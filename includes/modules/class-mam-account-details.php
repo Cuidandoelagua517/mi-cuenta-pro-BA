@@ -63,7 +63,77 @@ class MAM_Account_Details {
         // Añadir pestañas para organizar la información de la cuenta
         add_action('woocommerce_before_edit_account_form', array($this, 'add_account_tabs'));
     }
+public function register_ajax_handlers() {
+    add_action('wp_ajax_mam_update_account', array($this, 'ajax_update_account'));
+    add_action('wp_ajax_mam_update_password', array($this, 'ajax_update_password'));
+    add_action('wp_ajax_mam_update_preferences', array($this, 'ajax_update_preferences'));
+    add_action('wp_ajax_mam_revoke_session', array($this, 'ajax_revoke_session'));
+}
 
+public function ajax_update_account() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $user_id = get_current_user_id();
+    
+    // Validar campos
+    $account_first_name = isset($_POST['account_first_name']) ? sanitize_text_field($_POST['account_first_name']) : '';
+    $account_last_name = isset($_POST['account_last_name']) ? sanitize_text_field($_POST['account_last_name']) : '';
+    $account_email = isset($_POST['account_email']) ? sanitize_email($_POST['account_email']) : '';
+    
+    // Validar email
+    if (empty($account_email)) {
+        wp_send_json_error(array(
+            'message' => __('Por favor, introduce una dirección de correo electrónico.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    if (!is_email($account_email)) {
+        wp_send_json_error(array(
+            'message' => __('Por favor, introduce una dirección de correo electrónico válida.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    // Comprobar si el email ya está en uso
+    if (email_exists($account_email) && email_exists($account_email) !== $user_id) {
+        wp_send_json_error(array(
+            'message' => __('Esta dirección de correo electrónico ya está siendo utilizada.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    // Actualizar datos de usuario
+    $user_data = array(
+        'ID'         => $user_id,
+        'first_name' => $account_first_name,
+        'last_name'  => $account_last_name,
+        'user_email' => $account_email,
+        'display_name' => $account_first_name
+    );
+    
+    $user_id = wp_update_user($user_data);
+    
+    if (is_wp_error($user_id)) {
+        wp_send_json_error(array(
+            'message' => $user_id->get_error_message()
+        ));
+        return;
+    }
+    
+    // Guardar campos personalizados
+    if (isset($_POST['account_phone'])) {
+        update_user_meta($user_id, 'phone', sanitize_text_field($_POST['account_phone']));
+    }
+    
+    if (isset($_POST['account_birth_date'])) {
+        update_user_meta($user_id, 'birth_date', sanitize_text_field($_POST['account_birth_date']));
+    }
+    
+    wp_send_json_success(array(
+        'message' => __('Datos de cuenta actualizados correctamente.', 'my-account-manager')
+    ));
+}
     /**
      * Personalizar título de la página de datos de cuenta
      */
