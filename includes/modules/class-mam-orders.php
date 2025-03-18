@@ -23,7 +23,9 @@ class MAM_Orders {
     /**
      * Constructor
      */
-    public function __construct() {
+  public function __construct() {
+    // Verificar si HPOS está activo
+    $this->is_hpos_enabled = $this->check_hpos_enabled();
         // Personalizar títulos de los endpoints
         add_filter('woocommerce_endpoint_orders_title', array($this, 'custom_orders_title'));
         add_filter('woocommerce_endpoint_view-order_title', array($this, 'custom_view_order_title'));
@@ -59,7 +61,27 @@ class MAM_Orders {
         // Procesar el formulario de valoración
         add_action('template_redirect', array($this, 'process_order_review_form'));
     }
-
+/**
+ * Verifica si High-Performance order storage está activo
+ */
+private function check_hpos_enabled() {
+    if (class_exists('\Automattic\WooCommerce\Utilities\OrderUtil')) {
+        return \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+    }
+    return false;
+}
+    /**
+ * Método para obtener pedidos de manera compatible
+ */
+private function get_orders_compatible($args) {
+    if ($this->is_hpos_enabled) {
+        // Usar la nueva API para HPOS
+        return wc_get_orders($args);
+    } else {
+        // Usar el método tradicional
+        return wc_get_orders($args);
+    }
+}
     /**
      * Personalizar título de la página de pedidos
      */
