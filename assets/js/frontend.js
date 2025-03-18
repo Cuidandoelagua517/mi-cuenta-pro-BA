@@ -24,59 +24,60 @@
         /**
          * Inicializar elementos comunes de UI para AJAX
          */
-        initAjaxUI: function() {
-            // Manejar envío de formularios con clase .mam-ajax-form
-            $(document).on('submit', '.mam-ajax-form', function(e) {
-                e.preventDefault();
-                
-                var $form = $(this);
-                var $submitBtn = $form.find('button[type="submit"]');
-                var formData = $form.serialize();
-                var action = $form.data('action');
-                
-                if (!action) {
-                    console.error('Falta el atributo data-action en el formulario AJAX');
-                    return;
+       initAjaxUI: function() {
+    // Manejar envío de formularios con clase .mam-ajax-form
+    $(document).on('submit', '.mam-ajax-form', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var $submitBtn = $form.find('button[type="submit"]');
+        var formData = $form.serialize();
+        var action = $form.data('action');
+        
+        if (!action) {
+            console.error('Falta el atributo data-action en el formulario AJAX');
+            return;
+        }
+        
+        // Añadir nonce y acción
+        formData += '&action=' + action + '&security=' + mam_params.nonce;
+        
+        // Mostrar loader
+        $submitBtn.prop('disabled', true).addClass('mam-loading');
+        
+        $.ajax({
+            type: 'POST',
+            url: mam_params.ajax_url,
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    // Manejar redirección
+                    if (response.data.redirect) {
+                        window.location.href = response.data.redirect;
+                        return;
+                    }
+                    
+                    // Mostrar mensaje
+                    if (response.data.message) {
+                        MAM.showMessage($form, 'success', response.data.message);
+                    }
+                    
+                    // Trigger para acciones personalizadas
+                    $form.trigger('mam_ajax_success', [response.data]);
+                } else {
+                    MAM.showMessage($form, 'error', response.data.message || mam_params.i18n.error);
                 }
                 
-                // Añadir nonce y acción
-                formData += '&action=' + action + '&security=' + mam_params.nonce;
-                
-                // Mostrar loader
-                $submitBtn.prop('disabled', true).addClass('mam-loading');
-                
-                $.ajax({
-                    type: 'POST',
-                    url: mam_params.ajax_url,
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
-                            // Manejar acciones específicas según el resultado
-                            if (response.data.redirect) {
-                                window.location.href = response.data.redirect;
-                                return;
-                            }
-                            
-                            if (response.data.message) {
-                                MAM.showMessage($form, 'success', response.data.message);
-                            }
-                            
-                            // Trigger para manejar acciones personalizadas
-                            $form.trigger('mam_ajax_success', [response.data]);
-                        } else {
-                            MAM.showMessage($form, 'error', response.data.message || mam_params.i18n.error);
-                        }
-                        
-                        // Restaurar botón
-                        $submitBtn.prop('disabled', false).removeClass('mam-loading');
-                    },
-                    error: function() {
-                        MAM.showMessage($form, 'error', mam_params.i18n.error);
-                        $submitBtn.prop('disabled', false).removeClass('mam-loading');
-                    }
-                });
-            });
-        },
+                // Restaurar botón
+                $submitBtn.prop('disabled', false).removeClass('mam-loading');
+            },
+            error: function() {
+                MAM.showMessage($form, 'error', mam_params.i18n.error);
+                $submitBtn.prop('disabled', false).removeClass('mam-loading');
+            }
+        });
+    });
+}
         
         /**
          * Mostrar mensajes de respuesta
