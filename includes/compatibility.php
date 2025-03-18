@@ -12,7 +12,7 @@ function mam_declare_hpos_compatibility() {
     if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
         \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
             'custom_order_tables',
-            MAM_PLUGIN_BASENAME,
+            plugin_basename(MAM_PLUGIN_DIR . 'my-account-manager.php'),
             true
         );
     }
