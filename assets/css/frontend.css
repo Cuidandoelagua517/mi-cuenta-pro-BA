@@ -1,0 +1,460 @@
+/**
+ * My Account Manager Frontend Styles
+ * Mobile-First Approach
+ */
+
+/* Variables globales */
+:root {
+    --mam-primary-color: #4a6cf7;
+    --mam-secondary-color: #6b7280;
+    --mam-success-color: #10b981;
+    --mam-danger-color: #ef4444;
+    --mam-warning-color: #f59e0b;
+    --mam-info-color: #3b82f6;
+    --mam-light-color: #f3f4f6;
+    --mam-dark-color: #1f2937;
+    --mam-text-color: #374151;
+    --mam-text-light-color: #6b7280;
+    --mam-border-color: #e5e7eb;
+    --mam-background-color: #ffffff;
+    --mam-font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mam-border-radius: 8px;
+    --mam-transition: all 0.3s ease;
+    --mam-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --mam-box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Resetear estilos de WooCommerce */
+.woocommerce-account .woocommerce {
+    font-family: var(--mam-font-family);
+    color: var(--mam-text-color);
+}
+
+.woocommerce-account .woocommerce-notices-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+/* Contenedor principal */
+.woocommerce-account .woocommerce {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Navegación de Mi cuenta */
+.woocommerce-account .woocommerce-MyAccount-navigation {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-radius: var(--mam-border-radius);
+    overflow: hidden;
+    box-shadow: var(--mam-box-shadow);
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation ul li {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--mam-border-color);
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation ul li:last-child {
+    border-bottom: none;
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation ul li a {
+    display: block;
+    padding: 1rem 1.25rem;
+    color: var(--mam-text-color);
+    text-decoration: none;
+    transition: var(--mam-transition);
+    background-color: var(--mam-background-color);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation ul li a:hover {
+    background-color: var(--mam-light-color);
+    color: var(--mam-primary-color);
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation ul li.is-active a {
+    background-color: var(--mam-primary-color);
+    color: white;
+}
+
+/* Contenido de Mi cuenta */
+.woocommerce-account .woocommerce-MyAccount-content {
+    width: 100%;
+    background-color: var(--mam-background-color);
+    border-radius: var(--mam-border-radius);
+    box-shadow: var(--mam-box-shadow);
+    padding: 1.5rem;
+}
+
+/* Wrapper personalizado para el contenido */
+.mam-account-content-wrapper {
+    padding: 0.5rem;
+}
+
+/* Estilos para formularios */
+.woocommerce form .form-row {
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+.woocommerce form .form-row label {
+    line-height: 1.5;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.95rem;
+}
+
+.woocommerce form .form-row .required {
+    color: var(--mam-danger-color);
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--mam-border-color);
+    border-radius: var(--mam-border-radius);
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: var(--mam-transition);
+    box-shadow: none;
+    appearance: none;
+}
+
+.woocommerce form .form-row input.input-text:focus,
+.woocommerce form .form-row textarea:focus,
+.woocommerce form .form-row select:focus {
+    outline: none;
+    border-color: var(--mam-primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
+}
+
+/* Login y Registro */
+.mam-login-form-container,
+.mam-register-form-container {
+    background-color: var(--mam-background-color);
+    border-radius: var(--mam-border-radius);
+    padding: 2rem 1.5rem;
+    box-shadow: var(--mam-box-shadow);
+    margin-bottom: 2rem;
+}
+
+.mam-form-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.mam-form-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--mam-dark-color);
+}
+
+.mam-form-header p {
+    color: var(--mam-text-light-color);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.mam-login-remember {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+@media (min-width: 480px) {
+    .mam-login-remember {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.mam-lost-password {
+    font-size: 0.875rem;
+    color: var(--mam-primary-color);
+    text-decoration: none;
+    transition: var(--mam-transition);
+}
+
+.mam-lost-password:hover {
+    text-decoration: underline;
+}
+
+.mam-register-link,
+.mam-login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.mam-register-link a,
+.mam-login-link a {
+    color: var(--mam-primary-color);
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--mam-transition);
+}
+
+.mam-register-link a:hover,
+.mam-login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Checkbox personalizado */
+.mam-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.mam-checkbox input[type="checkbox"] {
+    position: relative;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--mam-background-color);
+    border: 1px solid var(--mam-border-color);
+    border-radius: 4px;
+    transition: var(--mam-transition);
+}
+
+.mam-checkbox input[type="checkbox"]:checked {
+    background-color: var(--mam-primary-color);
+    border-color: var(--mam-primary-color);
+}
+
+.mam-checkbox input[type="checkbox"]:checked::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.5rem;
+    height: 0.25rem;
+    border: 2px solid white;
+    border-top: none;
+    border-right: none;
+    background: transparent;
+    transform-origin: center;
+    transform: translate(-50%, -70%) rotate(-45deg);
+}
+
+.mam-checkbox-label {
+    font-size: 0.875rem;
+    color: var(--mam-text-color);
+}
+
+/* Botones personalizados */
+.mam-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--mam-border-radius);
+    transition: var(--mam-transition);
+    width: 100%;
+}
+
+.mam-button-primary {
+    background-color: var(--mam-primary-color);
+    color: white;
+}
+
+.mam-button-primary:hover {
+    background-color: #3a5bf5;
+}
+
+.mam-button-secondary {
+    background-color: var(--mam-light-color);
+    color: var(--mam-text-color);
+    border-color: var(--mam-border-color);
+}
+
+.mam-button-secondary:hover {
+    background-color: #e5e7eb;
+}
+
+/* Layout para filas de formulario */
+.mam-form-row {
+    margin-bottom: 1.25rem;
+}
+
+.mam-form-row-first,
+.mam-form-row-last {
+    width: 100%;
+}
+
+/* Privacidad del registro */
+.mam-register-privacy {
+    margin: 1.25rem 0;
+}
+
+/* Responsive: Tablet (768px) y superior */
+@media (min-width: 768px) {
+    .woocommerce-account .woocommerce {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    
+    .woocommerce-account .woocommerce-MyAccount-navigation {
+        width: 25%;
+        margin-bottom: 0;
+    }
+    
+    .woocommerce-account .woocommerce-MyAccount-content {
+        width: 75%;
+        padding: 2rem;
+    }
+    
+    .mam-login-form-container,
+    .mam-register-form-container {
+        padding: 2.5rem;
+    }
+    
+    .mam-form-row-first {
+        float: left;
+        width: 48%;
+        clear: both;
+    }
+    
+    .mam-form-row-last {
+        float: right;
+        width: 48%;
+    }
+    
+    .mam-form-row::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    
+    .mam-button {
+        width: auto;
+    }
+}
+
+/* Responsive: Desktop (1024px) y superior */
+@media (min-width: 1024px) {
+    .woocommerce-account .woocommerce-MyAccount-navigation {
+        width: 20%;
+    }
+    
+    .woocommerce-account .woocommerce-MyAccount-content {
+        width: 80%;
+    }
+}
+
+/* Dashboard personalizado */
+.mam-dashboard-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .mam-dashboard-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .mam-dashboard-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.mam-dashboard-card {
+    background-color: var(--mam-background-color);
+    border-radius: var(--mam-border-radius);
+    box-shadow: var(--mam-box-shadow);
+    padding: 1.5rem;
+    transition: var(--mam-transition);
+}
+
+.mam-dashboard-card:hover {
+    box-shadow: var(--mam-box-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.mam-dashboard-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.mam-dashboard-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--mam-dark-color);
+}
+
+.mam-dashboard-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(74, 108, 247, 0.1);
+    color: var(--mam-primary-color);
+    border-radius: 50%;
+}
+
+.mam-dashboard-card-content {
+    margin-bottom: 1rem;
+}
+
+.mam-dashboard-card-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--mam-dark-color);
+    margin-bottom: 0.25rem;
+}
+
+.mam-dashboard-card-text {
+    font-size: 0.875rem;
+    color: var(--mam-text-light-color);
+}
+
+.mam-dashboard-card-footer {
+    font-size: 0.875rem;
+}
+
+.mam-dashboard-card-footer a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--mam-primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--mam-transition);
+}
+
+.mam-dashboard-card-footer a:hover {
+    text-decoration: underline;
+}
