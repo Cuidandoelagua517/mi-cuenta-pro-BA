@@ -1,0 +1,519 @@
+/**
+ * My Account Manager - Admin Styles
+ */
+
+/* Variables globales */
+:root {
+    --mam-admin-primary-color: #4a6cf7;
+    --mam-admin-secondary-color: #6b7280;
+    --mam-admin-success-color: #10b981;
+    --mam-admin-danger-color: #ef4444;
+    --mam-admin-warning-color: #f59e0b;
+    --mam-admin-info-color: #3b82f6;
+    --mam-admin-light-color: #f3f4f6;
+    --mam-admin-dark-color: #1f2937;
+    --mam-admin-text-color: #374151;
+    --mam-admin-text-light-color: #6b7280;
+    --mam-admin-border-color: #e5e7eb;
+    --mam-admin-background-color: #ffffff;
+    --mam-admin-border-radius: 8px;
+    --mam-admin-transition: all 0.3s ease;
+    --mam-admin-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Estilos generales para páginas de administración */
+.mam-admin-page {
+    margin: 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: var(--mam-admin-text-color);
+}
+
+.mam-admin-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--mam-admin-border-color);
+}
+
+.mam-admin-logo {
+    margin-right: 15px;
+    width: 36px;
+    height: 36px;
+}
+
+.mam-admin-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--mam-admin-dark-color);
+}
+
+.mam-admin-subtitle {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: var(--mam-admin-text-light-color);
+}
+
+/* Contenedores */
+.mam-admin-container {
+    background-color: var(--mam-admin-background-color);
+    border-radius: var(--mam-admin-border-radius);
+    box-shadow: var(--mam-admin-box-shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.mam-admin-section {
+    margin-bottom: 30px;
+}
+
+.mam-admin-section-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mam-admin-dark-color);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--mam-admin-border-color);
+}
+
+.mam-admin-notice {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: var(--mam-admin-border-radius);
+    border-left: 4px solid var(--mam-admin-info-color);
+    background-color: var(--mam-admin-light-color);
+}
+
+.mam-admin-notice.mam-notice-success {
+    border-left-color: var(--mam-admin-success-color);
+}
+
+.mam-admin-notice.mam-notice-warning {
+    border-left-color: var(--mam-admin-warning-color);
+}
+
+.mam-admin-notice.mam-notice-error {
+    border-left-color: var(--mam-admin-danger-color);
+}
+
+/* Pestañas de navegación */
+.mam-admin-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--mam-admin-border-color);
+    margin-bottom: 20px;
+}
+
+.mam-admin-tab {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--mam-admin-text-light-color);
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: var(--mam-admin-transition);
+}
+
+.mam-admin-tab:hover {
+    color: var(--mam-admin-primary-color);
+}
+
+.mam-admin-tab.active {
+    color: var(--mam-admin-primary-color);
+    border-bottom-color: var(--mam-admin-primary-color);
+}
+
+/* Formularios */
+.mam-admin-form-row {
+    margin-bottom: 20px;
+}
+
+.mam-admin-form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--mam-admin-text-color);
+}
+
+.mam-admin-input,
+.mam-admin-select,
+.mam-admin-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--mam-admin-text-color);
+    background-color: var(--mam-admin-background-color);
+    border: 1px solid var(--mam-admin-border-color);
+    border-radius: var(--mam-admin-border-radius);
+    transition: var(--mam-admin-transition);
+}
+
+.mam-admin-input:focus,
+.mam-admin-select:focus,
+.mam-admin-textarea:focus {
+    outline: none;
+    border-color: var(--mam-admin-primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.1);
+}
+
+.mam-admin-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.mam-admin-checkbox,
+.mam-admin-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.mam-admin-checkbox input[type="checkbox"],
+.mam-admin-radio input[type="radio"] {
+    margin: 0;
+}
+
+.mam-admin-checkbox-label,
+.mam-admin-radio-label {
+    font-size: 14px;
+    color: var(--mam-admin-text-color);
+}
+
+.mam-admin-help-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--mam-admin-text-light-color);
+}
+
+/* Botones */
+.mam-admin-button {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    border-radius: var(--mam-admin-border-radius);
+    transition: var(--mam-admin-transition);
+}
+
+.mam-admin-button-primary {
+    color: #fff;
+    background-color: var(--mam-admin-primary-color);
+    border-color: var(--mam-admin-primary-color);
+}
+
+.mam-admin-button-primary:hover {
+    background-color: #4056db;
+    border-color: #4056db;
+}
+
+.mam-admin-button-secondary {
+    color: var(--mam-admin-text-color);
+    background-color: var(--mam-admin-light-color);
+    border-color: var(--mam-admin-border-color);
+}
+
+.mam-admin-button-secondary:hover {
+    background-color: #e5e7eb;
+}
+
+.mam-admin-button-danger {
+    color: #fff;
+    background-color: var(--mam-admin-danger-color);
+    border-color: var(--mam-admin-danger-color);
+}
+
+.mam-admin-button-danger:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+.mam-admin-button-small {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.mam-admin-button-large {
+    padding: 12px 20px;
+    font-size: 16px;
+}
+
+/* Tablas */
+.mam-admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.mam-admin-table th,
+.mam-admin-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--mam-admin-border-color);
+}
+
+.mam-admin-table th {
+    background-color: var(--mam-admin-light-color);
+    font-weight: 600;
+    color: var(--mam-admin-text-color);
+}
+
+.mam-admin-table tbody tr:hover {
+    background-color: var(--mam-admin-light-color);
+}
+
+.mam-admin-table tfoot {
+    background-color: var(--mam-admin-light-color);
+}
+
+/* Tarjetas */
+.mam-admin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.mam-admin-card {
+    background-color: var(--mam-admin-background-color);
+    border-radius: var(--mam-admin-border-radius);
+    box-shadow: var(--mam-admin-box-shadow);
+    padding: 20px;
+    transition: var(--mam-admin-transition);
+}
+
+.mam-admin-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.mam-admin-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.mam-admin-card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mam-admin-dark-color);
+}
+
+.mam-admin-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(74, 108, 247, 0.1);
+    color: var(--mam-admin-primary-color);
+    border-radius: 50%;
+}
+
+.mam-admin-card-content {
+    margin-bottom: 15px;
+}
+
+.mam-admin-card-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--mam-admin-dark-color);
+    margin-bottom: 5px;
+}
+
+.mam-admin-card-text {
+    font-size: 14px;
+    color: var(--mam-admin-text-light-color);
+}
+
+.mam-admin-card-footer {
+    font-size: 14px;
+}
+
+.mam-admin-card-footer a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--mam-admin-primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--mam-admin-transition);
+}
+
+.mam-admin-card-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Información */
+.mam-admin-info-box {
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: var(--mam-admin-light-color);
+    border-radius: var(--mam-admin-border-radius);
+}
+
+.mam-admin-info-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mam-admin-dark-color);
+}
+
+.mam-admin-info-content {
+    font-size: 14px;
+    color: var(--mam-admin-text-color);
+}
+
+.mam-admin-info-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Vista previa de tarjetas en configuración de apariencia */
+.mam-preview-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--mam-admin-border-color);
+}
+
+.mam-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.mam-preview-button {
+    padding: 10px 15px;
+    border-radius: var(--mam-admin-border-radius);
+    font-weight: 500;
+    transition: var(--mam-admin-transition);
+}
+
+.mam-preview-primary {
+    background-color: var(--mam-admin-primary-color);
+    color: white;
+}
+
+.mam-preview-secondary {
+    background-color: var(--mam-admin-secondary-color);
+    color: white;
+}
+
+/* Metaboxes de pedidos */
+#mam_order_custom_info .inside {
+    padding: 12px;
+}
+
+#mam_order_custom_info textarea {
+    width: 100%;
+    min-height: 80px;
+}
+
+/* Configuración de color */
+.mam-color-picker {
+    width: 60px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--mam-admin-border-color);
+    border-radius: var(--mam-admin-border-radius);
+    cursor: pointer;
+}
+
+/* Notificaciones de estadísticas */
+.mam-admin-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.mam-admin-stat-item {
+    flex: 1;
+    min-width: 150px;
+    background-color: var(--mam-admin-background-color);
+    border-radius: var(--mam-admin-border-radius);
+    box-shadow: var(--mam-admin-box-shadow);
+    padding: 15px;
+    text-align: center;
+}
+
+.mam-admin-stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--mam-admin-primary-color);
+    margin-bottom: 5px;
+}
+
+.mam-admin-stat-label {
+    font-size: 14px;
+    color: var(--mam-admin-text-light-color);
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .mam-admin-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .mam-admin-tab {
+        flex: 1 0 auto;
+        text-align: center;
+    }
+    
+    .mam-admin-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .mam-admin-stats {
+        flex-direction: column;
+    }
+}
+
+/* Diseño específico para las páginas del plugin */
+.toplevel_page_my-account-manager .wp-header-end {
+    margin-bottom: 20px;
+}
+
+/* Animaciones */
+@keyframes mam-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.mam-fade-in {
+    animation: mam-fade-in 0.3s ease-in-out;
+}
+
+@keyframes mam-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mam-slide-up {
+    animation: mam-slide-up 0.3s ease-in-out;
+}
