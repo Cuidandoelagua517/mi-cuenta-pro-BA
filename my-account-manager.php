@@ -88,6 +88,7 @@ private function declare_compatibility() {
      * Incluir archivos necesarios
      */
     private function includes() {
+        include_once MAM_PLUGIN_DIR . 'includes/compatibility.php';
         // Core
         include_once MAM_PLUGIN_DIR . 'includes/class-mam-core.php';
         
