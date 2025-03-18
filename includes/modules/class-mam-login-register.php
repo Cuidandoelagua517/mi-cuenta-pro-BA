@@ -17,6 +17,7 @@ class MAM_Login_Register {
      */
     public static function init() {
         $instance = new self();
+          $instance->register_ajax_handlers(); // Método para registrar handlers
         return $instance;
     }
 
