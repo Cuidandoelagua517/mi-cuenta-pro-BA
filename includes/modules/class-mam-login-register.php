@@ -47,11 +47,15 @@ class MAM_Login_Register {
         add_shortcode('mam_login_form', array($this, 'login_form_shortcode'));
         add_shortcode('mam_register_form', array($this, 'register_form_shortcode'));
         
-        // AJAX para login y registro
-        add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'ajax_login'));
-        add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'ajax_register'));
     }
-
+/**
+ * Register AJAX handlers
+ */
+public function register_ajax_handlers() {
+    // AJAX para login y registro
+    add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'ajax_login'));
+    add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'ajax_register'));
+}
     /**
      * Inicio del formulario de login personalizado
      */
