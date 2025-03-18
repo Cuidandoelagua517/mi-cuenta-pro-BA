@@ -181,20 +181,46 @@ private function declare_compatibility() {
      * Enqueue de assets para el frontend
      */
     public function enqueue_frontend_assets() {
-        // Registrar y encolar estilos CSS
-        wp_register_style('mam-styles', MAM_PLUGIN_URL . 'assets/css/frontend.css', array(), MAM_VERSION);
-        wp_enqueue_style('mam-styles');
-        
-        // Registrar y encolar scripts JS
-        wp_register_script('mam-scripts', MAM_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), MAM_VERSION, true);
-        wp_enqueue_script('mam-scripts');
-        
-        // Localizar el script
-        wp_localize_script('mam-scripts', 'mam_params', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('mam-nonce')
-        ));
+       public function enqueue_frontend_assets() {
+    // Registrar y encolar estilos CSS
+    wp_register_style('mam-styles', MAM_PLUGIN_URL . 'assets/css/frontend.css', array(), MAM_VERSION);
+    wp_enqueue_style('mam-styles');
+    
+    // Registrar los scripts JS
+    wp_register_script('mam-scripts', MAM_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), MAM_VERSION, true);
+    
+    // Scripts específicos para cada página
+    if (is_account_page()) {
+        if (is_wc_endpoint_url('orders')) {
+            wp_enqueue_script('mam-orders', MAM_PLUGIN_URL . 'assets/js/orders.js', array('jquery'), MAM_VERSION, true);
+        } elseif (is_wc_endpoint_url('edit-address')) {
+            wp_enqueue_script('mam-addresses', MAM_PLUGIN_URL . 'assets/js/addresses.js', array('jquery'), MAM_VERSION, true);
+        } elseif (is_wc_endpoint_url('edit-account')) {
+            wp_enqueue_script('mam-account-details', MAM_PLUGIN_URL . 'assets/js/account-details.js', array('jquery'), MAM_VERSION, true);
+        } elseif (is_wc_endpoint_url('downloads')) {
+            wp_enqueue_script('mam-downloads', MAM_PLUGIN_URL . 'assets/js/downloads.js', array('jquery'), MAM_VERSION, true);
+        } elseif (is_wc_endpoint_url('payment-methods') || is_wc_endpoint_url('add-payment-method')) {
+            wp_enqueue_script('mam-payment-methods', MAM_PLUGIN_URL . 'assets/js/payment-methods.js', array('jquery'), MAM_VERSION, true);
+        }
     }
+    
+    // Script principal
+    wp_enqueue_script('mam-scripts');
+    
+    // Localizar todos los scripts con los mismos parámetros
+    $mam_params = array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('mam-nonce'),
+        'i18n' => array(
+            'loading' => __('Cargando...', 'my-account-manager'),
+            'error' => __('Ha ocurrido un error. Por favor, inténtalo de nuevo.', 'my-account-manager'),
+            'success' => __('Operación completada con éxito.', 'my-account-manager'),
+            'confirm_delete' => __('¿Estás seguro de que quieres eliminar este elemento?', 'my-account-manager')
+        )
+    );
+    
+    wp_localize_script('mam-scripts', 'mam_params', $mam_params);
+}
 
     /**
      * Enqueue de assets para el admin
