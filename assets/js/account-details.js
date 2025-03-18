@@ -9,12 +9,14 @@
         /**
          * Inicialización
          */
-        init: function() {
+     init: function() {
             this.initTabs();
             this.initPasswordStrength();
             this.initDeleteAccount();
             this.initImageUpload();
             this.handleSessionManagement();
+            this.initAjaxAccount();
+            this.initAjaxPassword();
         },
 
         /**
@@ -86,97 +88,90 @@
 // Añadir a assets/js/account-details.js (existente)
 // Modificar la función init para añadir nuevos métodos
 
-initAjaxAccount: function() {
-    var self = this;
-    
-    // Form de detalles de cuenta
-$('.woocommerce-EditAccountForm').on('mam_ajax_success', function(event, data) {
-    // Código específico para manejar la respuesta
-    if (data.some_specific_data) {
-        // Hacer algo específico
-    }
-});
-        // No procesar si es otro tab que no sea "details"
-        if ($('.mam-account-tab[data-tab="details"]').hasClass('active')) {
-            e.preventDefault();
+ initAjaxAccount: function() {
+            var self = this;
             
-            var $form = $(this);
-            var formData = $form.serialize();
-            
-            // Añadir acción y nonce
-            formData += '&action=mam_update_account&security=' + mam_params.nonce;
-            
-            // Mostrar loader
-            var $submitBtn = $form.find('button[type="submit"]');
-            $submitBtn.prop('disabled', true).addClass('mam-loading');
-            
-            $.ajax({
-                type: 'POST',
-                url: mam_params.ajax_url,
-                data: formData,
-                success: function(response) {
-                    if (response.success) {
-                        self.showNotice('success', response.data.message);
-                    } else {
-                        self.showNotice('error', response.data.message);
-                    }
+            $('.woocommerce-EditAccountForm').on('submit', function(e) {
+                // No procesar si es otro tab que no sea "details"
+                if ($('.mam-account-tab[data-tab="details"]').hasClass('active')) {
+                    e.preventDefault();
                     
-                    // Restaurar botón
-                    $submitBtn.prop('disabled', false).removeClass('mam-loading');
-                },
-                error: function() {
-                    self.showNotice('error', 'Error de conexión. Por favor, inténtalo de nuevo.');
-                    $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                    var $form = $(this);
+                    var formData = $form.serialize();
+                    
+                    // Añadir acción y nonce
+                    formData += '&action=mam_update_account&security=' + mam_params.nonce;
+                    
+                    // Mostrar loader
+                    var $submitBtn = $form.find('button[type="submit"]');
+                    $submitBtn.prop('disabled', true).addClass('mam-loading');
+                    
+                    $.ajax({
+                        type: 'POST',
+                        url: mam_params.ajax_url,
+                        data: formData,
+                        success: function(response) {
+                            if (response.success) {
+                                self.showNotice('success', response.data.message);
+                            } else {
+                                self.showNotice('error', response.data.message);
+                            }
+                            
+                            // Restaurar botón
+                            $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                        },
+                        error: function() {
+                            self.showNotice('error', 'Error de conexión. Por favor, inténtalo de nuevo.');
+                            $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                        }
+                    });
                 }
             });
-        }
-    });
-},
+        },
 
-initAjaxPassword: function() {
-    var self = this;
-    
-    // Form de cambio de contraseña
-    $('.woocommerce-EditAccountForm').on('submit', function(e) {
-        // Solo procesar si estamos en el tab "password"
-        if ($('.mam-account-tab[data-tab="password"]').hasClass('active')) {
-            e.preventDefault();
+        initAjaxPassword: function() {
+            var self = this;
             
-            var $form = $(this);
-            var formData = $form.serialize();
-            
-            // Añadir acción y nonce
-            formData += '&action=mam_update_password&security=' + mam_params.nonce;
-            
-            // Mostrar loader
-            var $submitBtn = $form.find('button[type="submit"]');
-            $submitBtn.prop('disabled', true).addClass('mam-loading');
-            
-            $.ajax({
-                type: 'POST',
-                url: mam_params.ajax_url,
-                data: formData,
-                success: function(response) {
-                    if (response.success) {
-                        self.showNotice('success', response.data.message);
-                        
-                        // Limpiar campos de contraseña
-                        $('#password_current, #password_1, #password_2').val('');
-                    } else {
-                        self.showNotice('error', response.data.message);
-                    }
+            $('.woocommerce-EditAccountForm').on('submit', function(e) {
+                // Solo procesar si estamos en el tab "password"
+                if ($('.mam-account-tab[data-tab="password"]').hasClass('active')) {
+                    e.preventDefault();
                     
-                    // Restaurar botón
-                    $submitBtn.prop('disabled', false).removeClass('mam-loading');
-                },
-                error: function() {
-                    self.showNotice('error', 'Error de conexión. Por favor, inténtalo de nuevo.');
-                    $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                    var $form = $(this);
+                    var formData = $form.serialize();
+                    
+                    // Añadir acción y nonce
+                    formData += '&action=mam_update_password&security=' + mam_params.nonce;
+                    
+                    // Mostrar loader
+                    var $submitBtn = $form.find('button[type="submit"]');
+                    $submitBtn.prop('disabled', true).addClass('mam-loading');
+                    
+                    $.ajax({
+                        type: 'POST',
+                        url: mam_params.ajax_url,
+                        data: formData,
+                        success: function(response) {
+                            if (response.success) {
+                                self.showNotice('success', response.data.message);
+                                
+                                // Limpiar campos de contraseña
+                                $('#password_current, #password_1, #password_2').val('');
+                            } else {
+                                self.showNotice('error', response.data.message);
+                            }
+                            
+                            // Restaurar botón
+                            $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                        },
+                        error: function() {
+                            self.showNotice('error', 'Error de conexión. Por favor, inténtalo de nuevo.');
+                            $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                        }
+                    });
                 }
             });
-        }
-    });
-},
+        },
 
 showNotice: function(type, message) {
     var $noticeContainer = $('.mam-account-notices');
@@ -378,7 +373,7 @@ showNotice: function(type, message) {
     };
 
     // Inicializar cuando el documento esté listo
-    $(document).ready(function() {
+   $(document).ready(function() {
         MAM_Account.init();
     });
 
