@@ -13,11 +13,18 @@ if (!defined('ABSPATH')) {
 class MAM_Orders {
 
     /**
+     * Whether HPOS is enabled or not
+     * 
+     * @var bool
+     */
+    private $is_hpos_enabled;
+
+    /**
      * Inicializar la clase
      */
     public static function init() {
         $instance = new self();
-           $instance->register_ajax_handlers(); // Añadir esta línea
+        $instance->register_ajax_handlers();
         return $instance;
     }
 
