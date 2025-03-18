@@ -1,6 +1,4 @@
-/**
- * My Account Manager Frontend Scripts
- */
+// Actualizar assets/js/frontend.js (existente)
 (function($) {
     'use strict';
 
@@ -16,271 +14,112 @@
             this.initPasswordToggle();
             this.initFormValidation();
             this.initMobileMenu();
+            
+            // Funcionalidades generales para AJAX
+            this.initAjaxUI();
         },
-
+        
+        // [Mantener funciones existentes...]
+        
         /**
-         * Inicializar pestañas para login/registro
+         * Inicializar elementos comunes de UI para AJAX
          */
-        initTabs: function() {
-            var $loginTab = $('.mam-login-tab');
-            var $registerTab = $('.mam-register-tab');
-            var $loginForm = $('.mam-login-form-container');
-            var $registerForm = $('.mam-register-form-container');
-
-            // Mostrar formulario de login por defecto
-            $loginForm.show();
-            $registerForm.hide();
-            $loginTab.addClass('active');
-
-            // Click en la pestaña de login
-            $loginTab.on('click', function(e) {
+        initAjaxUI: function() {
+            // Manejar envío de formularios con clase .mam-ajax-form
+            $(document).on('submit', '.mam-ajax-form', function(e) {
                 e.preventDefault();
-                $loginForm.fadeIn(300);
-                $registerForm.hide();
-                $loginTab.addClass('active');
-                $registerTab.removeClass('active');
-            });
-
-            // Click en la pestaña de registro
-            $registerTab.on('click', function(e) {
-                e.preventDefault();
-                $registerForm.fadeIn(300);
-                $loginForm.hide();
-                $registerTab.addClass('active');
-                $loginTab.removeClass('active');
-            });
-
-            // Verificar hash de URL para cambiar pestaña si es necesario
-            if (window.location.hash === '#register') {
-                $registerTab.trigger('click');
-            }
-        },
-
-        /**
-         * Inicializar login por AJAX
-         */
-        initAjaxLogin: function() {
-            var self = this;
-
-            $('.woocommerce-form-login').on('submit', function(e) {
-                // Solo procesar si tiene la clase de AJAX
-                if (!$(this).hasClass('mam-ajax-login')) {
-                    return true;
-                }
-
-                e.preventDefault();
-
+                
                 var $form = $(this);
-                var $submitButton = $form.find('button[type="submit"]');
+                var $submitBtn = $form.find('button[type="submit"]');
                 var formData = $form.serialize();
-
-                // Deshabilitar botón y mostrar loader
-                self.startLoading($submitButton);
-
-                // Añadir nonce
-                formData += '&security=' + mam_params.nonce + '&action=mam_ajax_login';
-
-                // Enviar solicitud AJAX
+                var action = $form.data('action');
+                
+                if (!action) {
+                    console.error('Falta el atributo data-action en el formulario AJAX');
+                    return;
+                }
+                
+                // Añadir nonce y acción
+                formData += '&action=' + action + '&security=' + mam_params.nonce;
+                
+                // Mostrar loader
+                $submitBtn.prop('disabled', true).addClass('mam-loading');
+                
                 $.ajax({
                     type: 'POST',
-                    dataType: 'json',
                     url: mam_params.ajax_url,
                     data: formData,
                     success: function(response) {
                         if (response.success) {
-                            self.showSuccessMessage($form, response.data.message);
-                            
-                            // Redirigir después de un pequeño retraso
-                            setTimeout(function() {
+                            // Manejar acciones específicas según el resultado
+                            if (response.data.redirect) {
                                 window.location.href = response.data.redirect;
-                            }, 1000);
+                                return;
+                            }
+                            
+                            if (response.data.message) {
+                                MAM.showMessage($form, 'success', response.data.message);
+                            }
+                            
+                            // Trigger para manejar acciones personalizadas
+                            $form.trigger('mam_ajax_success', [response.data]);
                         } else {
-                            self.showErrorMessage($form, response.data.message);
-                            self.stopLoading($submitButton);
+                            MAM.showMessage($form, 'error', response.data.message || mam_params.i18n.error);
                         }
+                        
+                        // Restaurar botón
+                        $submitBtn.prop('disabled', false).removeClass('mam-loading');
                     },
-                    error: function(xhr, status, error) {
-                        self.showErrorMessage($form, 'Ha ocurrido un error. Por favor, inténtalo de nuevo.');
-                        self.stopLoading($submitButton);
+                    error: function() {
+                        MAM.showMessage($form, 'error', mam_params.i18n.error);
+                        $submitBtn.prop('disabled', false).removeClass('mam-loading');
                     }
                 });
             });
         },
-
+        
         /**
-         * Inicializar registro por AJAX
+         * Mostrar mensajes de respuesta
          */
-        initAjaxRegister: function() {
-            var self = this;
-
-            $('.woocommerce-form-register').on('submit', function(e) {
-                // Solo procesar si tiene la clase de AJAX
-                if (!$(this).hasClass('mam-ajax-register')) {
-                    return true;
-                }
-
-                e.preventDefault();
-
-                var $form = $(this);
-                var $submitButton = $form.find('button[type="submit"]');
-                var formData = $form.serialize();
-
-                // Deshabilitar botón y mostrar loader
-                self.startLoading($submitButton);
-
-                // Añadir nonce
-                formData += '&security=' + mam_params.nonce + '&action=mam_ajax_register';
-
-                // Enviar solicitud AJAX
-                $.ajax({
-                    type: 'POST',
-                    dataType: 'json',
-                    url: mam_params.ajax_url,
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
-                            self.showSuccessMessage($form, response.data.message);
-                            
-                            // Redirigir después de un pequeño retraso
-                            setTimeout(function() {
-                                window.location.href = response.data.redirect;
-                            }, 1000);
-                        } else {
-                            self.showErrorMessage($form, response.data.message);
-                            self.stopLoading($submitButton);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        self.showErrorMessage($form, 'Ha ocurrido un error. Por favor, inténtalo de nuevo.');
-                        self.stopLoading($submitButton);
+        showMessage: function($context, type, message) {
+            var $container = $context.find('.mam-messages');
+            
+            if ($container.length === 0) {
+                $container = $('<div class="mam-messages"></div>');
+                $context.prepend($container);
+            }
+            
+            var $message = $('<div class="mam-message mam-message-' + type + '">' + message + '</div>');
+            $container.html($message).show();
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(function() {
+                $message.fadeOut(300, function() {
+                    $(this).remove();
+                    if ($container.children().length === 0) {
+                        $container.hide();
                     }
                 });
-            });
-        },
-
-        /**
-         * Inicializar toggle de visibilidad de contraseña
-         */
-        initPasswordToggle: function() {
-            $('.mam-password-toggle').on('click', function(e) {
-                e.preventDefault();
-                
-                var $passwordField = $(this).siblings('input');
-                var currentType = $passwordField.attr('type');
-                var $icon = $(this).find('i');
-                
-                if (currentType === 'password') {
-                    $passwordField.attr('type', 'text');
-                    $icon.removeClass('fa-eye').addClass('fa-eye-slash');
-                } else {
-                    $passwordField.attr('type', 'password');
-                    $icon.removeClass('fa-eye-slash').addClass('fa-eye');
-                }
-            });
-        },
-
-        /**
-         * Inicializar validación de formularios
-         */
-        initFormValidation: function() {
-            // Validación básica de formularios
-            $('input, textarea, select').on('blur', function() {
-                var $field = $(this);
-                var $parent = $field.closest('.form-row');
-                
-                // Limpiar errores previos
-                $parent.removeClass('mam-form-error');
-                $parent.find('.mam-error-message').remove();
-                
-                // Validar campo requerido
-                if ($field.prop('required') && $field.val() === '') {
-                    $parent.addClass('mam-form-error');
-                    $parent.append('<span class="mam-error-message">Este campo es obligatorio.</span>');
-                }
-                
-                // Validar email
-                if ($field.attr('type') === 'email' && $field.val() !== '') {
-                    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailPattern.test($field.val())) {
-                        $parent.addClass('mam-form-error');
-                        $parent.append('<span class="mam-error-message">Por favor, introduce una dirección de correo válida.</span>');
-                    }
-                }
-            });
-        },
-
-        /**
-         * Inicializar menú móvil
-         */
-        initMobileMenu: function() {
-            var $menuToggle = $('.mam-mobile-menu-toggle');
-            var $navigation = $('.woocommerce-MyAccount-navigation');
+            }, 5000);
             
-            $menuToggle.on('click', function(e) {
-                e.preventDefault();
-                $navigation.slideToggle(300);
-                $(this).toggleClass('active');
-            });
-            
-            // Ocultar/mostrar menú al cambiar tamaño de ventana
-            $(window).on('resize', function() {
-                if ($(window).width() >= 768) {
-                    $navigation.show();
-                } else if (!$menuToggle.hasClass('active')) {
-                    $navigation.hide();
-                }
-            });
-        },
-
-        /**
-         * Mostrar mensaje de éxito
-         */
-        showSuccessMessage: function($form, message) {
-            this.removeMessages($form);
-            $form.prepend('<div class="mam-success-message">' + message + '</div>');
-        },
-
-        /**
-         * Mostrar mensaje de error
-         */
-        showErrorMessage: function($form, message) {
-            this.removeMessages($form);
-            $form.prepend('<div class="mam-error-message">' + message + '</div>');
-        },
-
-        /**
-         * Eliminar mensajes existentes
-         */
-        removeMessages: function($form) {
-            $form.find('.mam-success-message, .mam-error-message').remove();
-        },
-
-        /**
-         * Iniciar estado de carga
-         */
-        startLoading: function($button) {
-            $button.prop('disabled', true);
-            $button.addClass('mam-loading');
-            
-            // Guardar texto original si no está guardado
-            if (!$button.data('original-text')) {
-                $button.data('original-text', $button.html());
+            // Scroll para mostrar el mensaje si es necesario
+            if (!this.isInViewport($container)) {
+                $('html, body').animate({
+                    scrollTop: $container.offset().top - 50
+                }, 300);
             }
-            
-            $button.html('<span class="mam-spinner"></span> Procesando...');
         },
-
+        
         /**
-         * Detener estado de carga
+         * Verificar si un elemento está en el viewport
          */
-        stopLoading: function($button) {
-            $button.prop('disabled', false);
-            $button.removeClass('mam-loading');
+        isInViewport: function($element) {
+            var elementTop = $element.offset().top;
+            var elementBottom = elementTop + $element.outerHeight();
+            var viewportTop = $(window).scrollTop();
+            var viewportBottom = viewportTop + $(window).height();
             
-            // Restaurar texto original
-            if ($button.data('original-text')) {
-                $button.html($button.data('original-text'));
-            }
+            return elementBottom > viewportTop && elementTop < viewportBottom;
         }
     };
 
