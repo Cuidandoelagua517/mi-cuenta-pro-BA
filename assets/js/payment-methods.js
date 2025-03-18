@@ -336,64 +336,134 @@
         /**
          * Inicializar selección de método predeterminado
          */
-        initDefaultPaymentSelection: function() {
-            $('.mam-set-default-form').on('submit', function(e) {
-                e.preventDefault();
+       initDefaultPaymentSelection: function() {
+    var self = this;
+    
+    $('.mam-set-default-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var $button = $form.find('button');
+        var token_id = $form.find('input[name="payment_token_id"]').val();
+        
+        // Mostrar loader
+        $button.prop('disabled', true).addClass('mam-loading');
+        
+        $.ajax({
+            type: 'POST',
+            url: mam_params.ajax_url,
+            data: {
+                action: 'mam_set_default_payment',
+                security: mam_params.nonce,
+                payment_token_id: token_id
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar HTML de las tarjetas
+                    $('.mam-payment-cards').html(response.data.html);
+                    
+                    // Reinicializar eventos después de actualizar el DOM
+                    self.initCardFlip();
+                    self.initVisualEffects();
+                    
+                    // Mostrar mensaje de éxito
+                    self.showMessage('success', response.data.message);
+                } else {
+                    self.showMessage('error', response.data.message);
+                }
                 
-                var $form = $(this);
-                var formData = $form.serialize();
-                
-                // Añadir spinners
-                $form.find('button').prop('disabled', true).addClass('mam-loading');
-                
-                // Enviar solicitud AJAX
-                $.ajax({
-                    type: 'POST',
-                    url: $form.attr('action'),
-                    data: formData,
-                    success: function(response) {
-                        // Recargar página
-                        window.location.reload();
-                    },
-                    error: function() {
-                        alert('Ha ocurrido un error. Por favor, inténtalo de nuevo.');
-                        $form.find('button').prop('disabled', false).removeClass('mam-loading');
-                    }
-                });
-            });
-        },
+                // Restaurar botón
+                $button.prop('disabled', false).removeClass('mam-loading');
+            },
+            error: function() {
+                self.showMessage('error', 'Error de conexión. Por favor, inténtalo de nuevo.');
+                $button.prop('disabled', false).removeClass('mam-loading');
+            }
+        });
+    });
+},
+
 
         /**
          * Inicializar efectos visuales de tarjetas
          */
-        initCardVisualEffects: function() {
-            // Añadir efecto hover
-            $('.mam-payment-card').hover(
-                function() {
-                    $(this).addClass('mam-card-hover');
-                },
-                function() {
-                    $(this).removeClass('mam-card-hover');
-                }
-            );
+       initCardVisualEffects: function() {
+    var self = this;
+    
+    // Añadir efecto hover
+    $('.mam-payment-card').hover(
+        function() {
+            $(this).addClass('mam-card-hover');
+        },
+        function() {
+            $(this).removeClass('mam-card-hover');
+        }
+    );
+    
+    // Añadir animación al eliminar por AJAX
+    $('.mam-delete-payment-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        if (confirm('¿Estás seguro de que quieres eliminar esta tarjeta?')) {
+            var $form = $(this);
+            var $card = $form.closest('.mam-payment-card');
+            var token_id = $form.find('input[name="payment_token_id"]').val();
             
-            // Añadir animación al eliminar
-            $('.mam-delete-payment-form').on('submit', function(e) {
-                var $card = $(this).closest('.mam-payment-card');
-                
-                if (confirm('¿Estás seguro de que quieres eliminar esta tarjeta?')) {
-                    $card.addClass('mam-card-removing');
-                    
-                    // Permitir que la animación se complete antes de enviar el formulario
-                    setTimeout(function() {
-                        return true;
-                    }, 300);
-                } else {
-                    e.preventDefault();
+            // Añadir efecto visual de eliminación
+            $card.addClass('mam-card-removing');
+            
+            $.ajax({
+                type: 'POST',
+                url: mam_params.ajax_url,
+                data: {
+                    action: 'mam_delete_payment',
+                    security: mam_params.nonce,
+                    payment_token_id: token_id
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Actualizar HTML de las tarjetas
+                        setTimeout(function() {
+                            $('.mam-payment-cards').html(response.data.html);
+                            
+                            // Reinicializar eventos
+                            self.initCardFlip();
+                            self.initVisualEffects();
+                            
+                            // Mostrar mensaje
+                            self.showMessage('success', response.data.message);
+                        }, 300); // Esperar a que termine la animación
+                    } else {
+                        $card.removeClass('mam-card-removing');
+                        self.showMessage('error', response.data.message);
+                    }
+                },
+                error: function() {
+                    $card.removeClass('mam-card-removing');
+                    self.showMessage('error', 'Error de conexión. Por favor, inténtalo de nuevo.');
                 }
             });
-        },
-
+        }
+    });
+},
+showMessage: function(type, message) {
+    var $messageContainer = $('.mam-payment-messages');
+    
+    if ($messageContainer.length === 0) {
+        $messageContainer = $('<div class="mam-payment-messages"></div>');
+        $('.mam-payment-methods-header').after($messageContainer);
+    }
+    
+    var $message = $('<div class="mam-message mam-message-' + type + '">' + message + '</div>');
+    $messageContainer.html($message);
+    
+    // Auto-ocultar después de 5 segundos
+    setTimeout(function() {
+        $message.fadeOut(300, function() {
+            $(this).remove();
+        });
+    }, 5000);
+}
         /**
          * Adjuntar interruptor de modo tabla
          */
