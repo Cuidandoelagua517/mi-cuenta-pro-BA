@@ -62,8 +62,19 @@ class My_Account_Manager {
         $this->define('MAM_PLUGIN_DIR', plugin_dir_path(__FILE__));
         $this->define('MAM_PLUGIN_URL', plugin_dir_url(__FILE__));
         $this->define('MAM_PLUGIN_BASENAME', plugin_basename(__FILE__));
+        $this->define('MAM_HPOS_COMPATIBLE', true);
     }
-
+// Añadir después de define_constants() en el constructor
+private function declare_compatibility() {
+    // Declarar compatibilidad con HPOS si la clase existe
+    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            __FILE__,
+            true
+        );
+    }
+}
     /**
      * Definir si no está definido
      */
