@@ -66,6 +66,62 @@ class MAM_Downloads {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_downloads_scripts'));
     }
 
+    // Añadir a class-mam-downloads.php
+public function register_ajax_handlers() {
+    add_action('wp_ajax_mam_filter_downloads', array($this, 'ajax_filter_downloads'));
+    add_action('wp_ajax_mam_search_downloads', array($this, 'ajax_search_downloads'));
+    add_action('wp_ajax_mam_load_file_preview', array($this, 'ajax_load_file_preview'));
+}
+
+public function ajax_filter_downloads() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $category_id = isset($_POST['category']) ? absint($_POST['category']) : 0;
+    $view_mode = isset($_POST['view_mode']) ? sanitize_text_field($_POST['view_mode']) : 'list';
+    
+    // Obtener descargas del cliente
+    $downloads = WC()->customer->get_downloadable_products();
+    
+    // Filtrar por categoría si es necesario
+    if ($category_id > 0) {
+        $filtered_downloads = array();
+        
+        foreach ($downloads as $download) {
+            $product_id = $download['product_id'];
+            $product_categories = get_the_terms($product_id, 'product_cat');
+            
+            if ($product_categories && !is_wp_error($product_categories)) {
+                $category_ids = wp_list_pluck($product_categories, 'term_id');
+                
+                if (in_array($category_id, $category_ids)) {
+                    $filtered_downloads[] = $download;
+                }
+            }
+        }
+        
+        $downloads = $filtered_downloads;
+    }
+    
+    // Renderizar las descargas actualizadas
+    ob_start();
+    
+    if ($view_mode === 'grid') {
+        // Renderizar vista de cuadrícula
+        // ...
+    } else {
+        // Renderizar vista de lista
+        // ...
+    }
+    
+    $html = ob_get_clean();
+    
+    wp_send_json_success(array(
+        'html' => $html,
+        'count' => count($downloads)
+    ));
+}
+
+// Implementar ajax_search_downloads y ajax_load_file_preview similarmente
     /**
      * Personalizar título de la página de descargas
      */
