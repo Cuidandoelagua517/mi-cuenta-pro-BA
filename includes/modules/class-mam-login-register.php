@@ -167,25 +167,46 @@ public function register_ajax_handlers() {
     }
 
     /**
-     * Validación personalizada de registro
-     */
-    public function validate_registration($validation_error, $username, $email) {
-        // Validar campos obligatorios personalizados
-        if (isset($_POST['first_name']) && empty($_POST['first_name'])) {
-            $validation_error->add('first_name_error', __('El nombre es obligatorio.', 'my-account-manager'));
-        }
-        
-        if (isset($_POST['last_name']) && empty($_POST['last_name'])) {
-            $validation_error->add('last_name_error', __('El apellido es obligatorio.', 'my-account-manager'));
-        }
-        
-        if (isset($_POST['privacy_policy']) && empty($_POST['privacy_policy'])) {
-            $validation_error->add('privacy_policy_error', __('Debes aceptar nuestra política de privacidad.', 'my-account-manager'));
-        }
-        
-        return $validation_error;
+ * Validación personalizada de registro
+ */
+public function validate_registration($validation_error, $username, $email) {
+    // Validar campos obligatorios personalizados
+    if (isset($_POST['company_name']) && empty($_POST['company_name'])) {
+        $validation_error->add('company_name_error', __('El nombre de empresa es obligatorio.', 'my-account-manager'));
     }
-
+    
+    if (isset($_POST['cuit']) && empty($_POST['cuit'])) {
+        $validation_error->add('cuit_error', __('El CUIT es obligatorio.', 'my-account-manager'));
+    }
+    
+    // Validación básica de formato CUIT (xx-xxxxxxxx-x)
+    if (!empty($_POST['cuit']) && !$this->validate_cuit_format($_POST['cuit'])) {
+        $validation_error->add('cuit_format_error', __('El formato del CUIT no es válido. Debe ser: xx-xxxxxxxx-x', 'my-account-manager'));
+    }
+    
+    if (isset($_POST['privacy_policy']) && empty($_POST['privacy_policy'])) {
+        $validation_error->add('privacy_policy_error', __('Debes aceptar nuestra política de privacidad.', 'my-account-manager'));
+    }
+    
+    return $validation_error;
+}
+/**
+ * Validar formato de CUIT
+ */
+private function validate_cuit_format($cuit) {
+    // Eliminar guiones y espacios
+    $cuit = preg_replace('/[^0-9]/', '', $cuit);
+    
+    // Verificar longitud
+    if (strlen($cuit) !== 11) {
+        return false;
+    }
+    
+    // Aquí podrías añadir validación adicional del número de CUIT
+    // como verificación del dígito de control
+    
+    return true;
+}
     /**
      * Inicio del wrapper de contenido de mi cuenta
      */
