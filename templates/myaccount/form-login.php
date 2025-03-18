@@ -44,7 +44,8 @@ do_action('woocommerce_before_customer_login_form');
 
     <div class="mam-login-register-forms">
         <div class="mam-login-form-wrapper <?php echo isset($_GET['action']) && $_GET['action'] === 'register' ? 'hide' : ''; ?>">
-            <form class="woocommerce-form woocommerce-form-login login mam-ajax-login" method="post">
+    <form class="woocommerce-form woocommerce-form-login login mam-ajax-form" data-action="mam_ajax_login" method="post">
+    <?php wp_nonce_field('mam-nonce', 'security'); ?>
 
                 <?php do_action('woocommerce_login_form_start'); ?>
 
@@ -124,7 +125,8 @@ do_action('woocommerce_before_customer_login_form');
         <?php if ('yes' === get_option('woocommerce_enable_myaccount_registration')) : ?>
 
         <div class="mam-register-form-wrapper <?php echo isset($_GET['action']) && $_GET['action'] === 'register' ? '' : 'hide'; ?>">
-            <form method="post" class="woocommerce-form woocommerce-form-register register mam-ajax-register" <?php do_action('woocommerce_register_form_tag'); ?>>
+           <form method="post" class="woocommerce-form woocommerce-form-register register mam-ajax-form" data-action="mam_ajax_register" <?php do_action('woocommerce_register_form_tag'); ?>>
+    <?php wp_nonce_field('mam-nonce', 'security'); ?>
 
                 <?php do_action('woocommerce_register_form_start'); ?>
 
