@@ -227,67 +227,70 @@
         /**
          * Inicializar búsqueda de descargas
          */
-        initSearchDownloads: function() {
-            var self = this;
-            var $searchInput = $('.mam-downloads-search input');
-            
-            if (!$searchInput.length) {
-                return;
+       initSearchDownloads: function() {
+    var self = this;
+    var $searchInput = $('.mam-downloads-search input');
+    var searchTimeout = null;
+    
+    if (!$searchInput.length) {
+        return;
+    }
+    
+    // Realizar búsqueda por AJAX al escribir
+    $searchInput.on('keyup', function() {
+        var searchTerm = $(this).val();
+        
+        // Esperar a que el usuario deje de escribir
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            if (searchTerm.length >= 3 || searchTerm.length === 0) {
+                self.searchDownloads(searchTerm);
+            }
+        }, 500);
+    });
+},
+
+searchDownloads: function(searchTerm) {
+    // Mostrar loader
+    $('.mam-downloads-container').addClass('mam-loading');
+    
+    $.ajax({
+        type: 'POST',
+        url: mam_params.ajax_url,
+        data: {
+            action: 'mam_search_downloads',
+            security: mam_params.nonce,
+            search: searchTerm,
+            view_mode: $('.mam-view-button.active').data('view') || 'list'
+        },
+        success: function(response) {
+            if (response.success) {
+                // Actualizar contenido
+                if ($('.mam-downloads-by-category').length) {
+                    $('.mam-downloads-by-category').html(response.data.html);
+                } else if ($('.woocommerce-table--downloads').length) {
+                    $('.woocommerce-table--downloads tbody').html(response.data.html);
+                }
+                
+                // Mostrar/ocultar mensaje de "sin resultados"
+                if (response.data.count === 0) {
+                    $('.mam-downloads-empty-results').show();
+                } else {
+                    $('.mam-downloads-empty-results').hide();
+                }
+            } else {
+                console.error('Error al buscar descargas:', response.data.message);
             }
             
-            // Realizar búsqueda en tiempo real
-            $searchInput.on('keyup', function() {
-                var searchTerm = $(this).val().toLowerCase();
-                
-                // Buscar en modo lista
-                $('.woocommerce-table--downloads tbody tr').each(function() {
-                    var productName = $(this).find('td.download-product').text().toLowerCase();
-                    var fileName = $(this).find('td.download-file').text().toLowerCase();
-                    
-                    if (productName.indexOf(searchTerm) > -1 || fileName.indexOf(searchTerm) > -1) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-                
-                // Buscar en modo cuadrícula
-                $('.mam-download-card').each(function() {
-                    var productName = $(this).find('.mam-download-product').text().toLowerCase();
-                    var fileName = $(this).find('.mam-download-title').text().toLowerCase();
-                    
-                    if (productName.indexOf(searchTerm) > -1 || fileName.indexOf(searchTerm) > -1) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-                
-                // Buscar en vista por categorías
-                $('.mam-download-item').each(function() {
-                    var productName = $(this).find('.mam-download-product').text().toLowerCase();
-                    var fileName = $(this).find('.mam-download-title').text().toLowerCase();
-                    
-                    if (productName.indexOf(searchTerm) > -1 || fileName.indexOf(searchTerm) > -1) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-                
-                // Mostrar/ocultar categorías vacías
-                $('.mam-download-category').each(function() {
-                    var $category = $(this);
-                    var visibleItems = $category.find('.mam-download-item:visible').length;
-                    
-                    if (visibleItems === 0) {
-                        $category.hide();
-                    } else {
-                        $category.show();
-                    }
-                });
-            });
+            // Ocultar loader
+            $('.mam-downloads-container').removeClass('mam-loading');
         },
+        error: function() {
+            console.error('Error de conexión al buscar descargas');
+            $('.mam-downloads-container').removeClass('mam-loading');
+        }
+    });
+}
 
         /**
          * Inicializar filas expandibles
