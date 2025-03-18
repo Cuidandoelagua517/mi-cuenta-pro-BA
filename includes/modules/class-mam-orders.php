@@ -70,6 +70,40 @@ private function check_hpos_enabled() {
     }
     return false;
 }
+    public function register_ajax_handlers() {
+    add_action('wp_ajax_mam_filter_orders', array($this, 'ajax_filter_orders'));
+    add_action('wp_ajax_mam_load_order_details', array($this, 'ajax_load_order_details'));
+    add_action('wp_ajax_mam_paginate_orders', array($this, 'ajax_paginate_orders'));
+}
+
+public function ajax_filter_orders() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $status = isset($_POST['status']) ? wc_clean($_POST['status']) : '';
+    $page = isset($_POST['page']) ? absint($_POST['page']) : 1;
+    
+    $args = array(
+        'customer_id' => get_current_user_id(),
+        'page'        => $page,
+        'limit'       => 10
+    );
+    
+    if (!empty($status)) {
+        $args['status'] = $status;
+    }
+    
+    $customer_orders = wc_get_orders($args);
+    
+    ob_start();
+    // Renderizar la tabla de órdenes actualizada
+    // ...
+    $html = ob_get_clean();
+    
+    wp_send_json_success(array(
+        'html' => $html,
+        'count' => count($customer_orders)
+    ));
+}
     /**
  * Método para obtener pedidos de manera compatible
  */
