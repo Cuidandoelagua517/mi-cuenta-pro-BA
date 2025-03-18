@@ -62,7 +62,87 @@ class MAM_Payments {
         // Mostrar saldos y créditos (si es aplicable)
         add_action('woocommerce_before_account_payment_methods', array($this, 'show_account_balance'));
     }
+public function register_ajax_handlers() {
+    add_action('wp_ajax_mam_set_default_payment', array($this, 'ajax_set_default_payment'));
+    add_action('wp_ajax_mam_delete_payment', array($this, 'ajax_delete_payment'));
+}
 
+public function ajax_set_default_payment() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $token_id = isset($_POST['payment_token_id']) ? absint($_POST['payment_token_id']) : 0;
+    
+    if ($token_id <= 0) {
+        wp_send_json_error(array(
+            'message' => __('ID de método de pago no válido.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    $token = WC_Payment_Tokens::get($token_id);
+    
+    if (!$token || $token->get_user_id() !== get_current_user_id()) {
+        wp_send_json_error(array(
+            'message' => __('No tienes permiso para realizar esta acción.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    WC_Payment_Tokens::set_users_default(get_current_user_id(), $token_id);
+    
+    // Obtener HTML actualizado
+    ob_start();
+    // Renderizar tarjetas de pago actualizadas
+    // ...
+    $html = ob_get_clean();
+    
+    wp_send_json_success(array(
+        'message' => __('Método de pago establecido como predeterminado.', 'my-account-manager'),
+        'html' => $html
+    ));
+}
+
+public function ajax_delete_payment() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $token_id = isset($_POST['payment_token_id']) ? absint($_POST['payment_token_id']) : 0;
+    
+    if ($token_id <= 0) {
+        wp_send_json_error(array(
+            'message' => __('ID de método de pago no válido.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    $token = WC_Payment_Tokens::get($token_id);
+    
+    if (!$token || $token->get_user_id() !== get_current_user_id()) {
+        wp_send_json_error(array(
+            'message' => __('No tienes permiso para realizar esta acción.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    $deleted = WC_Payment_Tokens::delete($token_id);
+    
+    if (!$deleted) {
+        wp_send_json_error(array(
+            'message' => __('Ha ocurrido un error al eliminar el método de pago.', 'my-account-manager')
+        ));
+        return;
+    }
+    
+    // Obtener HTML actualizado
+    ob_start();
+    // Renderizar tarjetas de pago actualizadas
+    // ...
+    $html = ob_get_clean();
+    
+    wp_send_json_success(array(
+        'message' => __('Método de pago eliminado correctamente.', 'my-account-manager'),
+        'html' => $html
+    ));
+}
     /**
      * Personalizar título de la página de métodos de pago
      */
