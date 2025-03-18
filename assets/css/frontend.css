@@ -140,7 +140,88 @@
     border-color: var(--mam-primary-color);
     box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
 }
+.mam-loading {
+    position: relative;
+    opacity: 0.7;
+    pointer-events: none;
+}
 
+.mam-loading:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--mam-primary-color);
+    border-radius: 50%;
+    animation: mam-loader 0.8s linear infinite;
+}
+
+.mam-button.mam-loading {
+    text-indent: -9999px;
+}
+
+@keyframes mam-loader {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.mam-message {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: var(--mam-border-radius);
+    border-left: 4px solid transparent;
+}
+
+.mam-message-success {
+    background-color: #d1e7dd;
+    border-color: var(--mam-success-color);
+    color: #0f5132;
+}
+
+.mam-message-error {
+    background-color: #f8d7da;
+    border-color: var(--mam-danger-color);
+    color: #842029;
+}
+
+/* Animaciones para eliminar/añadir elementos */
+.mam-item-removing {
+    animation: mam-fade-out 0.3s ease-out forwards;
+}
+
+.mam-item-adding {
+    animation: mam-fade-in 0.3s ease-in forwards;
+}
+
+@keyframes mam-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+        height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+}
+
+@keyframes mam-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 /* Login y Registro */
 .mam-login-form-container,
 .mam-register-form-container {
