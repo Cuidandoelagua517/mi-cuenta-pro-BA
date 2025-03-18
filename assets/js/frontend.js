@@ -157,7 +157,43 @@ initAjaxRegister: function() {
         });
     });
 },
-
+/**
+ * Validación de CUIT en tiempo real
+ */
+initCUITValidation: function() {
+    $('#reg_cuit').on('blur', function() {
+        var $field = $(this);
+        var cuit = $field.val().trim();
+        
+        // Eliminar guiones y espacios para la validación
+        var cleanCuit = cuit.replace(/[^0-9]/g, '');
+        
+        if (cuit && cleanCuit.length !== 11) {
+            $field.addClass('mam-field-error');
+            
+            // Añadir mensaje de error si no existe
+            if ($field.next('.mam-field-error-message').length === 0) {
+                $field.after('<span class="mam-field-error-message">CUIT debe tener 11 dígitos (xx-xxxxxxxx-x)</span>');
+            } else {
+                $field.next('.mam-field-error-message').text('CUIT debe tener 11 dígitos (xx-xxxxxxxx-x)');
+            }
+        }
+    });
+    
+    // Formatear automáticamente el CUIT mientras se escribe
+    $('#reg_cuit').on('input', function() {
+        var $field = $(this);
+        var cuit = $field.val().replace(/[^0-9]/g, '');
+        
+        if (cuit.length > 2 && cuit.length <= 10) {
+            cuit = cuit.substring(0, 2) + '-' + cuit.substring(2);
+        } else if (cuit.length > 10) {
+            cuit = cuit.substring(0, 2) + '-' + cuit.substring(2, 10) + '-' + cuit.substring(10, 11);
+        }
+        
+        $field.val(cuit);
+    });
+}
 /**
  * Inicializar toggle de mostrar/ocultar contraseña
  */
