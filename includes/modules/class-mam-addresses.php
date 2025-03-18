@@ -57,6 +57,93 @@ class MAM_Addresses {
         // Añadir opción para copiar dirección
         add_action('woocommerce_before_checkout_shipping_form', array($this, 'add_copy_address_option'));
     }
+public function register_ajax_handlers() {
+    add_action('wp_ajax_mam_save_address', array($this, 'ajax_save_address'));
+    add_action('wp_ajax_mam_delete_address', array($this, 'ajax_delete_address'));
+    add_action('wp_ajax_mam_set_default_address', array($this, 'ajax_set_default_address'));
+    add_action('wp_ajax_mam_get_saved_address', array($this, 'ajax_get_saved_address'));
+}
+
+public function ajax_save_address() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $user_id = get_current_user_id();
+    $action = isset($_POST['address_action']) ? wc_clean($_POST['address_action']) : '';
+    $address_id = isset($_POST['address_id']) ? wc_clean($_POST['address_id']) : '';
+    
+    // Validar campos requeridos
+    $required_fields = array(
+        'address_name'      => __('Nombre de la dirección', 'my-account-manager'),
+        'first_name'        => __('Nombre', 'my-account-manager'),
+        'last_name'         => __('Apellidos', 'my-account-manager'),
+        'country'           => __('País', 'my-account-manager'),
+        'address_1'         => __('Dirección', 'my-account-manager'),
+        'city'              => __('Ciudad', 'my-account-manager'),
+        'postcode'          => __('Código Postal', 'my-account-manager'),
+    );
+    
+    $errors = array();
+    foreach ($required_fields as $field => $label) {
+        $field_name = 'mam_address_' . $field;
+        if (empty($_POST[$field_name])) {
+            $errors[] = sprintf(__('El campo %s es obligatorio.', 'my-account-manager'), $label);
+        }
+    }
+    
+    if (!empty($errors)) {
+        wp_send_json_error(array(
+            'message' => implode('<br>', $errors)
+        ));
+        return;
+    }
+    
+    // Obtener direcciones existentes
+    $additional_addresses = get_user_meta($user_id, '_mam_additional_addresses', true);
+    if (!is_array($additional_addresses)) {
+        $additional_addresses = array();
+    }
+    
+    // Crear nuevo ID si estamos añadiendo
+    if ($action === 'add' || empty($address_id)) {
+        $address_id = 'addr_' . time() . '_' . wp_rand(100, 999);
+    }
+    
+    // Preparar datos de la dirección
+    $address = array(
+        'name'       => sanitize_text_field($_POST['mam_address_name']),
+        'first_name' => sanitize_text_field($_POST['mam_address_first_name']),
+        'last_name'  => sanitize_text_field($_POST['mam_address_last_name']),
+        'company'    => sanitize_text_field($_POST['mam_address_company']),
+        'country'    => sanitize_text_field($_POST['mam_address_country']),
+        'address_1'  => sanitize_text_field($_POST['mam_address_address_1']),
+        'address_2'  => sanitize_text_field($_POST['mam_address_address_2']),
+        'city'       => sanitize_text_field($_POST['mam_address_city']),
+        'state'      => sanitize_text_field($_POST['mam_address_state']),
+        'postcode'   => sanitize_text_field($_POST['mam_address_postcode']),
+        'phone'      => sanitize_text_field($_POST['mam_address_phone']),
+    );
+    
+    // Guardar dirección
+    $additional_addresses[$address_id] = $address;
+    update_user_meta($user_id, '_mam_additional_addresses', $additional_addresses);
+    
+    // Renderizar HTML de la nueva lista de direcciones
+    ob_start();
+    // Renderizar la lista de direcciones actualizada
+    // ...
+    $html = ob_get_clean();
+    
+    // Mensaje de éxito
+    $message = $action === 'add' ? 
+        __('Dirección añadida correctamente.', 'my-account-manager') : 
+        __('Dirección actualizada correctamente.', 'my-account-manager');
+    
+    wp_send_json_success(array(
+        'message' => $message,
+        'html' => $html,
+        'address_id' => $address_id
+    ));
+}
 
     /**
      * Personalizar título de la página de direcciones
