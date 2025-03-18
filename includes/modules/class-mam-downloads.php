@@ -17,6 +17,7 @@ class MAM_Downloads {
      */
     public static function init() {
         $instance = new self();
+        $instance->register_ajax_handlers(); // Añadir esta línea
         return $instance;
     }
 
