@@ -117,33 +117,41 @@ public function register_ajax_handlers() {
     /**
      * Campos personalizados para el formulario de registro
      */
-    public function register_form_custom_fields() {
-        // Aquí se pueden añadir campos personalizados de registro
-        ?>
-        <div class="mam-form-row mam-form-row-first">
-            <label for="reg_first_name"><?php _e('Nombre', 'my-account-manager'); ?> <span class="required">*</span></label>
-            <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="first_name" id="reg_first_name" autocomplete="given-name" value="<?php echo (!empty($_POST['first_name'])) ? esc_attr($_POST['first_name']) : ''; ?>" />
-        </div>
+   public function register_form_custom_fields() {
+    ?>
+    <div class="mam-form-row mam-form-row-wide">
+        <label for="reg_company_name"><?php _e('Nombre de Empresa', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name" id="reg_company_name" value="<?php echo (!empty($_POST['company_name'])) ? esc_attr($_POST['company_name']) : ''; ?>" required />
+    </div>
 
-        <div class="mam-form-row mam-form-row-last">
-            <label for="reg_last_name"><?php _e('Apellido', 'my-account-manager'); ?> <span class="required">*</span></label>
-            <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="last_name" id="reg_last_name" autocomplete="family-name" value="<?php echo (!empty($_POST['last_name'])) ? esc_attr($_POST['last_name']) : ''; ?>" />
-        </div>
+    <div class="mam-form-row mam-form-row-wide">
+        <label for="reg_cuit"><?php _e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="cuit" id="reg_cuit" placeholder="xx-xxxxxxxx-x" value="<?php echo (!empty($_POST['cuit'])) ? esc_attr($_POST['cuit']) : ''; ?>" required />
+    </div>
 
-        <div class="mam-form-row mam-form-row-wide">
-            <label for="reg_phone"><?php _e('Teléfono', 'my-account-manager'); ?></label>
-            <input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="phone" id="reg_phone" autocomplete="tel" value="<?php echo (!empty($_POST['phone'])) ? esc_attr($_POST['phone']) : ''; ?>" />
-        </div>
+    <div class="mam-form-row mam-form-row-first">
+        <label for="reg_first_name"><?php _e('Nombre', 'my-account-manager'); ?></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="first_name" id="reg_first_name" autocomplete="given-name" value="<?php echo (!empty($_POST['first_name'])) ? esc_attr($_POST['first_name']) : ''; ?>" />
+    </div>
 
-        <div class="mam-register-privacy">
-            <label class="mam-checkbox">
-                <input class="woocommerce-form__input woocommerce-form__input-checkbox" name="privacy_policy" type="checkbox" id="privacy_policy" value="1" />
-                <span class="mam-checkbox-label"><?php printf(__('He leído y acepto la %spolitica de privacidad%s', 'my-account-manager'), '<a href="' . esc_url(get_privacy_policy_url()) . '" target="_blank">', '</a>'); ?></span>
-            </label>
-        </div>
-        <?php
-    }
+    <div class="mam-form-row mam-form-row-last">
+        <label for="reg_last_name"><?php _e('Apellido', 'my-account-manager'); ?></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="last_name" id="reg_last_name" autocomplete="family-name" value="<?php echo (!empty($_POST['last_name'])) ? esc_attr($_POST['last_name']) : ''; ?>" />
+    </div>
 
+    <div class="mam-form-row mam-form-row-wide">
+        <label for="reg_phone"><?php _e('Teléfono', 'my-account-manager'); ?></label>
+        <input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="phone" id="reg_phone" autocomplete="tel" value="<?php echo (!empty($_POST['phone'])) ? esc_attr($_POST['phone']) : ''; ?>" />
+    </div>
+
+    <div class="mam-register-privacy">
+        <label class="mam-checkbox">
+            <input class="woocommerce-form__input woocommerce-form__input-checkbox" name="privacy_policy" type="checkbox" id="privacy_policy" value="1" required />
+            <span class="mam-checkbox-label"><?php printf(__('He leído y acepto la %spolitica de privacidad%s', 'my-account-manager'), '<a href="' . esc_url(get_privacy_policy_url()) . '" target="_blank">', '</a>'); ?></span>
+        </label>
+    </div>
+    <?php
+}
     /**
      * Fin del formulario de registro personalizado
      */
