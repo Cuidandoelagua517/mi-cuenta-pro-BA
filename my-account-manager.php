@@ -180,7 +180,6 @@ private function declare_compatibility() {
     /**
      * Enqueue de assets para el frontend
      */
-    public function enqueue_frontend_assets() {
        public function enqueue_frontend_assets() {
     // Registrar y encolar estilos CSS
     wp_register_style('mam-styles', MAM_PLUGIN_URL . 'assets/css/frontend.css', array(), MAM_VERSION);
