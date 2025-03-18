@@ -134,7 +134,60 @@ private function get_orders_compatible($args) {
         </div>
         <?php
     }
+/**
+ * Obtener metadatos de pedido de manera compatible con HPOS
+ *
+ * @param WC_Order $order Objeto de pedido
+ * @param string $key Clave del metadato
+ * @param bool $single Valor único o array
+ * @return mixed
+ */
+private function get_order_meta_compatible($order, $key, $single = true) {
+    if ($this->is_hpos_enabled) {
+        // Método para HPOS
+        return $order->get_meta($key, $single);
+    } else {
+        // Método tradicional para WP post meta
+        return get_post_meta($order->get_id(), $key, $single);
+    }
+}
 
+/**
+ * Actualizar metadatos de pedido de manera compatible con HPOS
+ *
+ * @param WC_Order $order Objeto de pedido
+ * @param string $key Clave del metadato
+ * @param mixed $value Valor a guardar
+ * @return void
+ */
+private function update_order_meta_compatible($order, $key, $value) {
+    if ($this->is_hpos_enabled) {
+        // Método para HPOS
+        $order->update_meta_data($key, $value);
+        $order->save();
+    } else {
+        // Método tradicional para WP post meta
+        update_post_meta($order->get_id(), $key, $value);
+    }
+}
+
+/**
+ * Eliminar metadatos de pedido de manera compatible con HPOS
+ *
+ * @param WC_Order $order Objeto de pedido
+ * @param string $key Clave del metadato
+ * @return void
+ */
+private function delete_order_meta_compatible($order, $key) {
+    if ($this->is_hpos_enabled) {
+        // Método para HPOS
+        $order->delete_meta_data($key);
+        $order->save();
+    } else {
+        // Método tradicional para WP post meta
+        delete_post_meta($order->get_id(), $key);
+    }
+}
     /**
      * Añadir contenido después de la lista de pedidos
      */
