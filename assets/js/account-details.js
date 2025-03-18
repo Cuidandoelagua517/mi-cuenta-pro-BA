@@ -90,7 +90,12 @@ initAjaxAccount: function() {
     var self = this;
     
     // Form de detalles de cuenta
-    $('.woocommerce-EditAccountForm').on('submit', function(e) {
+$('.woocommerce-EditAccountForm').on('mam_ajax_success', function(event, data) {
+    // Código específico para manejar la respuesta
+    if (data.some_specific_data) {
+        // Hacer algo específico
+    }
+});
         // No procesar si es otro tab que no sea "details"
         if ($('.mam-account-tab[data-tab="details"]').hasClass('active')) {
             e.preventDefault();
@@ -350,7 +355,7 @@ showNotice: function(type, message) {
                     });
                 });
             }
-        },
+        }
 
         /**
          * Manejar gestión de sesiones
@@ -359,7 +364,7 @@ showNotice: function(type, message) {
             $('.mam-revoke-session, .mam-revoke-all-sessions').on('click', function() {
                 return confirm('¿Estás seguro de que quieres cerrar esta sesión?');
             });
-        },
+        }
 
         /**
          * Obtener parámetro de URL
