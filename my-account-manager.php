@@ -155,7 +155,11 @@ private function declare_compatibility() {
     public function activation() {
         // Crear páginas personalizadas si es necesario
         // Inicializar opciones del plugin
-        
+        $default_options = array(
+    'enable_custom_dashboard' => 1,
+    'enable_ajax_login' => 1
+);
+update_option('mam_options', $default_options);
         // Vaciar el caché de reglas de reescritura
         flush_rewrite_rules();
     }
