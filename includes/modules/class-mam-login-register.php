@@ -298,7 +298,7 @@ private function validate_cuit_format($cuit) {
     /**
      * Registro por AJAX
      */
-   public function ajax_register() {
+public function ajax_register() {
     check_ajax_referer('mam-nonce', 'security');
     
     $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
@@ -333,7 +333,7 @@ private function validate_cuit_format($cuit) {
         update_user_meta($new_customer, 'phone', sanitize_text_field($_POST['phone']));
     }
     
-    // Guardar los nuevos campos obligatorios
+    // Guardar los campos de empresa y CUIT
     if (isset($_POST['company_name'])) {
         update_user_meta($new_customer, 'billing_company', sanitize_text_field($_POST['company_name']));
         update_user_meta($new_customer, 'company_name', sanitize_text_field($_POST['company_name']));
