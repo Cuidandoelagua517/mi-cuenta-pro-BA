@@ -356,111 +356,18 @@ var MAMUserAccount = {
         }
     },
     
-// Añadir estas funciones de validación
-validateEmail: function(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(String(email).toLowerCase());
-},
-
-validatePassword: function(password) {
-  return password.length >= 8;
-},
-
-validateCUIT: function(cuit) {
-  // Limpiar guiones y espacios
-  const cleanCuit = cuit.replace(/[^0-9]/g, '');
-  return cleanCuit.length === 11;
-},
-
-validatePhone: function(phone) {
-  const re = /^\d{10}$/;
-  return re.test(String(phone).replace(/[^0-9]/g, ''));
-},
-
-// Mejorar la validación de formularios
-initFormValidation: function() {
-  const self = this;
-  
-  // Validar email en tiempo real
-  $('form.mam-ajax-form input[type="email"]').on('blur', function() {
-    const $field = $(this);
-    const email = $field.val().trim();
-    
-    if (!email) {
-      self.showFieldError($field, 'El correo electrónico es obligatorio');
-    } else if (!self.validateEmail(email)) {
-      self.showFieldError($field, 'Por favor, introduce un email válido');
-    } else {
-      self.clearFieldError($field);
+    /**
+     * Inicializar todas las funcionalidades
+     */
+    init: function() {
+        this.initTabs();
+        this.initAjaxLogin();
+        this.initAjaxRegister();
+        this.initCUITValidation();
+        this.initPasswordToggle();
+        this.initFormValidation();
+        this.initMobileMenu();
     }
-  });
-  
-  // Validar contraseña en tiempo real
-  $('form.mam-ajax-form input[type="password"]').on('blur', function() {
-    const $field = $(this);
-    const password = $field.val().trim();
-    
-    if (!password) {
-      self.showFieldError($field, 'La contraseña es obligatoria');
-    } else if (!self.validatePassword(password)) {
-      self.showFieldError($field, 'La contraseña debe tener al menos 8 caracteres');
-    } else {
-      self.clearFieldError($field);
-    }
-  });
-  
-  // Validar CUIT en tiempo real
-  $('#reg_cuit').on('blur', function() {
-    const $field = $(this);
-    const cuit = $field.val().trim();
-    
-    if (!cuit) {
-      self.showFieldError($field, 'El CUIT es obligatorio');
-    } else if (!self.validateCUIT(cuit)) {
-      self.showFieldError($field, 'CUIT debe tener 11 dígitos (xx-xxxxxxxx-x)');
-    } else {
-      self.clearFieldError($field);
-    }
-  });
-  
-  // Limpiar errores al escribir
-  $('form.mam-ajax-form input, form.mam-ajax-form select, form.mam-ajax-form textarea').on('input', function() {
-    const $field = $(this);
-    if ($field.val().trim()) {
-      self.clearFieldError($field);
-    }
-  });
-},
-
-// Mostrar error en un campo específico
-showFieldError: function($field, message) {
-  const $parent = $field.closest('.mam-input-with-icon, .mam-form-row');
-  $parent.addClass('mam-error');
-  
-  // Eliminar mensaje de error existente
-  $parent.find('.mam-error-message').remove();
-  
-  // Añadir nuevo mensaje de error
-  $field.after('<span class="mam-error-message">' + message + '</span>');
-},
-
-// Limpiar error de un campo
-clearFieldError: function($field) {
-  const $parent = $field.closest('.mam-input-with-icon, .mam-form-row');
-  $parent.removeClass('mam-error');
-  $parent.find('.mam-error-message').remove();
-},
-
-// Actualizar la inicialización para incluir los nuevos métodos
-init: function() {
-  this.initTabs();
-  this.initAjaxLogin();
-  this.initAjaxRegister();
-  this.initFormValidation();
-  this.initPasswordToggle();
-  this.initCUITValidation();
-  this.initMobileMenu();
-}
 };
 
 // Inicializar cuando el DOM esté listo
