@@ -145,14 +145,7 @@ do_action('woocommerce_before_customer_login_form');
                     <label for="reg_email"><?php esc_html_e('Correo electrónico', 'my-account-manager'); ?> <span class="required">*</span></label>
                     <input type="email" class="woocommerce-Input woocommerce-Input--text input-text" name="email" id="reg_email" autocomplete="email" value="<?php echo (!empty($_POST['email'])) ? esc_attr(wp_unslash($_POST['email'])) : ''; ?>" />
                 </div>
-<div class="mam-form-row mam-form-row-wide">
-    <label for="reg_company_name"><?php esc_html_e('Nombre de Empresa', 'my-account-manager'); ?> <span class="required">*</span></label>
-    <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name" id="reg_company_name" value="<?php echo (!empty($_POST['company_name'])) ? esc_attr(wp_unslash($_POST['company_name'])) : ''; ?>" required />
-</div>
-        <div class="mam-form-row mam-form-row-wide">
-    <label for="reg_cuit"><?php esc_html_e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
-    <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="cuit" id="reg_cuit" value="<?php echo (!empty($_POST['cuit'])) ? esc_attr(wp_unslash($_POST['cuit'])) : ''; ?>" required />
-</div>
+
                 <div class="mam-form-row mam-form-row-first">
                     <label for="reg_first_name"><?php esc_html_e('Nombre', 'my-account-manager'); ?> <span class="required">*</span></label>
                     <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="first_name" id="reg_first_name" value="<?php echo (!empty($_POST['first_name'])) ? esc_attr(wp_unslash($_POST['first_name'])) : ''; ?>" />
