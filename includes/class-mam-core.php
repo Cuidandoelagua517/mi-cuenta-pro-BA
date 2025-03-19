@@ -119,6 +119,6 @@ public function override_woocommerce_templates($template, $template_name, $templ
     // Si no, devolver el template original
     return $template;
 }
-
+}
 // Inicializar la clase core
 new MAM_Core();
