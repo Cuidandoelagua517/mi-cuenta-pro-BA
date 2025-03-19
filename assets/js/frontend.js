@@ -56,7 +56,7 @@ var MAMUserAccount = {
             var formData = $form.serialize();
             
             // Validar campos obligatorios
-            var username = $form.find('input[name="username"]').val();
+            var username = $form.find('input[name="email"]').val();
             var password = $form.find('input[name="password"]').val();
             
             if (!username || !password) {
