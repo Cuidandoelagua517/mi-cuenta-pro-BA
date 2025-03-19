@@ -31,9 +31,9 @@ class MAM_Login_Register {
         //add_action('woocommerce_login_form_end', array($this, 'login_form_end'), 10);
         
         // Sobreescribir formulario de registro
-        //add_action('woocommerce_register_form_start', array($this, 'register_form_start'), 10);
-        //add_action('woocommerce_register_form', array($this, 'register_form_custom_fields'), 15);
-        //add_action('woocommerce_register_form_end', array($this, 'register_form_end'), 10);
+        add_action('woocommerce_register_form_start', array($this, 'register_form_start'), 10);
+        add_action('woocommerce_register_form', array($this, 'register_form_custom_fields'), 15);
+        add_action('woocommerce_register_form_end', array($this, 'register_form_end'), 10);
         
         // Validación personalizada
         add_action('woocommerce_process_login_errors', array($this, 'validate_login'), 10, 2);
