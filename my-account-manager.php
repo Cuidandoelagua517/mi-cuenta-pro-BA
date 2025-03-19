@@ -173,7 +173,11 @@ update_option('mam_options', $default_options);
         // Vaciar el caché de reglas de reescritura
         flush_rewrite_rules();
     }
-
+public function register_ajax_handlers() {
+    // Añadir handlers para usuarios no logueados
+    add_action('wp_ajax_nopriv_mam_ajax_login', array($this->login_register, 'ajax_login'));
+    add_action('wp_ajax_nopriv_mam_ajax_register', array($this->login_register, 'ajax_register'));
+}
     /**
      * Cargar traducción
      */
