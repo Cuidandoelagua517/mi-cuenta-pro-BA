@@ -295,7 +295,7 @@ public function ajax_login() {
     
     wp_send_json_success(array(
         'message' => __('Login exitoso, redirigiendo...', 'my-account-manager'),
-        'redirect' => apply_filters('mam_login_redirect', wc_get_endpoint_url('dashboard', '', wc_get_page_permalink('myaccount')), $user)
+        'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
     ));
     
     exit;
