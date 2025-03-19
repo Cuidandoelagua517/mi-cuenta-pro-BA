@@ -48,10 +48,9 @@ var MAMUserAccount = {
     initAjaxLogin: function() {
     var self = this;
     
-    $(document).on('submit', '.mam-ajax-form[data-action="mam_ajax_login"]', function(e) {
-        e.preventDefault();
-        
-        console.log('Login Form Submitted');
+   $('.mam-ajax-form[data-action="mam_ajax_login"]').on('submit', function(e) {
+    e.preventDefault(); // Importante: Prevenir envío normal
+    console.log('Login form intercepted!'); // Debugging
         
         var $form = $(this);
         var $submitBtn = $form.find('button[type="submit"]');
