@@ -39,101 +39,115 @@ do_action('woocommerce_before_customer_login_form');
 
     <div class="mam-login-register-forms">
         <!-- FORMULARIO DE LOGIN -->
-        <div class="mam-login-form-container">
-    <div class="mam-form-header">
-        <h2>Iniciar Sesión</h2>
-        <p>Ingresa tus credenciales para acceder a tu cuenta</p>
-    </div>
-    
-    <form class="mam-login-form" method="post">
-        <!-- Mensaje de error general (opcional) -->
-        <div class="mam-message mam-error" style="display: none;">
-            Credenciales incorrectas. Por favor intenta de nuevo.
-        </div>
-        
-        <div class="mam-form-row mam-form-row-wide">
-            <label for="username">Correo electrónico <span class="required">*</span></label>
-            <div class="mam-input-with-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <input type="email" name="username" id="username" class="mam-input-field" placeholder="Tu dirección de email" required>
-                <span class="mam-field-error-icon" style="display: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </span>
+        <div class="mam-login-form-wrapper <?php echo isset($_GET['action']) && $_GET['action'] === 'register' ? 'hide' : ''; ?>">
+            <form class="woocommerce-form woocommerce-form-login login mam-ajax-form" data-action="mam_ajax_login" method="post" id="login-form">
+                <?php wp_nonce_field('mam-nonce', 'security'); ?>
+
+                <?php do_action('woocommerce_login_form_start'); ?>
+
+                <div class="mam-form-row mam-form-row-wide">
+                    <label for="username"><?php esc_html_e('Correo electrónico', 'my-account-manager'); ?> <span class="required">*</span></label>
+                    <div class="mam-input-with-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <input type="email" 
+                            class="woocommerce-Input woocommerce-Input--text input-text" 
+                            name="username" 
+                            id="username" 
+                            autocomplete="email" 
+                            value="<?php echo (!empty($_POST['username'])) ? esc_attr(wp_unslash($_POST['username'])) : ''; ?>" 
+                            placeholder="<?php esc_attr_e('Tu dirección de email', 'my-account-manager'); ?>"
+                            required />
+                    </div>
+                </div>
+
+                <div class="mam-form-row mam-form-row-wide">
+                    <label for="password"><?php esc_html_e('Contraseña', 'my-account-manager'); ?> <span class="required">*</span></label>
+                    <div class="mam-password-field mam-input-with-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <input class="woocommerce-Input woocommerce-Input--text input-text" 
+                            type="password" 
+                            name="password" 
+                            id="password" 
+                            autocomplete="current-password" 
+                            placeholder="<?php esc_attr_e('Tu contraseña', 'my-account-manager'); ?>"
+                            required />
+                        <span class="mam-password-toggle" role="button" tabindex="0" aria-label="<?php esc_attr_e('Mostrar/ocultar contraseña', 'my-account-manager'); ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="mam-eye-icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <?php do_action('woocommerce_login_form'); ?>
+
+                <div class="mam-form-row mam-remember-row">
+                    <label class="woocommerce-form__label woocommerce-form__label-for-checkbox woocommerce-form-login__rememberme mam-checkbox">
+                        <input class="woocommerce-form__input woocommerce-form__input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever" />
+                        <span class="mam-checkbox-label"><?php esc_html_e('Recordarme', 'my-account-manager'); ?></span>
+                    </label>
+                    <p class="woocommerce-LostPassword lost_password">
+                        <a href="<?php echo esc_url(wp_lostpassword_url()); ?>"><?php esc_html_e('¿Olvidaste tu contraseña?', 'my-account-manager'); ?></a>
+                    </p>
+                </div>
+
+                <div class="mam-form-row">
+                    <?php wp_nonce_field('woocommerce-login', 'woocommerce-login-nonce'); ?>
+                    <button type="submit" class="woocommerce-button button woocommerce-form-login__submit mam-button mam-button-primary" name="login" value="<?php esc_attr_e('Iniciar Sesión', 'my-account-manager'); ?>">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        <?php esc_html_e('Iniciar Sesión', 'my-account-manager'); ?>
+                    </button>
+                </div>
+
+                <?php do_action('woocommerce_login_form_end'); ?>
+
+            </form>
+
+            <div class="mam-login-divider">
+                <span><?php esc_html_e('O conéctate con', 'my-account-manager'); ?></span>
             </div>
-            <span class="mam-field-error-message" style="display: none;">Correo electrónico inválido</span>
-        </div>
-        
-        <div class="mam-form-row mam-form-row-wide">
-            <label for="password">Contraseña <span class="required">*</span></label>
-            <div class="mam-input-with-icon mam-password-field">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <input type="password" name="password" id="password" class="mam-input-field" placeholder="Tu contraseña" required>
-                <span class="mam-password-toggle" role="button" tabindex="0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                </span>
-                <span class="mam-field-error-icon" style="display: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </span>
+
+            <div class="mam-social-login">
+                <?php
+                // Añadir botones de login social si hay algún plugin compatible
+                if (function_exists('wc_social_login_buttons') || function_exists('woocommerce_social_login_buttons')) {
+                    if (function_exists('wc_social_login_buttons')) {
+                        wc_social_login_buttons();
+                    } elseif (function_exists('woocommerce_social_login_buttons')) {
+                        woocommerce_social_login_buttons();
+                    }
+                } else {
+                    // Botones de ejemplo (solo visuales)
+                    ?>
+                    <a href="#" class="mam-social-button mam-google">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
+                            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+                            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                        </svg>
+                        <?php esc_html_e('Continuar con Google', 'my-account-manager'); ?>
+                    </a>
+                    <a href="#" class="mam-social-button mam-facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
+                            <path fill="#3F51B5" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path>
+                            <path fill="#FFF" d="M34.368,25H31v13h-5V25h-3v-4h3v-2.41c0.002-3.508,1.459-5.59,5.592-5.59H35v4h-2.287C31.104,17,31,17.6,31,18.723V21h4L34.368,25z"></path>
+                        </svg>
+                        <?php esc_html_e('Continuar con Facebook', 'my-account-manager'); ?>
+                    </a>
+                    <?php
+                }
+                ?>
             </div>
-            <span class="mam-field-error-message" style="display: none;">La contraseña debe tener al menos 8 caracteres</span>
         </div>
-        
-        <div class="mam-form-row mam-remember-row">
-            <label class="mam-checkbox">
-                <input class="mam-checkbox-input" name="rememberme" type="checkbox" id="rememberme" value="forever">
-                <span class="mam-checkbox-label">Recordarme</span>
-            </label>
-            <a href="#" class="mam-lost-password">¿Olvidaste tu contraseña?</a>
-        </div>
-        
-        <div class="mam-form-row">
-            <button type="submit" class="mam-button mam-button-primary" name="login" value="Iniciar Sesión">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                </svg>
-                Iniciar Sesión
-            </button>
-        </div>
-    </form>
-    
-    <div class="mam-login-divider">
-        <span>O conéctate con</span>
-    </div>
-    
-    <div class="mam-social-login">
-        <a href="#" class="mam-social-button mam-google">
-            <svg width="20" height="20" viewBox="0 0 48 48">
-                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-                <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-            </svg>
-            Continuar con Google
-        </a>
-        <a href="#" class="mam-social-button mam-facebook">
-            <svg width="20" height="20" viewBox="0 0 48 48">
-                <path fill="#3F51B5" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path>
-                <path fill="#FFF" d="M34.368,25H31v13h-5V25h-3v-4h3v-2.41c0.002-3.508,1.459-5.59,5.592-5.59H35v4h-2.287C31.104,17,31,17.6,31,18.723V21h4L34.368,25z"></path>
-            </svg>
-            Continuar con Facebook
-        </a>
-    </div>
-    
-    <div class="mam-register-link">
-        <p>¿No tienes cuenta? <a href="#">Regístrate</a></p>
-    </div>
-</div>
+
         <?php if ('yes' === get_option('woocommerce_enable_myaccount_registration')) : ?>
 
         <!-- FORMULARIO DE REGISTRO -->
