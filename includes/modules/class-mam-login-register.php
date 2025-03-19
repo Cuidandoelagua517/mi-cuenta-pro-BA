@@ -269,41 +269,57 @@ private function validate_cuit_format($cuit) {
      * Login por AJAX
      */
 public function ajax_login() {
-     error_log('Redirección después de login: ' . apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user));
-    check_ajax_referer('mam-nonce', 'security');
+    // Log de inicio del proceso de login
+    error_log('AJAX Login Attempt Started');
     
-    // Utilizar email como nombre de usuario si está presente
+    // Verificar nonce
+    if (!check_ajax_referer('mam-nonce', 'security', false)) {
+        error_log('AJAX Login: Nonce Verification Failed');
+        wp_send_json_error(array('message' => 'Error de seguridad. Intenta de nuevo.'));
+        exit;
+    }
+
+    // Utilizar email como nombre de usuario
     $email_or_username = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
     
-    $creds = array(
-        'user_login'    => $email_or_username,
-        'user_password' => isset($_POST['password']) ? $_POST['password'] : '',
-        'remember'      => isset($_POST['rememberme']),
-    );
+    error_log('Login Attempt - Email/Username: ' . $email_or_username);
+
+    // Intentar encontrar el usuario por email
+    $user = get_user_by('email', $email_or_username);
     
-    $validation_error = new WP_Error();
-    $validation_error = $this->validate_login($validation_error, $creds['user_login']);
-    
-    if ($validation_error->get_error_code()) {
-        wp_send_json_error(array('message' => $validation_error->get_error_message()));
+    // Si no se encuentra por email, intentar por nombre de usuario
+    if (!$user) {
+        $user = get_user_by('login', $email_or_username);
+    }
+
+    // Log de búsqueda de usuario
+    if (!$user) {
+        error_log('AJAX Login: User Not Found');
+        wp_send_json_error(array('message' => 'Usuario no encontrado. Verifica tus credenciales.'));
         exit;
     }
-    
-    $user = wp_signon($creds, is_ssl());
-    
-    if (is_wp_error($user)) {
-        wp_send_json_error(array('message' => $user->get_error_message()));
+
+    // Verificar contraseña
+    if (!wp_check_password($password, $user->user_pass, $user->ID)) {
+        error_log('AJAX Login: Incorrect Password for User: ' . $user->user_login);
+        wp_send_json_error(array('message' => 'Contraseña incorrecta. Intenta de nuevo.'));
         exit;
     }
-    
+
+    // Iniciar sesión
+    wp_set_auth_cookie($user->ID, true);
+    wp_set_current_user($user->ID);
+
+    error_log('AJAX Login: Successful for User: ' . $user->user_login);
+
     wp_send_json_success(array(
-        'message' => __('Login exitoso, redirigiendo...', 'my-account-manager'),
+        'message' => 'Login exitoso, redirigiendo...',
         'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
     ));
     
     exit;
 }
-
     /**
      * Registro por AJAX
      */
