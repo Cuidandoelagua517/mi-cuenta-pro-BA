@@ -25,7 +25,7 @@ class MAM_Dashboard {
      */
     public function __construct() {
         // Reemplazar el contenido del dashboard
-         add_action('woocommerce_account_dashboard', array($this, 'dashboard_content'), 1);
+         add_action('woocommerce_account_dashboard', array($this, 'dashboard_content'), 0);
         
         // Añadir widgets personalizados al dashboard
         add_action('mam_dashboard_after_content', array($this, 'add_custom_widgets'));
@@ -42,7 +42,16 @@ class MAM_Dashboard {
      */
    public function dashboard_content() {
     // Eliminar el contenido por defecto de WooCommerce con la prioridad correcta
-    remove_action('woocommerce_account_dashboard', 'woocommerce_account_dashboard');
+ remove_action('woocommerce_account_dashboard', 'woocommerce_account_dashboard', 10);
+    
+    $options = get_option('mam_options', array());
+    $enable_custom_dashboard = isset($options['enable_custom_dashboard']) ? $options['enable_custom_dashboard'] : 1;
+    
+    if ($enable_custom_dashboard) {
+        // Cargar el template personalizado
+        wc_get_template('myaccount/dashboard.php', array(), 'my-account-manager/', MAM_PLUGIN_DIR . 'templates/');
+    }
+}
     
     // Forzar activación del dashboard personalizado para el MVP
     $options = get_option('mam_options', array());
