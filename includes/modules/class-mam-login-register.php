@@ -266,37 +266,40 @@ private function validate_cuit_format($cuit) {
     /**
      * Login por AJAX
      */
-    public function ajax_login() {
-        check_ajax_referer('mam-nonce', 'security');
-        
-        $creds = array(
-            'user_login'    => trim($_POST['username']),
-            'user_password' => $_POST['password'],
-            'remember'      => isset($_POST['rememberme']),
-        );
-        
-        $validation_error = new WP_Error();
-        $validation_error = $this->validate_login($validation_error, $creds['user_login']);
-        
-        if ($validation_error->get_error_code()) {
-            wp_send_json_error(array('message' => $validation_error->get_error_message()));
-            exit;
-        }
-        
-        $user = wp_signon($creds, is_ssl());
-        
-        if (is_wp_error($user)) {
-            wp_send_json_error(array('message' => $user->get_error_message()));
-            exit;
-        }
-        
-        wp_send_json_success(array(
-            'message' => __('Login exitoso, redirigiendo...', 'my-account-manager'),
-            'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
-        ));
-        
+public function ajax_login() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    // Utilizar email como nombre de usuario si está presente
+    $email_or_username = isset($_POST['email']) ? trim($_POST['email']) : '';
+    
+    $creds = array(
+        'user_login'    => $email_or_username,
+        'user_password' => isset($_POST['password']) ? $_POST['password'] : '',
+        'remember'      => isset($_POST['rememberme']),
+    );
+    
+    $validation_error = new WP_Error();
+    $validation_error = $this->validate_login($validation_error, $creds['user_login']);
+    
+    if ($validation_error->get_error_code()) {
+        wp_send_json_error(array('message' => $validation_error->get_error_message()));
         exit;
     }
+    
+    $user = wp_signon($creds, is_ssl());
+    
+    if (is_wp_error($user)) {
+        wp_send_json_error(array('message' => $user->get_error_message()));
+        exit;
+    }
+    
+    wp_send_json_success(array(
+        'message' => __('Login exitoso, redirigiendo...', 'my-account-manager'),
+        'redirect' => apply_filters('mam_login_redirect', wc_get_endpoint_url('dashboard', '', wc_get_page_permalink('myaccount')), $user)
+    ));
+    
+    exit;
+}
 
     /**
      * Registro por AJAX
