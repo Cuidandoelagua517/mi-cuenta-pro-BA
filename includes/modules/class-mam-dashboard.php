@@ -41,17 +41,32 @@ class MAM_Dashboard {
      * Reemplazar el contenido del dashboard
      */
 public function dashboard_content() {
-   // Eliminar el contenido por defecto de WooCommerce
+    // Debug: Log de la función
+    error_log('MAM Dashboard Content Function Called');
+
+    // Eliminar el contenido por defecto de WooCommerce
     remove_action('woocommerce_account_dashboard', 'woocommerce_account_dashboard');
     
     $options = get_option('mam_options', array());
     $enable_custom_dashboard = isset($options['enable_custom_dashboard']) ? $options['enable_custom_dashboard'] : 1;
     
+    error_log('Custom Dashboard Enabled: ' . ($enable_custom_dashboard ? 'Yes' : 'No'));
+
     if ($enable_custom_dashboard) {
-        // Cargar el template personalizado
-        wc_get_template('myaccount/dashboard.php', array(), '', MAM_PLUGIN_DIR . 'templates/');
+        $template_path = MAM_PLUGIN_DIR . 'templates/myaccount/dashboard.php';
+        
+        error_log('Attempting to load template: ' . $template_path);
+        
+        if (file_exists($template_path)) {
+            // Cargar el template personalizado
+            include $template_path;
+        } else {
+            error_log('Template file not found: ' . $template_path);
+            // Fallback al método original
+            woocommerce_account_dashboard();
+        }
     } else {
-        // Si no está habilitado, mostrar el dashboard predeterminado
+        // Fallback al método original de WooCommerce
         woocommerce_account_dashboard();
     }
 }
