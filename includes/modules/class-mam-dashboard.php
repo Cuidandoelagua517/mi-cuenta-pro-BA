@@ -41,20 +41,18 @@ class MAM_Dashboard {
      * Reemplazar el contenido del dashboard
      */
 public function dashboard_content() {
-    // Eliminar el contenido por defecto de WooCommerce
+   // Eliminar el contenido por defecto de WooCommerce
     remove_action('woocommerce_account_dashboard', 'woocommerce_account_dashboard');
     
     $options = get_option('mam_options', array());
     $enable_custom_dashboard = isset($options['enable_custom_dashboard']) ? $options['enable_custom_dashboard'] : 1;
     
     if ($enable_custom_dashboard) {
-        // Cargar el template personalizado una sola vez con la ruta absoluta
-        wc_get_template(
-            'myaccount/dashboard.php',
-            array(), // Variables para el template
-            '', // Template path (vacío para usar la ruta absoluta)
-            MAM_PLUGIN_DIR . 'templates/' // Ruta absoluta
-        );
+        // Cargar el template personalizado
+        wc_get_template('myaccount/dashboard.php', array(), '', MAM_PLUGIN_DIR . 'templates/');
+    } else {
+        // Si no está habilitado, mostrar el dashboard predeterminado
+        woocommerce_account_dashboard();
     }
 }
     /**
