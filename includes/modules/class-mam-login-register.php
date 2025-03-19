@@ -49,6 +49,7 @@ class MAM_Login_Register {
         add_shortcode('mam_register_form', array($this, 'register_form_shortcode'));
         
     }
+    error_log('Redirección después de login: ' . apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user));
 /**
  * Register AJAX handlers
  */
