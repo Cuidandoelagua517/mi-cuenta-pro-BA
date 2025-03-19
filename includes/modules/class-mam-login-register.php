@@ -117,7 +117,7 @@ public function register_ajax_handlers() {
     /**
      * Campos personalizados para el formulario de registro
      */
-   public function register_form_custom_fields() {
+ public function register_form_custom_fields() {
     ?>
     <div class="mam-form-row mam-form-row-wide">
         <label for="reg_company_name"><?php _e('Nombre de Empresa', 'my-account-manager'); ?> <span class="required">*</span></label>
