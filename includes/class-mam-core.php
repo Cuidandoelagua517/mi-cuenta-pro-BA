@@ -97,26 +97,27 @@ class MAM_Core {
      * Sobreescribir templates de WooCommerce
      */
 public function override_woocommerce_templates($template, $template_name, $template_path) {
+    global $woocommerce;
+    
     // Rutas para buscar templates
     $plugin_path = MAM_PLUGIN_DIR . 'templates/';
     
-    // Buscar el template en nuestro plugin
+    // Buscar el template en nuestro plugin (asegurando ruta completa)
     $template_in_plugin = $plugin_path . $template_name;
     
-    // Depuración (opcional - eliminar en producción)
-    /*
-    if (strpos($template_name, 'dashboard') !== false) {
-        error_log('Buscando template: ' . $template_in_plugin);
-        error_log('Existe template: ' . (file_exists($template_in_plugin) ? 'SI' : 'NO'));
-    }
-    */
-    
-    // Si existe en nuestro plugin, devolver esa ruta
+    // Verificar si existe con ruta exacta
     if (file_exists($template_in_plugin)) {
         return $template_in_plugin;
     }
     
-    // Si no, devolver el template original
+    // En caso de debug, descomentar estas líneas
+    /*
+    if (strpos($template_name, 'dashboard') !== false) {
+        error_log('Buscando template: ' . $template_in_plugin);
+        error_log('Template original: ' . $template);
+    }
+    */
+    
     return $template;
 }
 }
