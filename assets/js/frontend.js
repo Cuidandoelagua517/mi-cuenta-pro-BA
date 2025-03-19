@@ -1,3 +1,4 @@
+{
 /**
  * Inicializar pestañas en login/registro y otras áreas
  */
@@ -88,7 +89,7 @@ initAjaxLogin: function() {
             }
         });
     });
-}
+},
 
 /**
  * Inicializar registro por AJAX
@@ -157,6 +158,7 @@ initAjaxRegister: function() {
         });
     });
 },
+
 /**
  * Validación de CUIT en tiempo real
  */
@@ -193,7 +195,8 @@ initCUITValidation: function() {
         
         $field.val(cuit);
     });
-}
+},
+
 /**
  * Inicializar toggle de mostrar/ocultar contraseña
  */
@@ -315,4 +318,5 @@ initMobileMenu: function() {
             }
         });
     }
+}
 }
