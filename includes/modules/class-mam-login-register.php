@@ -49,7 +49,7 @@ class MAM_Login_Register {
         add_shortcode('mam_register_form', array($this, 'register_form_shortcode'));
         
     }
-    error_log('Redirección después de login: ' . apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user));
+
 /**
  * Register AJAX handlers
  */
@@ -154,6 +154,7 @@ public function register_ajax_handlers() {
     </div>
     <?php
 }
+ 
     /**
      * Fin del formulario de registro personalizado
      */
@@ -248,7 +249,7 @@ private function validate_cuit_format($cuit) {
         
         return ob_get_clean();
     }
-
+      
     /**
      * Shortcode para formulario de registro
      */
@@ -268,6 +269,7 @@ private function validate_cuit_format($cuit) {
      * Login por AJAX
      */
 public function ajax_login() {
+     error_log('Redirección después de login: ' . apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user));
     check_ajax_referer('mam-nonce', 'security');
     
     // Utilizar email como nombre de usuario si está presente
