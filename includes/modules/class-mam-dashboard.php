@@ -51,7 +51,7 @@ class MAM_Dashboard {
         // Cargar el template personalizado
         wc_get_template('myaccount/dashboard.php', array(), 'my-account-manager/', MAM_PLUGIN_DIR . 'templates/');
     }
-}
+
     
     // Forzar activación del dashboard personalizado para el MVP
     $options = get_option('mam_options', array());
