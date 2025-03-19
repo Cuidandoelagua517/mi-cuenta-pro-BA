@@ -280,10 +280,10 @@ public function ajax_login() {
     }
 
     // Utilizar email como nombre de usuario
-    $email_or_username = isset($_POST['email']) ? trim($_POST['email']) : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-    
+   $email_or_username = isset($_POST['username']) ? trim($_POST['username']) : '';
     error_log('Login Attempt - Email/Username: ' . $email_or_username);
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+
 
     // Intentar encontrar el usuario por email
     $user = get_user_by('email', $email_or_username);
