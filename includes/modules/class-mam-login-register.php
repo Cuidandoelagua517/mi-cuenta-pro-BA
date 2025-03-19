@@ -202,6 +202,9 @@ public function validate_registration($validation_error, $username, $email) {
 /**
  * Validar formato de CUIT
  */
+/**
+ * Validar formato de CUIT
+ */
 private function validate_cuit_format($cuit) {
     // Eliminar guiones y espacios
     $cuit = preg_replace('/[^0-9]/', '', $cuit);
