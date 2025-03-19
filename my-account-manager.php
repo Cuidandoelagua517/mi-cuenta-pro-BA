@@ -58,10 +58,10 @@ class My_Account_Manager {
      * Definir constantes
      */
     private function define_constants() {
-        $this->define('MAM_VERSION', self::VERSION);
-        $this->define('MAM_PLUGIN_DIR', plugin_dir_path(__FILE__));
-        $this->define('MAM_PLUGIN_URL', plugin_dir_url(__FILE__));
-        $this->define('MAM_PLUGIN_BASENAME', plugin_basename(__FILE__));
+ $this->define('MAM_VERSION', self::VERSION);
+    $this->define('MAM_PLUGIN_DIR', plugin_dir_path(__FILE__));
+    $this->define('MAM_PLUGIN_URL', plugin_dir_url(__FILE__));
+    $this->define('MAM_PLUGIN_BASENAME', plugin_basename(__FILE__));
         $this->define('MAM_HPOS_COMPATIBLE', true);
     }
 // Añadir después de define_constants() en el constructor
