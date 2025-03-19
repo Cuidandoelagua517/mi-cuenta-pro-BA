@@ -88,7 +88,7 @@ initAjaxLogin: function() {
             }
         });
     });
-},
+}
 
 /**
  * Inicializar registro por AJAX
