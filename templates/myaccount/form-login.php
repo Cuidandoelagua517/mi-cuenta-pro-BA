@@ -44,26 +44,39 @@ do_action('woocommerce_before_customer_login_form');
 
     <div class="mam-login-register-forms">
         <div class="mam-login-form-wrapper <?php echo isset($_GET['action']) && $_GET['action'] === 'register' ? 'hide' : ''; ?>">
-    <form class="woocommerce-form woocommerce-form-login login mam-ajax-form" data-action="mam_ajax_login" method="post">
+    <form class="woocommerce-form woocommerce-form-login login mam-ajax-form" data-action="mam_ajax_login" method="post"id="login-form">
     <?php wp_nonce_field('mam-nonce', 'security'); ?>
 
                 <?php do_action('woocommerce_login_form_start'); ?>
 
-       <div class="mam-form-row mam-form-row-wide">
-    <label for="reg_email"><?php esc_html_e('Correo electrónico', 'my-account-manager'); ?> <span class="required">*</span></label>
-    <input type="email" class="woocommerce-Input woocommerce-Input--text input-text" name="email" id="reg_email" autocomplete="email" value="<?php echo (!empty($_POST['email'])) ? esc_attr(wp_unslash($_POST['email'])) : ''; ?>" required />
-</div>
+<div class="mam-form-row mam-form-row-wide">
+        <label for="email"><?php esc_html_e('Correo electrónico', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="email" 
+               class="woocommerce-Input woocommerce-Input--text input-text" 
+               name="email" 
+               id="email"  // Cambiar a "email"
+               autocomplete="email" 
+               value="<?php echo (!empty($_POST['email'])) ? esc_attr(wp_unslash($_POST['email'])) : ''; ?>" 
+               required 
+        />
+    </div>
 
 
-                <div class="mam-form-row mam-form-row-wide">
-                    <label for="password"><?php esc_html_e('Contraseña', 'my-account-manager'); ?> <span class="required">*</span></label>
-                    <div class="mam-password-field">
-                        <input class="woocommerce-Input woocommerce-Input--text input-text" type="password" name="password" id="password" autocomplete="current-password" />
-                        <span class="mam-password-toggle">
-                            <i class="fa fa-eye"></i>
-                        </span>
-                    </div>
-                </div>
+     <div class="mam-form-row mam-form-row-wide">
+        <label for="password"><?php esc_html_e('Contraseña', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <div class="mam-password-field">
+            <input class="woocommerce-Input woocommerce-Input--text input-text" 
+                   type="password" 
+                   name="password" 
+                   id="password" 
+                   autocomplete="current-password" 
+                   required  // Añadir required
+            />
+            <span class="mam-password-toggle">
+                <i class="fa fa-eye"></i>
+            </span>
+        </div>
+    </div>
 
                 <?php do_action('woocommerce_login_form'); ?>
 
