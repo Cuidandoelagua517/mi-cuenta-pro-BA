@@ -154,10 +154,15 @@ do_action('woocommerce_before_customer_login_form');
 
                 <?php endif; ?>
 
-                <div class="mam-form-row mam-form-row-wide">
-                    <label for="reg_email"><?php esc_html_e('Correo electrónico', 'my-account-manager'); ?> <span class="required">*</span></label>
-                    <input type="email" class="woocommerce-Input woocommerce-Input--text input-text" name="email" id="reg_email" autocomplete="email" value="<?php echo (!empty($_POST['email'])) ? esc_attr(wp_unslash($_POST['email'])) : ''; ?>" />
-                </div>
+          <div class="mam-form-row mam-form-row-wide">
+        <label for="username"><?php esc_html_e('Correo electrónico', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="email" 
+               class="woocommerce-Input woocommerce-Input--text input-text" 
+               name="username" 
+               id="username"
+               autocomplete="email" 
+               required />
+    </div>
 <div class="mam-form-row mam-form-row-wide">
     <label for="reg_company_name"><?php esc_html_e('Nombre de Empresa', 'my-account-manager'); ?> <span class="required">*</span></label>
     <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="company_name" id="reg_company_name" value="<?php echo (!empty($_POST['company_name'])) ? esc_attr(wp_unslash($_POST['company_name'])) : ''; ?>" required />
