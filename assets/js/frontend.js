@@ -67,19 +67,23 @@ var MAMUserAccount = {
             // Mostrar loader
             $submitBtn.prop('disabled', true).addClass('mam-loading');
             
-            $.ajax({
-                type: 'POST',
-                url: mam_params.ajax_url,
-                data: formData,
-                success: function(response) {
-                    if (response.success) {
-                        self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
-                        
-                        // Redireccionar después de un breve retraso
-                        setTimeout(function() {
-                            window.location.href = response.data.redirect || '';
-                        }, 1000);
-                    } else {
+ $.ajax({
+    type: 'POST',
+    url: mam_params.ajax_url,
+    data: formData,
+    success: function(response) {
+        if (response.success) {
+            self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
+            
+            // Redireccionar después de un breve retraso
+            setTimeout(function() {
+                if (response.data.redirect) {
+                    window.location.href = response.data.redirect;
+                } else {
+                    window.location.href = woocommerce_params.myaccount_url || '/my-account/';
+                }
+            }, 1000);
+        } else {
                         self.showMessage($form, 'error', response.data.message || 'Error al iniciar sesión. Verifica tus credenciales.');
                         $submitBtn.prop('disabled', false).removeClass('mam-loading');
                     }
