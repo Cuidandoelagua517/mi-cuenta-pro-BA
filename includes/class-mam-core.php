@@ -103,13 +103,6 @@ public function override_woocommerce_templates($template, $template_name, $templ
     // Buscar el template en nuestro plugin
     $template_in_plugin = $plugin_path . $template_name;
     
-    // Debug temporal para ver qué está pasando
-    if (strpos($template_name, 'dashboard') !== false) {
-        error_log('Buscando template: ' . $template_in_plugin);
-        error_log('Template original: ' . $template);
-        error_log('Template existe: ' . (file_exists($template_in_plugin) ? 'SÍ' : 'NO'));
-    }
-    
     // Verificar si existe el archivo
     if (file_exists($template_in_plugin)) {
         return $template_in_plugin;
