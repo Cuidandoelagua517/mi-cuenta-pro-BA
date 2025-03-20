@@ -354,17 +354,17 @@ initAjaxLogin: function() {
         /**
          * Inicializar todas las funcionalidades
          */
-        init: function() {
-            console.log('MAMUserAccount init started'); // Depuración
-            this.initTabs();
-            this.initAjaxLogin();
-            this.initAjaxRegister();
-            this.initCUITValidation();
-            this.initPasswordToggle();
-            this.initFormValidation();
-            this.initMobileMenu();
-            console.log('MAMUserAccount init completed'); // Depuración
-        }
+init: function() {
+    console.log('MAMUserAccount init started'); // Depuración
+    this.initTabs();
+    this.initAjaxLogin(); // Verificar que esta función se esté llamando
+    this.initAjaxRegister();
+    this.initCUITValidation();
+    this.initPasswordToggle();
+    this.initFormValidation();
+    this.initMobileMenu();
+    console.log('MAMUserAccount init completed'); // Depuración
+}
     };
 
 /**
