@@ -256,7 +256,31 @@
     gap: 0.75rem;
     margin: 1.5rem 0;
 }
+/* Clase para ocultar elementos */
+.hide {
+    display: none;
+}
+.mam-login-register-tabs {
+    display: flex;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--mam-border-color);
+}
+.mam-login-tab, .mam-register-tab {
+    padding: 12px 20px;
+    font-weight: 500;
+    color: var(--mam-text-light-color);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: var(--mam-transition);
+}
+.mam-login-tab.active, .mam-register-tab.active {
+    color: var(--mam-primary-color);
+    border-bottom-color: var(--mam-primary-color);
+}
 
+.mam-login-tab:hover, .mam-register-tab:hover {
+    color: var(--mam-primary-color);
+}
 @media (min-width: 480px) {
     .mam-login-remember {
         flex-direction: row;
