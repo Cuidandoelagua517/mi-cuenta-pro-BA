@@ -482,5 +482,50 @@ function handleLoginRegisterTabs() {
             }
         }
     });
+  // Función para manejar las pestañas de login/registro
+function initLoginRegisterTabs() {
+    // Solo inicializar si estamos en la página de login/registro
+    if ($('.mam-login-register-tabs').length > 0) {
+        console.log('Inicializando tabs de login/registro');
+        
+        // Manejar clic en pestaña de login
+        $('.mam-login-tab').on('click', function(e) {
+            e.preventDefault();
+            console.log('Login tab clicked');
+            
+            $('.mam-login-tab').addClass('active');
+            $('.mam-register-tab').removeClass('active');
+            $('.mam-login-form-wrapper').show();
+            $('.mam-register-form-wrapper').hide();
+        });
+        
+        // Manejar clic en pestaña de registro
+        $('.mam-register-tab').on('click', function(e) {
+            e.preventDefault();
+            console.log('Register tab clicked');
+            
+            $('.mam-register-tab').addClass('active');
+            $('.mam-login-tab').removeClass('active');
+            $('.mam-register-form-wrapper').show();
+            $('.mam-login-form-wrapper').hide();
+        });
+        
+        // Verificar estado inicial basado en URL
+        if (window.location.hash === '#register' || 
+            window.location.search.indexOf('action=register') > -1) {
+            $('.mam-register-tab').trigger('click');
+        } else {
+            $('.mam-login-tab').trigger('click');
+        }
+    }
+}
+
+// Ejecutar cuando el DOM esté listo
+$(document).ready(function() {
+    // Inicializar el objeto principal
+    MAMUserAccount.init();
     
+    // Inicializar tabs de login/registro
+    initLoginRegisterTabs();
+});  
 })(jQuery);
