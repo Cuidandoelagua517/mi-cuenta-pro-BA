@@ -109,54 +109,70 @@ initAjaxLogin: function() {
         /**
          * Inicializar registro por AJAX
          */
-      initAjaxRegister: function() {
-    var self = this;
-    
-    $('.mam-ajax-form[data-action="mam_ajax_register"]').on('submit', function(e) {
-        e.preventDefault();
-        
-        // Agregar log para depuración
-        console.log("Form submit intercepted for registration");
-        
-        var $form = $(this);
-        var $submitBtn = $form.find('button[type="submit"]');
-        var formData = $form.serialize();
-        
-        // Asegurarse que el action esté incluido
-        if (formData.indexOf('action=') === -1) {
-            formData += '&action=mam_ajax_register';
-        }
-        
-        console.log('Sending registration data:', formData);
-        
-        // Mostrar loader
-        $submitBtn.prop('disabled', true).addClass('mam-loading');
-        
-        $.ajax({
-            type: 'POST',
-            url: mam_params.ajax_url,
-            data: formData,
-            success: function(response) {
-                console.log('Registration response:', response);
-                if (response.success) {
-                    self.showMessage($form, 'success', response.data.message || 'Registro exitoso. Redirigiendo...');
-                    
-                    setTimeout(function() {
-                        window.location.href = response.data.redirect || '';
-                    }, 1500);
-                } else {
-                    self.showMessage($form, 'error', response.data.message || 'Error en el registro.');
-                    $submitBtn.prop('disabled', false).removeClass('mam-loading');
+        initAjaxRegister: function() {
+            var self = this;
+            
+            $(document).on('submit', '.mam-ajax-form[data-action="mam_ajax_register"]', function(e) {
+                e.preventDefault();
+                
+                var $form = $(this);
+                var $submitBtn = $form.find('button[type="submit"]');
+                var formData = $form.serialize();
+                
+                // Validar campos obligatorios
+                var email = $form.find('input[name="email"]').val();
+                var privacyPolicy = $form.find('input[name="privacy_policy"]:checked').length;
+                
+                if (!email) {
+                    self.showMessage($form, 'error', 'Por favor, introduce un correo electrónico válido.');
+                    return;
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX error:', xhr.responseText);
-                self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo. Detalles: ' + error);
-                $submitBtn.prop('disabled', false).removeClass('mam-loading');
-            }
-        });
-    });
-}
+                
+                if (!privacyPolicy) {
+                    self.showMessage($form, 'error', 'Debes aceptar la política de privacidad.');
+                    return;
+                }
+                
+                // Validación básica de email
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    self.showMessage($form, 'error', 'Por favor, introduce un correo electrónico válido.');
+                    return;
+                }
+                
+                // Validar contraseña si existe campo
+                var password = $form.find('input[name="password"]').val();
+                if (password && password.length < 6) {
+                    self.showMessage($form, 'error', 'La contraseña debe tener al menos 6 caracteres.');
+                    return;
+                }
+                
+                // Mostrar loader
+                $submitBtn.prop('disabled', true).addClass('mam-loading');
+                
+                $.ajax({
+                    type: 'POST',
+                    url: mam_params.ajax_url,
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            self.showMessage($form, 'success', response.data.message || 'Registro exitoso. Redirigiendo...');
+                            
+                            // Redireccionar después de un breve retraso
+                            setTimeout(function() {
+                                window.location.href = response.data.redirect || '';
+                            }, 1500);
+                        } else {
+                            self.showMessage($form, 'error', response.data.message || 'Error en el registro.');
+                            $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                        }
+                    },
+                    error: function() {
+                        self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo.');
+                        $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                    }
+                });
+            });
+        },
 
         /**
          * Validación de CUIT en tiempo real
