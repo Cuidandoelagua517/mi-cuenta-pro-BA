@@ -150,35 +150,29 @@ public function declare_wc_compatibility() {
     /**
      * Inicializar módulos
      */
-    public function init_modules() {
-        // Inicializar si WooCommerce está activo
-        if ($this->is_woocommerce_active()) {
-            // Inicializar los módulos creando instancias
-            $dashboard = new MAM_Dashboard();
-            $dashboard->init();
-            
-            $orders = new MAM_Orders();
-            $orders->init();
-            
-            $addresses = new MAM_Addresses();
-            $addresses->init();
-            
-            $account_details = new MAM_Account_Details();
-            $account_details->init();
-            
-            $downloads = new MAM_Downloads();
-            $downloads->init();
-            
-            $payments = new MAM_Payments();
-            $payments->init();
-            
-            // Inicializar login/register y guardar la instancia
-            $this->login_register = MAM_Login_Register::init();
-            $this->login_register->init();
-        } else {
-            add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
-        }
+public function init_modules() {
+    // Inicializar si WooCommerce está activo
+    if ($this->is_woocommerce_active()) {
+        // Inicializar los módulos creando instancias
+        MAM_Dashboard::init();
+        MAM_Orders::init();
+        MAM_Addresses::init();
+        MAM_Account_Details::init();
+        MAM_Downloads::init();
+        MAM_Payments::init();
+        
+        // Para login/register, solo obtiene la instancia una vez
+        $this->login_register = MAM_Login_Register::init();
+        
+        // Eliminamos la llamada duplicada a init()
+        // $this->login_register->init();  <- Esto es lo que causa el problema
+    } else {
+        add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
     }
+    
+    // Registrar handlers AJAX para toda la aplicación si es necesario
+    $this->register_ajax_handlers();
+}
 
     /**
      * Verificar si WooCommerce está activo
@@ -216,13 +210,13 @@ public function declare_wc_compatibility() {
      * Registrar manejadores AJAX
      */
     public function register_ajax_handlers() {
-        // Verificar que login_register esté inicializado
-        if ($this->login_register) {
-            // Añadir handlers para usuarios no logueados
-            add_action('wp_ajax_nopriv_mam_ajax_login', array($this->login_register, 'ajax_login'));
-            add_action('wp_ajax_nopriv_mam_ajax_register', array($this->login_register, 'ajax_register'));
-        }
-    }
+// Los handlers específicos del inicio de sesión ya se registran en la clase MAM_Login_Register
+    // Aquí solo registramos handlers adicionales que no sean de login/register
+    
+    // Por ejemplo, handlers para usuarios ya autenticados
+    // add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
+}
+    
 
     /**
      * Cargar traducción
