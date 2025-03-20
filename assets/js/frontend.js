@@ -3,27 +3,34 @@ var MAMUserAccount = {
     /**
      * Inicializar pestañas en login/registro y otras áreas
      */
-    initTabs: function() {
-        // Tabs de login/registro
-        $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
-            e.preventDefault();
-            
-            var target = $(this).attr('href');
-            
-            // Activar tab
-            $('.mam-login-tab, .mam-register-tab').removeClass('active');
-            $(this).addClass('active');
-            
-            // Mostrar contenido correspondiente
-            if (target === '#login') {
-                $('.mam-login-form-wrapper').removeClass('hide');
-                $('.mam-register-form-wrapper').addClass('hide');
-            } else if (target === '#register') {
-                $('.mam-login-form-wrapper').addClass('hide');
-                $('.mam-register-form-wrapper').removeClass('hide');
-            }
-        });
+// Tabs de login/registro
+    $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
+        e.preventDefault();
         
+        var target = $(this).attr('href');
+        console.log('Tab clicked:', target); // Para depuración
+        
+        // Activar tab
+        $('.mam-login-tab, .mam-register-tab').removeClass('active');
+        $(this).addClass('active');
+        
+        // Mostrar contenido correspondiente con una pequeña animación
+        if (target === '#login') {
+            $('.mam-register-form-wrapper').fadeOut(200, function() {
+                $('.mam-login-form-wrapper').fadeIn(200);
+            });
+        } else if (target === '#register') {
+            $('.mam-login-form-wrapper').fadeOut(200, function() {
+                $('.mam-register-form-wrapper').fadeIn(200);
+            });
+        }
+         // Si estamos en móvil, scroll hacia arriba suavemente
+        if (window.innerWidth < 768) {
+            $('html, body').animate({
+                scrollTop: $('.mam-login-register-tabs').offset().top - 20
+            }, 300);
+        }
+    });
         // Otras pestañas de la cuenta
         $('.mam-account-tab, .mam-address-tab').on('click', function(e) {
             // Solo gestionar el evento si no estamos navegando a otra página
