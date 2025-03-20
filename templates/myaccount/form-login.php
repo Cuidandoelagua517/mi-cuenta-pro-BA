@@ -63,27 +63,21 @@ do_action('woocommerce_before_customer_login_form');
                     </div>
                 </div>
 
-                <div class="mam-form-row mam-form-row-wide">
-                    <label for="password"><?php esc_html_e('Contraseña', 'my-account-manager'); ?> <span class="required">*</span></label>
-                    <div class="mam-password-field mam-input-with-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                        <input class="woocommerce-Input woocommerce-Input--text input-text" 
-                            type="password" 
-                            name="password" 
-                            id="password" 
-                            autocomplete="current-password" 
-                            placeholder="<?php esc_attr_e('Tu contraseña', 'my-account-manager'); ?>"
-                            required />
-                        <span class="mam-password-toggle" role="button" tabindex="0" aria-label="<?php esc_attr_e('Mostrar/ocultar contraseña', 'my-account-manager'); ?>">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="mam-eye-icon">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </span>
-                    </div>
-                </div>
+    <div class="mam-form-row mam-form-row-wide">
+    <label for="password"><?php esc_html_e('Contraseña', 'my-account-manager'); ?> <span class="required">*</span></label>
+    <div class="mam-password-field mam-input-with-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <input class="woocommerce-Input woocommerce-Input--text input-text" 
+            type="password" 
+            name="password" 
+            id="password" 
+            autocomplete="current-password" 
+            placeholder="<?php esc_attr_e('Tu contraseña', 'my-account-manager'); ?>"
+            required />
+    </div>
+</div>
 
                 <?php do_action('woocommerce_login_form'); ?>
 
