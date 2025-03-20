@@ -64,23 +64,13 @@ initAjaxLogin: function() {
     
     $('.mam-ajax-form[data-action="mam_ajax_login"]').on('submit', function(e) {
         e.preventDefault();
-        console.log('Login form intercepted!'); // Debugging
         
         var $form = $(this);
         var $submitBtn = $form.find('button[type="submit"]');
         var formData = $form.serialize();
         
-        // Log para depuración
-        console.log('Form Data:', formData);
-        
-        // Validar campos obligatorios
-        var username = $form.find('input[name="username"]').val();
-        var password = $form.find('input[name="password"]').val();
-        
-        if (!username || !password) {
-            self.showMessage($form, 'error', 'Por favor, completa todos los campos.');
-            return;
-        }
+        // Añadir acción AJAX - IMPORTANTE
+        formData += '&action=mam_ajax_login';
         
         // Mostrar loader
         $submitBtn.prop('disabled', true).addClass('mam-loading');
@@ -90,29 +80,24 @@ initAjaxLogin: function() {
             url: mam_params.ajax_url,
             data: formData,
             success: function(response) {
-                console.log('AJAX Response:', response);
-                
                 if (response.success) {
                     self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
                     
-                    // Redireccionar después de un breve retraso
                     setTimeout(function() {
                         window.location.href = response.data.redirect || '';
                     }, 1000);
                 } else {
-                    console.error('Login Error:', response.data.message);
                     self.showMessage($form, 'error', response.data.message || 'Error al iniciar sesión. Verifica tus credenciales.');
                     $submitBtn.prop('disabled', false).removeClass('mam-loading');
                 }
             },
             error: function(xhr, status, error) {
-                console.error('AJAX Error:', status, error);
                 self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo.');
                 $submitBtn.prop('disabled', false).removeClass('mam-loading');
             }
         });
     });
-},
+}
 
         /**
          * Inicializar registro por AJAX
