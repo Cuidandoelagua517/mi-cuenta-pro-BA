@@ -438,10 +438,55 @@ function handleLoginRegisterTabs() {
 }
 
 // Ejecutar cuando el DOM esté listo
-$(document).ready(function() {
-    // Solo inicializar si estamos en la página de login/registro
-    if ($('.mam-login-register-tabs').length > 0) {
-        handleLoginRegisterTabs();
-    }
-});
+  $(document).ready(function() {
+        // Solo inicializar si estamos en la página de login/registro
+        if ($('.mam-login-register-tabs').length > 0) {
+            console.log('Inicializando tabs de login/registro');
+            
+            // Manejar clic en pestaña de login
+            $('.mam-login-tab').on('click', function(e) {
+                e.preventDefault();
+                console.log('Login tab clicked');
+                
+                // Activar esta pestaña
+                $('.mam-login-tab').addClass('active');
+                $('.mam-register-tab').removeClass('active');
+                
+                // Mostrar el formulario correspondiente
+                $('.mam-login-form-wrapper').removeClass('hide').show();
+                $('.mam-register-form-wrapper').addClass('hide').hide();
+                
+                // Actualizar clases en html para mayor compatibilidad
+                $('html').addClass('js-login-tab-active').removeClass('js-register-tab-active');
+            });
+            
+            // Manejar clic en pestaña de registro
+            $('.mam-register-tab').on('click', function(e) {
+                e.preventDefault();
+                console.log('Register tab clicked');
+                
+                // Activar esta pestaña
+                $('.mam-register-tab').addClass('active');
+                $('.mam-login-tab').removeClass('active');
+                
+                // Mostrar el formulario correspondiente
+                $('.mam-register-form-wrapper').removeClass('hide').show();
+                $('.mam-login-form-wrapper').addClass('hide').hide();
+                
+                // Actualizar clases en html para mayor compatibilidad
+                $('html').addClass('js-register-tab-active').removeClass('js-login-tab-active');
+            });
+            
+            // Verificar estado inicial basado en URL
+            if (window.location.hash === '#register' || 
+                window.location.search.indexOf('action=register') > -1) {
+                // Simular clic en la pestaña de registro
+                $('.mam-register-tab').trigger('click');
+            } else {
+                // Por defecto, activar pestaña de login
+                $('.mam-login-tab').trigger('click');
+            }
+        }
+    });
+    
 })(jQuery);
