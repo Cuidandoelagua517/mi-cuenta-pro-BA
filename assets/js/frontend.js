@@ -386,10 +386,67 @@
         }
     };
 
-    // Inicializar cuando el DOM esté listo
-    $(document).ready(function() {
-        console.log('DOM ready, initializing MAMUserAccount'); // Depuración
-        MAMUserAccount.init();
+/**
+ * Solución para las pestañas de login/registro
+ * Este código debe insertarse en frontend.js
+ */
+
+// Función para manejar las pestañas de login/registro
+function handleLoginRegisterTabs() {
+    console.log('Inicializando manejo de pestañas login/registro');
+    
+    // Función para cambiar entre pestañas
+    function switchTab(tabType) {
+        console.log('Cambiando a pestaña:', tabType);
+        
+        // 1. Actualizar pestañas activas
+        if (tabType === 'login') {
+            $('.mam-login-tab').addClass('active');
+            $('.mam-register-tab').removeClass('active');
+        } else if (tabType === 'register') {
+            $('.mam-register-tab').addClass('active');
+            $('.mam-login-tab').removeClass('active');
+        }
+        
+        // 2. Mostrar/ocultar formularios correspondientes
+        if (tabType === 'login') {
+            $('.mam-login-form-wrapper').show();
+            $('.mam-register-form-wrapper').hide();
+        } else if (tabType === 'register') {
+            $('.mam-login-form-wrapper').hide();
+            $('.mam-register-form-wrapper').show();
+        }
+    }
+    
+    // Manejar clic en pestaña de login
+    $('.mam-login-tab').on('click', function(e) {
+        e.preventDefault();
+        switchTab('login');
     });
+    
+    // Manejar clic en pestaña de registro
+    $('.mam-register-tab').on('click', function(e) {
+        e.preventDefault();
+        switchTab('register');
+    });
+    
+    // Establecer pestaña inicial según URL
+    var urlParams = new URLSearchParams(window.location.search);
+    var action = urlParams.get('action');
+    
+    if (action === 'register') {
+        switchTab('register');
+    } else {
+        switchTab('login');
+    }
+}
+
+// Ejecutar cuando el DOM esté listo
+$(document).ready(function() {
+    // Solo inicializar si estamos en la página de login/registro
+    if ($('.mam-login-register-tabs').length > 0) {
+        handleLoginRegisterTabs();
+    }
+});
 
 })(jQuery);
