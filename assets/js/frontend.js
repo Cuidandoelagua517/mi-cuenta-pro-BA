@@ -483,6 +483,7 @@ function handleLoginRegisterTabs() {
         }
     });
   // Función para manejar las pestañas de login/registro
+// Función para manejar las pestañas de login/registro
 function initLoginRegisterTabs() {
     // Solo inicializar si estamos en la página de login/registro
     if ($('.mam-login-register-tabs').length > 0) {
@@ -497,6 +498,7 @@ function initLoginRegisterTabs() {
             $('.mam-register-tab').removeClass('active');
             $('.mam-login-form-wrapper').show();
             $('.mam-register-form-wrapper').hide();
+            $('html').addClass('js-login-tab-active').removeClass('js-register-tab-active');
         });
         
         // Manejar clic en pestaña de registro
@@ -508,6 +510,7 @@ function initLoginRegisterTabs() {
             $('.mam-login-tab').removeClass('active');
             $('.mam-register-form-wrapper').show();
             $('.mam-login-form-wrapper').hide();
+            $('html').addClass('js-register-tab-active').removeClass('js-login-tab-active');
         });
         
         // Verificar estado inicial basado en URL
@@ -527,5 +530,5 @@ $(document).ready(function() {
     
     // Inicializar tabs de login/registro
     initLoginRegisterTabs();
-});  
+});
 })(jQuery);
