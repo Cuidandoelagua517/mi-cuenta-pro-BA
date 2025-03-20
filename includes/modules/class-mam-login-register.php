@@ -61,41 +61,6 @@ public function register_ajax_handlers() {
     add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'ajax_register'));
 }
 
-public function ajax_login() {
-    // Verificar nonce
-    if (!check_ajax_referer('mam-nonce', 'security', false)) {
-        wp_send_json_error(array('message' => 'Error de seguridad. Intenta de nuevo.'));
-        exit;
-    }
-
-    $username = isset($_POST['username']) ? trim($_POST['username']) : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-
-    // Validar datos
-    if (empty($username) || empty($password)) {
-        wp_send_json_error(array('message' => 'Por favor, completa todos los campos.'));
-        exit;
-    }
-
-    // Intentar autenticar
-    $user = wp_authenticate($username, $password);
-
-    if (is_wp_error($user)) {
-        wp_send_json_error(array('message' => 'Credenciales incorrectas. Verifica tu usuario y contraseña.'));
-        exit;
-    }
-
-    // Login exitoso
-    wp_set_auth_cookie($user->ID, true);
-    wp_set_current_user($user->ID);
-
-    wp_send_json_success(array(
-        'message' => 'Login exitoso, redirigiendo...',
-        'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
-    ));
-    
-    exit;
-}
     /**
      * Inicio del formulario de login personalizado
      */
