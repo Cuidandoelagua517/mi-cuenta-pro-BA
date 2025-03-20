@@ -153,7 +153,10 @@ public function declare_wc_compatibility() {
 public function init_modules() {
     // Inicializar si WooCommerce está activo
     if ($this->is_woocommerce_active()) {
-        // Inicializar los módulos creando instancias
+        // Inicializar primero el módulo de login/register
+        $this->login_register = MAM_Login_Register::init();
+        
+        // Luego los demás módulos
         MAM_Dashboard::init();
         MAM_Orders::init();
         MAM_Addresses::init();
@@ -161,19 +164,12 @@ public function init_modules() {
         MAM_Downloads::init();
         MAM_Payments::init();
         
-        // Para login/register, solo obtiene la instancia una vez
-        $this->login_register = MAM_Login_Register::init();
-        
-        // Eliminamos la llamada duplicada a init()
-        // $this->login_register->init();  <- Esto es lo que causa el problema
+        // Registrar handlers AJAX para toda la aplicación
+        $this->register_ajax_handlers();
     } else {
         add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
     }
-    
-    // Registrar handlers AJAX para toda la aplicación si es necesario
-    $this->register_ajax_handlers();
 }
-
     /**
      * Verificar si WooCommerce está activo
      */
@@ -206,18 +202,35 @@ public function init_modules() {
         flush_rewrite_rules();
     }
 
-    /**
-     * Registrar manejadores AJAX
-     */
-    public function register_ajax_handlers() {
-// Los handlers específicos del inicio de sesión ya se registran en la clase MAM_Login_Register
-    // Aquí solo registramos handlers adicionales que no sean de login/register
-    
-    // Por ejemplo, handlers para usuarios ya autenticados
-    // add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
+   /**
+ * Registrar manejadores AJAX
+ */
+public function register_ajax_handlers() {
+    // Registrar handlers globales para la aplicación
+    add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'handle_ajax_login'));
+    add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'handle_ajax_register'));
+}action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
 }
-    
-
+/**
+ * Manejar solicitud AJAX de login (puente al módulo)
+ */
+public function handle_ajax_login() {
+    if (isset($this->login_register)) {
+        $this->login_register->ajax_login();
+    } else {
+        wp_send_json_error(array('message' => 'Módulo de login no inicializado'));
+    }
+}    
+/**
+ * Manejar solicitud AJAX de registro (puente al módulo)
+ */
+public function handle_ajax_register() {
+    if (isset($this->login_register)) {
+        $this->login_register->ajax_register();
+    } else {
+        wp_send_json_error(array('message' => 'Módulo de registro no inicializado'));
+    }
+}
     /**
      * Cargar traducción
      */
