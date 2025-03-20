@@ -23,11 +23,11 @@
                 
                 // Simplificar la lógica de mostrar/ocultar formularios
                 if (target === '#login') {
-                    $('.mam-register-form-wrapper').hide();
-                    $('.mam-login-form-wrapper').removeClass('hide').show();
+                    $('.mam-register-form-wrapper').addClass('hide');
+                    $('.mam-login-form-wrapper').removeClass('hide');
                 } else if (target === '#register') {
-                    $('.mam-login-form-wrapper').hide();
-                    $('.mam-register-form-wrapper').removeClass('hide').show();
+                    $('.mam-login-form-wrapper').addClass('hide');
+                    $('.mam-register-form-wrapper').removeClass('hide');
                 }
                 
                 // Si estamos en móvil, scroll hacia arriba suavemente
