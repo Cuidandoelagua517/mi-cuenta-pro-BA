@@ -463,6 +463,10 @@ html.js-register-tab-active .mam-register-form-wrapper {
 .mam-button-secondary:hover {
     background-color: #e5e7eb;
 }
+.mam-form-row {
+  width: 100%;
+  margin-bottom: 1rem;
+}
 
 /* Layout para filas de formulario */
 .mam-form-row {
@@ -478,7 +482,37 @@ html.js-register-tab-active .mam-register-form-wrapper {
 .mam-register-privacy {
     margin: 1.25rem 0;
 }
-
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+.mam-password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.mam-password-toggle, 
+.mam-input-with-icon svg {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6b7280;
+}
+.mam-input-with-icon {
+  position: relative;
+  width: 100%;
+}
+.mam-input-with-icon input {
+  padding-right: 40px;
+}
 /* Responsive: Tablet (768px) y superior */
 @media (min-width: 768px) {
     .woocommerce-account .woocommerce {
