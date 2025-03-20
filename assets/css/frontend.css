@@ -161,19 +161,38 @@
 }
 
 .mam-button.mam-loading {
-    text-indent: -9999px;
+    position: relative;
+    color: transparent !important;
 }
-
+.mam-button.mam-loading:after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: white;
+    animation: mam-spin 0.8s linear infinite;
+}
+@keyframes mam-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 @keyframes mam-loader {
     to {
         transform: rotate(360deg);
     }
 }
 .mam-message {
-    padding: 10px 15px;
+    padding: 12px 15px;
     margin-bottom: 20px;
     border-radius: var(--mam-border-radius);
     border-left: 4px solid transparent;
+    font-size: 14px;
 }
 
 .mam-message-success {
@@ -265,6 +284,7 @@
     margin-bottom: 30px;
     border-bottom: 1px solid var(--mam-border-color);
 }
+
 .mam-login-tab, .mam-register-tab {
     padding: 12px 20px;
     font-weight: 500;
@@ -272,7 +292,12 @@
     text-decoration: none;
     border-bottom: 2px solid transparent;
     transition: var(--mam-transition);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
+
 .mam-login-tab.active, .mam-register-tab.active {
     color: var(--mam-primary-color);
     border-bottom-color: var(--mam-primary-color);
@@ -280,6 +305,13 @@
 
 .mam-login-tab:hover, .mam-register-tab:hover {
     color: var(--mam-primary-color);
+}
+.mam-login-form-wrapper, .mam-register-form-wrapper {
+    transition: opacity 0.3s ease;
+}
+
+.mam-login-form-wrapper.hide, .mam-register-form-wrapper.hide {
+    display: none;
 }
 @media (min-width: 480px) {
     .mam-login-remember {
@@ -371,18 +403,19 @@
 
 /* Botones personalizados */
 .mam-button {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
     font-weight: 500;
-    line-height: 1.5;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: var(--mam-border-radius);
     transition: var(--mam-transition);
-    width: 100%;
 }
 
 .mam-button-primary {
