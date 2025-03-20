@@ -265,8 +265,8 @@ public function init_modules() {
                 'confirm_delete' => __('¿Estás seguro de que quieres eliminar este elemento?', 'my-account-manager')
             )
         );
-        
-  wp_localize_script('mam-scripts', 'mam_params', array(
+
+    wp_localize_script('mam-scripts', 'mam_params', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('mam-nonce'),
         'i18n'     => array(
