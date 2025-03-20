@@ -60,7 +60,7 @@ public function register_ajax_handlers() {
     add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'ajax_login'));
     add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'ajax_register'));
     
-    // Para debugging
+    // Agregamos estos para debugging
     error_log('AJAX handlers registered: mam_ajax_login, mam_ajax_register');
 }
 
@@ -320,8 +320,8 @@ public function ajax_login() {
     exit;
 }
     /**
- * Registro por AJAX
- */
+     * Registro por AJAX
+     */
 public function ajax_register() {
     check_ajax_referer('mam-nonce', 'security');
     
@@ -329,23 +329,17 @@ public function ajax_register() {
     $email    = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     
-    // Depuración
-    error_log('AJAX register attempted for: ' . $email);
-    
     $validation_error = new WP_Error();
     $validation_error = $this->validate_registration($validation_error, $username, $email);
     
     if ($validation_error->get_error_code()) {
-        error_log('Validation error: ' . $validation_error->get_error_message());
         wp_send_json_error(array('message' => $validation_error->get_error_message()));
         exit;
     }
     
-    // Crear nuevo cliente
     $new_customer = wc_create_new_customer($email, $username, $password);
     
     if (is_wp_error($new_customer)) {
-        error_log('Customer creation error: ' . $new_customer->get_error_message());
         wp_send_json_error(array('message' => $new_customer->get_error_message()));
         exit;
     }
@@ -359,6 +353,11 @@ public function ajax_register() {
         update_user_meta($new_customer, 'last_name', sanitize_text_field($_POST['last_name']));
     }
     
+    if (isset($_POST['phone']) && !empty($_POST['phone'])) {
+        update_user_meta($new_customer, 'phone', sanitize_text_field($_POST['phone']));
+    }
+    
+    // Guardar los campos de empresa y CUIT
     if (isset($_POST['company_name'])) {
         update_user_meta($new_customer, 'billing_company', sanitize_text_field($_POST['company_name']));
         update_user_meta($new_customer, 'company_name', sanitize_text_field($_POST['company_name']));
@@ -369,19 +368,12 @@ public function ajax_register() {
         update_user_meta($new_customer, 'cuit', sanitize_text_field($_POST['cuit']));
     }
     
-    if (isset($_POST['phone'])) {
-        update_user_meta($new_customer, 'phone', sanitize_text_field($_POST['phone']));
-        update_user_meta($new_customer, 'billing_phone', sanitize_text_field($_POST['phone']));
-    }
-    
     // Iniciar sesión automáticamente
     wc_set_customer_auth_cookie($new_customer);
     
-    error_log('Customer registered successfully: ' . $new_customer);
-    
     wp_send_json_success(array(
         'message' => __('Registro exitoso, redirigiendo...', 'my-account-manager'),
-        'redirect' => apply_filters('woocommerce_registration_redirect', wc_get_page_permalink('myaccount'), $new_customer)
+        'redirect' => apply_filters('mam_registration_redirect', wc_get_page_permalink('myaccount'), $new_customer)
     ));
     
     exit;
