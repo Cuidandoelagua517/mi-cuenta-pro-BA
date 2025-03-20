@@ -173,7 +173,7 @@ public function declare_wc_compatibility() {
             $payments->init();
             
             // Inicializar login/register y guardar la instancia
-            $this->login_register = new MAM_Login_Register();
+            $this->login_register = MAM_Login_Register::init();
             $this->login_register->init();
         } else {
             add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
