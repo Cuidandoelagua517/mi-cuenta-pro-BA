@@ -439,6 +439,8 @@ function handleLoginRegisterTabs() {
 
 // Ejecutar cuando el DOM esté listo
   $(document).ready(function() {
+          // Inicializar el objeto principal
+    MAMUserAccount.init();
         // Solo inicializar si estamos en la página de login/registro
         if ($('.mam-login-register-tabs').length > 0) {
             console.log('Inicializando tabs de login/registro');
