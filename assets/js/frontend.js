@@ -56,13 +56,13 @@
             });
         },
 
-        /**
-         * Inicializar login por AJAX
-         */
+       /**
+ * Inicializar login por AJAX
+ */
 initAjaxLogin: function() {
     var self = this;
     
-    $('.mam-ajax-form[data-action="mam_ajax_login"]').on('submit', function(e) {
+    $('.woocommerce-form-login.login').on('submit', function(e) {
         e.preventDefault();
         console.log('Login form submitted via AJAX');
         
@@ -105,7 +105,6 @@ initAjaxLogin: function() {
         });
     });
 }
-
         /**
          * Inicializar registro por AJAX
          */
