@@ -271,11 +271,11 @@ private function validate_cuit_format($cuit) {
         return ob_get_clean();
     }
 
-    /**
-     * Login por AJAX
-     */
+   /**
+ * Login por AJAX
+ */
 public function ajax_login() {
-   // Log para debugging
+    // Log para debugging
     error_log('AJAX login handler triggered');
     
     // Verificar nonce
@@ -289,7 +289,7 @@ public function ajax_login() {
     // Validar datos
     if (empty($username) || empty($password)) {
         wp_send_json_error(array('message' => __('Por favor, completa todos los campos.', 'my-account-manager')));
-        exit;
+        return;
     }
 
     // Intentar autenticar
@@ -305,7 +305,7 @@ public function ajax_login() {
     if (is_wp_error($user)) {
         error_log("Login error: " . $user->get_error_message());
         wp_send_json_error(array('message' => __('Credenciales incorrectas. Verifica tu usuario y contraseña.', 'my-account-manager')));
-        exit;
+        return;
     }
 
     // Login exitoso
@@ -316,8 +316,6 @@ public function ajax_login() {
         'message' => __('Login exitoso, redirigiendo...', 'my-account-manager'),
         'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
     ));
-    
-    exit;
 }
     /**
      * Registro por AJAX
