@@ -64,13 +64,18 @@ initAjaxLogin: function() {
     
     $('.mam-ajax-form[data-action="mam_ajax_login"]').on('submit', function(e) {
         e.preventDefault();
+        console.log('Login form submitted via AJAX');
         
         var $form = $(this);
         var $submitBtn = $form.find('button[type="submit"]');
         var formData = $form.serialize();
         
-        // Añadir acción AJAX - IMPORTANTE
-        formData += '&action=mam_ajax_login';
+        // Asegurarse que el action esté incluido
+        if (formData.indexOf('action=') === -1) {
+            formData += '&action=mam_ajax_login';
+        }
+        
+        console.log('Form data:', formData);
         
         // Mostrar loader
         $submitBtn.prop('disabled', true).addClass('mam-loading');
@@ -80,6 +85,7 @@ initAjaxLogin: function() {
             url: mam_params.ajax_url,
             data: formData,
             success: function(response) {
+                console.log('AJAX response received:', response);
                 if (response.success) {
                     self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
                     
@@ -92,6 +98,7 @@ initAjaxLogin: function() {
                 }
             },
             error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error);
                 self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo.');
                 $submitBtn.prop('disabled', false).removeClass('mam-loading');
             }
