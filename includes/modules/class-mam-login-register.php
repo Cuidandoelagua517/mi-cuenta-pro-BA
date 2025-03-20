@@ -18,7 +18,7 @@ class MAM_Login_Register {
      */
     public static function init() {
         $instance = new self();
-          $instance->register_ajax_handlers(); // Método para registrar handlers
+
         return $instance;
     }
 
@@ -35,6 +35,8 @@ class MAM_Login_Register {
         //add_action('woocommerce_register_form_start', array($this, 'register_form_start'), 10);
         //add_action('woocommerce_register_form', array($this, 'register_form_custom_fields'), 15);
         //add_action('woocommerce_register_form_end', array($this, 'register_form_end'), 10);
+         // Registrar los handlers AJAX primero
+    $this->register_ajax_handlers();
         
         // Validación personalizada
         add_action('woocommerce_process_login_errors', array($this, 'validate_login'), 10, 2);
@@ -54,14 +56,46 @@ class MAM_Login_Register {
  * Register AJAX handlers
  */
 public function register_ajax_handlers() {
-    // Asegúrate que este hook exista y esté bien escrito
+     // Asegúrate que este hook exista y esté bien escrito
     add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'ajax_login'));
     add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'ajax_register'));
 }
 
 public function ajax_login() {
     // Verificar nonce
-    check_ajax_referer('mam-nonce', 'security');
+    if (!check_ajax_referer('mam-nonce', 'security', false)) {
+        wp_send_json_error(array('message' => 'Error de seguridad. Intenta de nuevo.'));
+        exit;
+    }
+
+    $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+
+    // Validar datos
+    if (empty($username) || empty($password)) {
+        wp_send_json_error(array('message' => 'Por favor, completa todos los campos.'));
+        exit;
+    }
+
+    // Intentar autenticar
+    $user = wp_authenticate($username, $password);
+
+    if (is_wp_error($user)) {
+        wp_send_json_error(array('message' => 'Credenciales incorrectas. Verifica tu usuario y contraseña.'));
+        exit;
+    }
+
+    // Login exitoso
+    wp_set_auth_cookie($user->ID, true);
+    wp_set_current_user($user->ID);
+
+    wp_send_json_success(array(
+        'message' => 'Login exitoso, redirigiendo...',
+        'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
+    ));
+    
+    exit;
+}
     /**
      * Inicio del formulario de login personalizado
      */
