@@ -207,8 +207,8 @@ public function init_modules() {
  */
 public function register_ajax_handlers() {
     // Registrar handlers globales para la aplicación
-    add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'handle_ajax_login'));
-    add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'handle_ajax_register'));
+    //add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'handle_ajax_login'));
+    //add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'handle_ajax_register'));
 add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
 }
 /**
