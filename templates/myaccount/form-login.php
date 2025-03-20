@@ -39,8 +39,8 @@ do_action('woocommerce_before_customer_login_form');
     <div class="mam-login-register-forms">
         <!-- FORMULARIO DE LOGIN -->
         <div class="mam-login-form-wrapper <?php echo isset($_GET['action']) && $_GET['action'] === 'register' ? 'hide' : ''; ?>">
-            <form class="woocommerce-form woocommerce-form-login login mam-ajax-form" data-action="mam_ajax_login" method="post" id="login-form">
-                <?php wp_nonce_field('mam-nonce', 'security'); ?>
+   <form class="woocommerce-form woocommerce-form-login login mam-ajax-form" data-action="mam_ajax_login" method="post" id="login-form">
+    <?php wp_nonce_field('mam-nonce', 'security'); ?>
 
                 <?php do_action('woocommerce_login_form_start'); ?>
 
