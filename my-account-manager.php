@@ -228,7 +228,93 @@ public function register_ajax_handlers() {
     
     wp_localize_script('mam-scripts', 'mam_params', $mam_params);
 }
+/**
+ * Agrega el script de corrección para las pestañas de login/registro
+ * Este código debe agregarse a functions.php de tu tema o a un archivo de tu plugin
+ */
 
+function mam_add_login_tabs_fix() {
+    // Solo cargar en la página de mi cuenta
+    if (function_exists('is_account_page') && is_account_page() && !is_user_logged_in()) {
+        // Registrar y encolar el script
+        wp_register_script(
+            'mam-login-tabs-fix',
+            plugin_dir_url(__FILE__) . 'assets/js/login-tabs-fix.js',
+            array('jquery'),
+            '1.0.0',
+            true
+        );
+        
+        wp_enqueue_script('mam-login-tabs-fix');
+    }
+}
+add_action('wp_enqueue_scripts', 'mam_add_login_tabs_fix', 99);
+
+/**
+ * Alternativa: Código JavaScript directo en el footer
+ * Si prefieres no crear un archivo .js adicional
+ */
+function mam_add_inline_login_tabs_fix() {
+    // Solo cargar en la página de mi cuenta
+    if (function_exists('is_account_page') && is_account_page() && !is_user_logged_in()) {
+        ?>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            // Solo inicializar si estamos en la página de login/registro
+            if ($('.mam-login-register-tabs').length > 0) {
+                console.log('Inicializando manejo de pestañas login/registro');
+                
+                // Función para cambiar entre pestañas
+                function switchTab(tabType) {
+                    console.log('Cambiando a pestaña:', tabType);
+                    
+                    // 1. Actualizar pestañas activas
+                    if (tabType === 'login') {
+                        $('.mam-login-tab').addClass('active');
+                        $('.mam-register-tab').removeClass('active');
+                    } else if (tabType === 'register') {
+                        $('.mam-register-tab').addClass('active');
+                        $('.mam-login-tab').removeClass('active');
+                    }
+                    
+                    // 2. Mostrar/ocultar formularios correspondientes
+                    if (tabType === 'login') {
+                        $('.mam-login-form-wrapper').show();
+                        $('.mam-register-form-wrapper').hide();
+                    } else if (tabType === 'register') {
+                        $('.mam-login-form-wrapper').hide();
+                        $('.mam-register-form-wrapper').show();
+                    }
+                }
+                
+                // Manejar clic en pestaña de login
+                $('.mam-login-tab').on('click', function(e) {
+                    e.preventDefault();
+                    switchTab('login');
+                });
+                
+                // Manejar clic en pestaña de registro
+                $('.mam-register-tab').on('click', function(e) {
+                    e.preventDefault();
+                    switchTab('register');
+                });
+                
+                // Establecer pestaña inicial según URL
+                var urlParams = new URLSearchParams(window.location.search);
+                var action = urlParams.get('action');
+                
+                if (action === 'register') {
+                    switchTab('register');
+                } else {
+                    switchTab('login');
+                }
+            }
+        });
+        </script>
+        <?php
+    }
+}
+add_action('wp_footer', 'mam_add_inline_login_tabs_fix', 99);
     /**
      * Enqueue de assets para el admin
      */
