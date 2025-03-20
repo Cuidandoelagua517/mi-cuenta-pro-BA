@@ -3,36 +3,34 @@ var MAMUserAccount = {
     /**
      * Inicializar pestañas en login/registro y otras áreas
      */
-    initTabs: function() {
-        // Tabs de login/registro
-        $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
-            e.preventDefault();
-            
-            var target = $(this).attr('href');
-            console.log('Tab clicked:', target); // Para depuración
-            
-            // Activar tab
-            $('.mam-login-tab, .mam-register-tab').removeClass('active');
-            $(this).addClass('active');
-            
-            // Mostrar contenido correspondiente con una pequeña animación
-            if (target === '#login') {
-                $('.mam-register-form-wrapper').fadeOut(200, function() {
-                    $('.mam-login-form-wrapper').fadeIn(200);
-                });
-            } else if (target === '#register') {
-                $('.mam-login-form-wrapper').fadeOut(200, function() {
-                    $('.mam-register-form-wrapper').fadeIn(200);
-                });
-            }
-            // Si estamos en móvil, scroll hacia arriba suavemente
-            if (window.innerWidth < 768) {
-                $('html, body').animate({
-                    scrollTop: $('.mam-login-register-tabs').offset().top - 20
-                }, 300);
-            }
-        });
+// Tabs de login/registro
+    $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
+        e.preventDefault();
         
+        var target = $(this).attr('href');
+        console.log('Tab clicked:', target); // Para depuración
+        
+        // Activar tab
+        $('.mam-login-tab, .mam-register-tab').removeClass('active');
+        $(this).addClass('active');
+        
+        // Mostrar contenido correspondiente con una pequeña animación
+        if (target === '#login') {
+            $('.mam-register-form-wrapper').fadeOut(200, function() {
+                $('.mam-login-form-wrapper').fadeIn(200);
+            });
+        } else if (target === '#register') {
+            $('.mam-login-form-wrapper').fadeOut(200, function() {
+                $('.mam-register-form-wrapper').fadeIn(200);
+            });
+        }
+         // Si estamos en móvil, scroll hacia arriba suavemente
+        if (window.innerWidth < 768) {
+            $('html, body').animate({
+                scrollTop: $('.mam-login-register-tabs').offset().top - 20
+            }, 300);
+        }
+    });
         // Otras pestañas de la cuenta
         $('.mam-account-tab, .mam-address-tab').on('click', function(e) {
             // Solo gestionar el evento si no estamos navegando a otra página
@@ -55,63 +53,63 @@ var MAMUserAccount = {
      * Inicializar login por AJAX
      */
     initAjaxLogin: function() {
-        var self = this;
+    var self = this;
+    
+   $('.mam-ajax-form[data-action="mam_ajax_login"]').on('submit', function(e) {
+    e.preventDefault(); // Importante: Prevenir envío normal
+    console.log('Login form intercepted!'); // Debugging
         
-        $('.mam-ajax-form[data-action="mam_ajax_login"]').on('submit', function(e) {
-            e.preventDefault(); // Importante: Prevenir envío normal
-            console.log('Login form intercepted!'); // Debugging
-            
-            var $form = $(this);
-            var $submitBtn = $form.find('button[type="submit"]');
-            var formData = $form.serialize();
-            
-            // Log de datos enviados
-            console.log('Form Data:', formData);
-            
-            // Validar campos obligatorios
-            var username = $form.find('input[name="email"]').val();
-            var password = $form.find('input[name="password"]').val();
-            
-            console.log('Username:', username);
-            console.log('Password Length:', password.length);
-            
-            if (!username || !password) {
-                console.error('Missing username or password');
-                self.showMessage($form, 'error', 'Por favor, completa todos los campos.');
-                return;
-            }
-            
-            // Mostrar loader
-            $submitBtn.prop('disabled', true).addClass('mam-loading');
-            
-            $.ajax({
-                type: 'POST',
-                url: mam_params.ajax_url,
-                data: formData,
-                success: function(response) {
-                    console.log('AJAX Response:', response);
+        var $form = $(this);
+        var $submitBtn = $form.find('button[type="submit"]');
+        var formData = $form.serialize();
+        
+        // Log de datos enviados
+        console.log('Form Data:', formData);
+        
+        // Validar campos obligatorios
+        var username = $form.find('input[name="email"]').val();
+        var password = $form.find('input[name="password"]').val();
+        
+        console.log('Username:', username);
+        console.log('Password Length:', password.length);
+        
+        if (!username || !password) {
+            console.error('Missing username or password');
+            self.showMessage($form, 'error', 'Por favor, completa todos los campos.');
+            return;
+        }
+        
+        // Mostrar loader
+        $submitBtn.prop('disabled', true).addClass('mam-loading');
+        
+        $.ajax({
+            type: 'POST',
+            url: mam_params.ajax_url,
+            data: formData,
+            success: function(response) {
+                console.log('AJAX Response:', response);
+                
+                if (response.success) {
+                    self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
                     
-                    if (response.success) {
-                        self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
-                        
-                        // Redireccionar después de un breve retraso
-                        setTimeout(function() {
-                            window.location.href = response.data.redirect || '';
-                        }, 1000);
-                    } else {
-                        console.error('Login Error:', response.data.message);
-                        self.showMessage($form, 'error', response.data.message || 'Error al iniciar sesión. Verifica tus credenciales.');
-                        $submitBtn.prop('disabled', false).removeClass('mam-loading');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
-                    self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo.');
+                    // Redireccionar después de un breve retraso
+                    setTimeout(function() {
+                        window.location.href = response.data.redirect || '';
+                    }, 1000);
+                } else {
+                    console.error('Login Error:', response.data.message);
+                    self.showMessage($form, 'error', response.data.message || 'Error al iniciar sesión. Verifica tus credenciales.');
                     $submitBtn.prop('disabled', false).removeClass('mam-loading');
                 }
-            });
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo.');
+                $submitBtn.prop('disabled', false).removeClass('mam-loading');
+            }
         });
-    },
+    });
+},
 
     /**
      * Inicializar registro por AJAX
