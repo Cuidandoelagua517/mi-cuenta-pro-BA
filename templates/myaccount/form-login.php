@@ -320,3 +320,30 @@ do_action('woocommerce_before_customer_login_form');
 </div>
 
 <?php do_action('woocommerce_after_customer_login_form'); ?>
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Forzar funcionamiento de pestañas
+        $('.mam-login-tab').on('click', function(e) {
+            e.preventDefault();
+            $('.mam-login-tab').addClass('active');
+            $('.mam-register-tab').removeClass('active');
+            $('.mam-login-form-wrapper').show();
+            $('.mam-register-form-wrapper').hide();
+        });
+
+        $('.mam-register-tab').on('click', function(e) {
+            e.preventDefault();
+            $('.mam-register-tab').addClass('active');
+            $('.mam-login-tab').removeClass('active');
+            $('.mam-register-form-wrapper').show();
+            $('.mam-login-form-wrapper').hide();
+        });
+
+        // Estado inicial
+        <?php if (isset($_GET['action']) && $_GET['action'] === 'register'): ?>
+            $('.mam-register-tab').trigger('click');
+        <?php else: ?>
+            $('.mam-login-tab').trigger('click');
+        <?php endif; ?>
+    });
+</script>
