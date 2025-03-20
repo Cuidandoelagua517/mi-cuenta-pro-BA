@@ -56,9 +56,12 @@ class MAM_Login_Register {
  * Register AJAX handlers
  */
 public function register_ajax_handlers() {
-     // Asegúrate que este hook exista y esté bien escrito
+    // Usar add_action para registrar los manejadores
     add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'ajax_login'));
     add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'ajax_register'));
+    
+    // Agregamos estos para debugging
+    error_log('AJAX handlers registered: mam_ajax_login, mam_ajax_register');
 }
 
     /**
@@ -272,35 +275,45 @@ private function validate_cuit_format($cuit) {
      * Login por AJAX
      */
 public function ajax_login() {
+   // Log para debugging
+    error_log('AJAX login handler triggered');
+    
     // Verificar nonce
-    if (!check_ajax_referer('mam-nonce', 'security', false)) {
-        wp_send_json_error(array('message' => 'Error de seguridad. Intenta de nuevo.'));
-        exit;
-    }
+    check_ajax_referer('mam-nonce', 'security');
 
     $username = isset($_POST['username']) ? trim($_POST['username']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
+    
+    error_log("Login attempt for username: $username");
 
     // Validar datos
     if (empty($username) || empty($password)) {
-        wp_send_json_error(array('message' => 'Por favor, completa todos los campos.'));
+        wp_send_json_error(array('message' => __('Por favor, completa todos los campos.', 'my-account-manager')));
         exit;
     }
 
     // Intentar autenticar
-    $user = wp_authenticate($username, $password);
+    $user = wp_signon(
+        array(
+            'user_login' => $username,
+            'user_password' => $password,
+            'remember' => isset($_POST['rememberme']) ? true : false
+        ),
+        is_ssl()
+    );
 
     if (is_wp_error($user)) {
-        wp_send_json_error(array('message' => 'Credenciales incorrectas. Verifica tu usuario y contraseña.'));
+        error_log("Login error: " . $user->get_error_message());
+        wp_send_json_error(array('message' => __('Credenciales incorrectas. Verifica tu usuario y contraseña.', 'my-account-manager')));
         exit;
     }
 
     // Login exitoso
-    wp_set_auth_cookie($user->ID, true);
+    error_log("Login successful for user ID: " . $user->ID);
     wp_set_current_user($user->ID);
-
+    
     wp_send_json_success(array(
-        'message' => 'Login exitoso, redirigiendo...',
+        'message' => __('Login exitoso, redirigiendo...', 'my-account-manager'),
         'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
     ));
     
