@@ -211,26 +211,7 @@ public function register_ajax_handlers() {
     add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'handle_ajax_register'));
 add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
 }
-/**
- * Manejar solicitud AJAX de login (puente al módulo)
- */
-public function handle_ajax_login() {
-    if (isset($this->login_register)) {
-        $this->login_register->ajax_login();
-    } else {
-        wp_send_json_error(array('message' => 'Módulo de login no inicializado'));
-    }
-}    
-/**
- * Manejar solicitud AJAX de registro (puente al módulo)
- */
-public function handle_ajax_register() {
-    if (isset($this->login_register)) {
-        $this->login_register->ajax_register();
-    } else {
-        wp_send_json_error(array('message' => 'Módulo de registro no inicializado'));
-    }
-}
+
     /**
      * Cargar traducción
      */
