@@ -444,5 +444,4 @@ $(document).ready(function() {
         handleLoginRegisterTabs();
     }
 });
-
 })(jQuery);
