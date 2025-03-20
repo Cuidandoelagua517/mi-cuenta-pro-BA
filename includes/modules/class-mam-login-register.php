@@ -54,10 +54,14 @@ class MAM_Login_Register {
  * Register AJAX handlers
  */
 public function register_ajax_handlers() {
-    // AJAX para login y registro
+    // Asegúrate que este hook exista y esté bien escrito
     add_action('wp_ajax_nopriv_mam_ajax_login', array($this, 'ajax_login'));
     add_action('wp_ajax_nopriv_mam_ajax_register', array($this, 'ajax_register'));
 }
+
+public function ajax_login() {
+    // Verificar nonce
+    check_ajax_referer('mam-nonce', 'security');
     /**
      * Inicio del formulario de login personalizado
      */
