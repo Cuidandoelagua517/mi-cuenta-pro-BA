@@ -311,7 +311,7 @@
 }
 
 .mam-login-form-wrapper.hide, .mam-register-form-wrapper.hide {
-    display: none;
+    display: none !important;
 }
 @media (min-width: 480px) {
     .mam-login-remember {
