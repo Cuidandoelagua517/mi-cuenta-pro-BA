@@ -292,15 +292,15 @@
     text-decoration: none;
     border-bottom: 2px solid transparent;
     transition: var(--mam-transition);
-    cursor: pointer;
+    cursor: pointer !important;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 .mam-login-tab.active, .mam-register-tab.active {
-    color: var(--mam-primary-color);
-    border-bottom-color: var(--mam-primary-color);
+  color: var(--mam-primary-color) !important;
+    border-bottom-color: var(--mam-primary-color) !important;
 }
 
 .mam-login-tab:hover, .mam-register-tab:hover {
@@ -312,6 +312,33 @@
 
 .mam-login-form-wrapper.hide, .mam-register-form-wrapper.hide {
     display: none !important;
+}
+/* Mostrar el formulario correspondiente cuando su pestaña está activa */
+.mam-login-tab.active ~ .mam-login-register-forms .mam-login-form-wrapper,
+.mam-register-tab.active ~ .mam-login-register-forms .mam-register-form-wrapper {
+    display: block !important;
+}
+
+.mam-login-tab.active ~ .mam-login-register-forms .mam-register-form-wrapper,
+.mam-register-tab.active ~ .mam-login-register-forms .mam-login-form-wrapper {
+    display: none !important;
+}
+
+/* Solución adicional con JavaScript */
+html.js-login-tab-active .mam-register-form-wrapper {
+    display: none !important;
+}
+
+html.js-login-tab-active .mam-login-form-wrapper {
+    display: block !important;
+}
+
+html.js-register-tab-active .mam-login-form-wrapper {
+    display: none !important;
+}
+
+html.js-register-tab-active .mam-register-form-wrapper {
+    display: block !important;
 }
 @media (min-width: 480px) {
     .mam-login-remember {
