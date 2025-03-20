@@ -272,8 +272,15 @@ public function declare_wc_compatibility() {
             )
         );
         
-        wp_localize_script('mam-scripts', 'mam_params', $mam_params);
-    }
+  wp_localize_script('mam-scripts', 'mam_params', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce'    => wp_create_nonce('mam-nonce'),
+        'i18n'     => array(
+            'error'   => __('Error de conexión. Por favor, inténtalo de nuevo.', 'my-account-manager'),
+            // Otros strings...
+        )
+    ));
+}
 
     /**
      * Agregar script de corrección para las pestañas de login/registro
