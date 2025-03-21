@@ -82,8 +82,20 @@ private function check_hpos_enabled() {
     add_action('wp_ajax_mam_filter_orders', array($this, 'ajax_filter_orders'));
     add_action('wp_ajax_mam_load_order_details', array($this, 'ajax_load_order_details'));
     add_action('wp_ajax_mam_paginate_orders', array($this, 'ajax_paginate_orders'));
+         add_action('wp_ajax_mam_update_account', array($this, 'ajax_update_account'));
 }
-
+public function ajax_update_account() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    // Lógica para actualizar
+    // ...
+    
+    // Respuesta
+    wp_send_json_success([
+        'message' => __('Datos actualizados', 'my-account-manager'),
+        // Otros datos si son necesarios
+    ]);
+}
 public function ajax_filter_orders() {
     check_ajax_referer('mam-nonce', 'security');
     
