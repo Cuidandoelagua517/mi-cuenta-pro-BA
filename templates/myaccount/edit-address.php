@@ -178,7 +178,12 @@ do_action('woocommerce_before_edit_account_address_form');
                         <label for="mam_address_company"><?php _e('Empresa', 'my-account-manager'); ?></label>
                         <input type="text" class="mam-input-field" name="mam_address_company" id="mam_address_company" value="<?php echo esc_attr($addr['company']); ?>">
                     </div>
-                    
+                    <div class="mam-form-row mam-form-row-wide">
+    <label for="<?php echo esc_attr($load_address); ?>_cuit"><?php _e('CUIT', 'my-account-manager'); ?></label>
+    <input type="text" class="mam-input-field" name="<?php echo esc_attr($load_address); ?>_cuit" id="<?php echo esc_attr($load_address); ?>_cuit" 
+           value="<?php echo esc_attr(get_user_meta($current_user->ID, $load_address . '_cuit', true)); ?>" />
+    <span class="description"><?php _e('CUIT asociado a la empresa', 'my-account-manager'); ?></span>
+</div>
                     <div class="mam-form-row mam-form-row-wide">
                         <label for="mam_address_country"><?php _e('País', 'my-account-manager'); ?> <span class="required">*</span></label>
                         <select name="mam_address_country" id="mam_address_country" class="mam-select-field country_to_state" required>
