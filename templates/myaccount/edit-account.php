@@ -95,7 +95,24 @@ do_action('woocommerce_before_edit_account_form');
         <input type="date" class="woocommerce-Input woocommerce-Input--date input-text" name="account_birth_date" id="account_birth_date" value="<?php echo esc_attr(get_user_meta($current_user->ID, 'birth_date', true)); ?>" />
         <span class="description"><?php _e('Utilizada para enviarte promociones especiales en tu cumpleaños.', 'my-account-manager'); ?></span>
     </p>
-    
+    <?php
+// Obtener los valores actuales de CUIT y empresa
+$user_id = get_current_user_id();
+$cuit = get_user_meta($user_id, 'cuit', true);
+$company_name = get_user_meta($user_id, 'company_name', true);
+?>
+
+<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+    <label for="account_company_name"><?php esc_html_e('Nombre de Empresa', 'my-account-manager'); ?> <span class="required">*</span></label>
+    <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_company_name" id="account_company_name" value="<?php echo esc_attr($company_name); ?>" />
+    <span class="description"><?php _e('Empresa asociada a tu cuenta.', 'my-account-manager'); ?></span>
+</p>
+
+<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+    <label for="account_cuit"><?php esc_html_e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
+    <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_cuit" id="account_cuit" value="<?php echo esc_attr($cuit); ?>" />
+    <span class="description"><?php _e('CUIT asociado a tu empresa.', 'my-account-manager'); ?></span>
+</p>
     <!-- Campos de contraseña -->
     <fieldset>
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
