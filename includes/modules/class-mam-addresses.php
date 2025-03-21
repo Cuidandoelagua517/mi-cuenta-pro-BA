@@ -77,6 +77,85 @@ public function ajax_update_account() {
         // Otros datos si son necesarios
     ]);
 }
+    /**
+ * Manejo AJAX de actualización de cuenta que incluye CUIT y empresa
+ */
+public function ajax_update_account() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $user_id = get_current_user_id();
+    $errors = array();
+    
+    // Validar y guardar datos básicos
+    if (isset($_POST['account_first_name'])) {
+        update_user_meta($user_id, 'first_name', sanitize_text_field($_POST['account_first_name']));
+        update_user_meta($user_id, 'billing_first_name', sanitize_text_field($_POST['account_first_name']));
+    }
+    
+    if (isset($_POST['account_last_name'])) {
+        update_user_meta($user_id, 'last_name', sanitize_text_field($_POST['account_last_name']));
+        update_user_meta($user_id, 'billing_last_name', sanitize_text_field($_POST['account_last_name']));
+    }
+    
+    // Guardar empresa
+    if (isset($_POST['account_company'])) {
+        update_user_meta($user_id, 'billing_company', sanitize_text_field($_POST['account_company']));
+    }
+    
+    // Validar y guardar CUIT
+    if (isset($_POST['account_cuit'])) {
+        $cuit = sanitize_text_field($_POST['account_cuit']);
+        
+        // Validar formato del CUIT
+        if (empty($cuit)) {
+            $errors[] = __('El campo CUIT es obligatorio.', 'my-account-manager');
+        } else if (!$this->validate_cuit_format($cuit)) {
+            $errors[] = __('El formato del CUIT no es válido.', 'my-account-manager');
+        } else {
+            update_user_meta($user_id, 'billing_cuit', $cuit);
+        }
+    }
+    
+    // Manejar cambio de email si está presente
+    if (isset($_POST['account_email']) && is_email($_POST['account_email'])) {
+        $email = sanitize_email($_POST['account_email']);
+        
+        if (email_exists($email) && email_exists($email) !== $user_id) {
+            $errors[] = __('Esta dirección de correo electrónico ya está registrada.', 'my-account-manager');
+        } else {
+            wp_update_user(array('ID' => $user_id, 'user_email' => $email));
+            update_user_meta($user_id, 'billing_email', $email);
+        }
+    }
+    
+    // Manejar cambio de contraseña si está presente
+    if (!empty($_POST['password_current']) && !empty($_POST['password_1']) && !empty($_POST['password_2'])) {
+        $current_user = get_user_by('id', $user_id);
+        
+        if (!wp_check_password($_POST['password_current'], $current_user->user_pass, $user_id)) {
+            $errors[] = __('Su contraseña actual es incorrecta.', 'my-account-manager');
+        }
+        
+        if ($_POST['password_1'] !== $_POST['password_2']) {
+            $errors[] = __('Las nuevas contraseñas no coinciden.', 'my-account-manager');
+        }
+        
+        if (empty($errors)) {
+            wp_update_user(array('ID' => $user_id, 'user_pass' => $_POST['password_1']));
+        }
+    }
+    
+    // Responder con éxito o errores
+    if (!empty($errors)) {
+        wp_send_json_error(array(
+            'message' => implode('<br>', $errors)
+        ));
+    } else {
+        wp_send_json_success(array(
+            'message' => __('Datos de cuenta actualizados correctamente.', 'my-account-manager')
+        ));
+    }
+}
 public function ajax_save_address() {
     check_ajax_referer('mam-nonce', 'security');
     
@@ -267,7 +346,73 @@ $fields['billing_cuit'] = array(
 
         return $fields;
     }
-
+/**
+ * Modificar los campos del formulario de edición de cuenta
+ */
+public function customize_account_fields($fields) {
+    // Añadir campo de empresa al formulario de cuenta
+    $fields['account_company'] = array(
+        'type'        => 'text',
+        'label'       => __('Empresa', 'my-account-manager'),
+        'placeholder' => __('Nombre de su empresa', 'my-account-manager'),
+        'required'    => false,
+        'class'       => array('mam-form-field', 'form-row-wide'),
+        'clear'       => true,
+        'priority'    => 25, // Justo después del apellido
+    );
+    
+    // Añadir campo CUIT al formulario de cuenta
+    $fields['account_cuit'] = array(
+        'type'        => 'text',
+        'label'       => __('CUIT', 'my-account-manager'),
+        'placeholder' => __('Formato: xx-xxxxxxxx-x', 'my-account-manager'),
+        'required'    => true,
+        'class'       => array('mam-form-field', 'form-row-wide'),
+        'clear'       => true,
+        'priority'    => 30, // Después de empresa
+    );
+    
+    return $fields;
+}
+    /**
+ * Cargar los valores guardados de CUIT y empresa en el formulario de cuenta
+ */
+public function load_account_fields_values($user) {
+    // Obtener datos guardados
+    $company = get_user_meta($user->ID, 'billing_company', true);
+    $cuit = get_user_meta($user->ID, 'billing_cuit', true);
+    
+    ?>
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_company"><?php _e('Empresa', 'my-account-manager'); ?></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_company" id="account_company" value="<?php echo esc_attr($company); ?>" />
+    </p>
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_cuit"><?php _e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_cuit" id="account_cuit" value="<?php echo esc_attr($cuit); ?>" required />
+    </p>
+    <?php
+}
+    /**
+ * Guardar los campos CUIT y empresa cuando se actualiza la cuenta
+ */
+public function save_account_fields($user_id) {
+    if (isset($_POST['account_company'])) {
+        update_user_meta($user_id, 'billing_company', sanitize_text_field($_POST['account_company']));
+    }
+    
+    if (isset($_POST['account_cuit'])) {
+        $cuit = sanitize_text_field($_POST['account_cuit']);
+        
+        // Validar formato del CUIT
+        if (!empty($cuit) && !$this->validate_cuit_format($cuit)) {
+            wc_add_notice(__('El formato del CUIT no es válido.', 'my-account-manager'), 'error');
+            return;
+        }
+        
+        update_user_meta($user_id, 'billing_cuit', $cuit);
+    }
+}
     /**
      * Personalizar campos de envío
      */
