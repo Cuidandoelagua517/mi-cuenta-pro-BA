@@ -275,47 +275,32 @@ private function validate_cuit_format($cuit) {
  * Login por AJAX
  */
 public function ajax_login() {
-    // Log para debugging
-    error_log('AJAX login handler triggered');
-    
-    // Verificar nonce
     check_ajax_referer('mam-nonce', 'security');
-
-    $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+    
+    $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     
-    error_log("Login attempt for username: $username");
-
-    // Validar datos
+    // Validación adecuada
     if (empty($username) || empty($password)) {
-        wp_send_json_error(array('message' => __('Por favor, completa todos los campos.', 'my-account-manager')));
+        wp_send_json_error(['message' => __('Complete todos los campos', 'my-account-manager')]);
         return;
     }
-
-    // Intentar autenticar
-    $user = wp_signon(
-        array(
-            'user_login' => $username,
-            'user_password' => $password,
-            'remember' => isset($_POST['rememberme']) ? true : false
-        ),
-        is_ssl()
-    );
-
-    if (is_wp_error($user)) {
-        error_log("Login error: " . $user->get_error_message());
-        wp_send_json_error(array('message' => __('Credenciales incorrectas. Verifica tu usuario y contraseña.', 'my-account-manager')));
-        return;
-    }
-
-    // Login exitoso
-    error_log("Login successful for user ID: " . $user->ID);
-    wp_set_current_user($user->ID);
     
-    wp_send_json_success(array(
-        'message' => __('Login exitoso, redirigiendo...', 'my-account-manager'),
-        'redirect' => apply_filters('mam_login_redirect', wc_get_page_permalink('myaccount'), $user)
-    ));
+    $user = wp_signon([
+        'user_login' => $username,
+        'user_password' => $password,
+        'remember' => isset($_POST['rememberme'])
+    ]);
+    
+    if (is_wp_error($user)) {
+        wp_send_json_error(['message' => $user->get_error_message()]);
+        return;
+    }
+    
+    wp_send_json_success([
+        'message' => __('Login exitoso', 'my-account-manager'),
+        'redirect' => wc_get_account_endpoint_url('dashboard')
+    ]);
 }
     /**
      * Registro por AJAX
