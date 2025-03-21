@@ -722,7 +722,44 @@ private function validate_cuit_format($cuit) {
         </div>
         <?php
     }
+// También necesitamos añadir estos campos al registro
+public function add_registration_fields() {
+    ?>
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="reg_billing_company"><?php _e('Empresa', 'my-account-manager'); ?></label>
+        <input type="text" class="input-text" name="billing_company" id="reg_billing_company" value="<?php if (!empty($_POST['billing_company'])) echo esc_attr($_POST['billing_company']); ?>" />
+    </p>
+    
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="reg_billing_cuit"><?php _e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="text" class="input-text" name="billing_cuit" id="reg_billing_cuit" value="<?php if (!empty($_POST['billing_cuit'])) echo esc_attr($_POST['billing_cuit']); ?>" required />
+    </p>
+    <?php
+}
 
+// Validar campos del registro
+public function validate_registration_fields($errors, $username, $email) {
+    if (isset($_POST['billing_cuit']) && empty($_POST['billing_cuit'])) {
+        $errors->add('billing_cuit_error', __('El campo CUIT es obligatorio.', 'my-account-manager'));
+    }
+    
+    if (isset($_POST['billing_cuit']) && !empty($_POST['billing_cuit']) && !$this->validate_cuit_format($_POST['billing_cuit'])) {
+        $errors->add('billing_cuit_error', __('El formato del CUIT no es válido.', 'my-account-manager'));
+    }
+    
+    return $errors;
+}
+
+// Guardar campos del registro
+public function save_registration_fields($customer_id) {
+    if (isset($_POST['billing_company'])) {
+        update_user_meta($customer_id, 'billing_company', sanitize_text_field($_POST['billing_company']));
+    }
+    
+    if (isset($_POST['billing_cuit'])) {
+        update_user_meta($customer_id, 'billing_cuit', sanitize_text_field($_POST['billing_cuit']));
+    }
+}
     /**
      * Renderizar formulario para direcciones adicionales
      */
