@@ -97,16 +97,12 @@ class MAM_Core {
      * Sobreescribir templates de WooCommerce
      */
 public function override_woocommerce_templates($template, $template_name, $template_path) {
-    error_log('Template Lookup: ' . $template_name);
-    error_log('Current Template: ' . $template);
+    // Remover logs de depuración
     
     $plugin_path = MAM_PLUGIN_DIR . 'templates/';
     $template_in_plugin = $plugin_path . $template_name;
     
-    error_log('Checking Plugin Template: ' . $template_in_plugin);
-    
     if (file_exists($template_in_plugin)) {
-        error_log('Using Plugin Template: ' . $template_in_plugin);
         return $template_in_plugin;
     }
     
