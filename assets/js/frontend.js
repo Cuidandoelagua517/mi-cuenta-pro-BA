@@ -481,45 +481,27 @@ function handleLoginRegisterTabs() {
             }
         }
     });
-  // Función para manejar las pestañas de login/registro
-// Función para manejar las pestañas de login/registro
+
+// Implementar una función clara para el manejo de pestañas
 function initLoginRegisterTabs() {
-    // Solo inicializar si estamos en la página de login/registro
-    if ($('.mam-login-register-tabs').length > 0) {
-        console.log('Inicializando tabs de login/registro');
+    $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
+        e.preventDefault();
         
-        // Manejar clic en pestaña de login
-        $('.mam-login-tab').on('click', function(e) {
-            e.preventDefault();
-            console.log('Login tab clicked');
-            
-            $('.mam-login-tab').addClass('active');
-            $('.mam-register-tab').removeClass('active');
+        const isLoginTab = $(this).hasClass('mam-login-tab');
+        
+        // Activar pestaña correcta
+        $('.mam-login-tab, .mam-register-tab').removeClass('active');
+        $(this).addClass('active');
+        
+        // Mostrar formulario correcto
+        if (isLoginTab) {
             $('.mam-login-form-wrapper').show();
             $('.mam-register-form-wrapper').hide();
-            $('html').addClass('js-login-tab-active').removeClass('js-register-tab-active');
-        });
-        
-        // Manejar clic en pestaña de registro
-        $('.mam-register-tab').on('click', function(e) {
-            e.preventDefault();
-            console.log('Register tab clicked');
-            
-            $('.mam-register-tab').addClass('active');
-            $('.mam-login-tab').removeClass('active');
+        } else {
             $('.mam-register-form-wrapper').show();
             $('.mam-login-form-wrapper').hide();
-            $('html').addClass('js-register-tab-active').removeClass('js-login-tab-active');
-        });
-        
-        // Verificar estado inicial basado en URL
-        if (window.location.hash === '#register' || 
-            window.location.search.indexOf('action=register') > -1) {
-            $('.mam-register-tab').trigger('click');
-        } else {
-            $('.mam-login-tab').trigger('click');
         }
-    }
+    });
 }
 
 // Ejecutar cuando el DOM esté listo
