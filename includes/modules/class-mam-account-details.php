@@ -130,7 +130,16 @@ public function ajax_update_account() {
     if (isset($_POST['account_birth_date'])) {
         update_user_meta($user_id, 'birth_date', sanitize_text_field($_POST['account_birth_date']));
     }
-    
+    // Guardar campos personalizados adicionales
+if (isset($_POST['account_cuit'])) {
+    update_user_meta($user_id, 'cuit', sanitize_text_field($_POST['account_cuit']));
+    update_user_meta($user_id, 'billing_cuit', sanitize_text_field($_POST['account_cuit']));
+}
+
+if (isset($_POST['account_company_name'])) {
+    update_user_meta($user_id, 'company_name', sanitize_text_field($_POST['account_company_name']));
+    update_user_meta($user_id, 'billing_company', sanitize_text_field($_POST['account_company_name']));
+}
     wp_send_json_success(array(
         'message' => __('Datos de cuenta actualizados correctamente.', 'my-account-manager')
     ));
@@ -237,12 +246,35 @@ public function ajax_update_account() {
         } else {
             update_user_meta($user_id, 'privacy_options', array());
         }
+        // Guardar CUIT
+if (isset($_POST['account_cuit'])) {
+    update_user_meta($user_id, 'cuit', sanitize_text_field($_POST['account_cuit']));
+    // También guardarlo como meta de facturación para WooCommerce
+    update_user_meta($user_id, 'billing_cuit', sanitize_text_field($_POST['account_cuit']));
+}
+
+// Guardar Nombre de Empresa
+if (isset($_POST['account_company_name'])) {
+    update_user_meta($user_id, 'company_name', sanitize_text_field($_POST['account_company_name']));
+    // También guardarlo como meta de facturación para WooCommerce
+    update_user_meta($user_id, 'billing_company', sanitize_text_field($_POST['account_company_name']));
+}
     }
 
     /**
      * Validación personalizada para los campos de cuenta
      */
+    
     public function validate_account_fields($errors, $user) {
+        // Validar CUIT
+if (!empty($_POST['account_cuit']) && !$this->validate_cuit_format($_POST['account_cuit'])) {
+    $errors->add('cuit_error', __('Por favor, introduce un CUIT válido.', 'my-account-manager'));
+}
+
+// Validar Empresa
+if (!empty($_POST['account_company_name']) && strlen($_POST['account_company_name']) < 2) {
+    $errors->add('company_error', __('El nombre de empresa debe tener al menos 2 caracteres.', 'my-account-manager'));
+}
         // Validar teléfono
         if (!empty($_POST['account_phone']) && !preg_match('/^[0-9+\s()-]{6,20}$/', $_POST['account_phone'])) {
             $errors->add('phone_error', __('Por favor, introduce un número de teléfono válido.', 'my-account-manager'));
@@ -258,7 +290,23 @@ public function ajax_update_account() {
             }
         }
     }
-
+/**
+ * Validar formato de CUIT
+ */
+private function validate_cuit_format($cuit) {
+    // Eliminar guiones y espacios
+    $cuit = preg_replace('/[^0-9]/', '', $cuit);
+    
+    // Verificar longitud
+    if (strlen($cuit) !== 11) {
+        return false;
+    }
+    
+    // Aquí podrías añadir validación adicional del número de CUIT
+    // como verificación del dígito de control
+    
+    return true;
+}
     /**
      * Añadir medidor de seguridad para contraseñas
      */
