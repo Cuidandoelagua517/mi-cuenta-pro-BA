@@ -83,10 +83,7 @@ public function ajax_save_address() {
     $user_id = get_current_user_id();
     $action = isset($_POST['address_action']) ? wc_clean($_POST['address_action']) : '';
     $address_id = isset($_POST['address_id']) ? wc_clean($_POST['address_id']) : '';
-    // CUIT
-if (isset($_POST['mam_address_cuit'])) {
-    $address['cuit'] = sanitize_text_field($_POST['mam_address_cuit']);
-}
+    
     // Validar campos requeridos
     $required_fields = array(
         'address_name'      => __('Nombre de la dirección', 'my-account-manager'),
@@ -138,6 +135,11 @@ if (isset($_POST['mam_address_cuit'])) {
         'postcode'   => sanitize_text_field($_POST['mam_address_postcode']),
         'phone'      => sanitize_text_field($_POST['mam_address_phone']),
     );
+    
+    // Añadir CUIT si está presente
+    if (isset($_POST['mam_address_cuit'])) {
+        $address['cuit'] = sanitize_text_field($_POST['mam_address_cuit']);
+    }
     
     // Guardar dirección
     $additional_addresses[$address_id] = $address;
@@ -346,7 +348,7 @@ $fields['shipping_cuit'] = array(
                 wc_add_notice(__('Por favor, introduce un número de teléfono válido para el envío.', 'my-account-manager'), 'error');
             }
         }
-    }
+    
 // Validar CUIT
 if (!empty($_POST['billing_cuit'])) {
     $cuit = sanitize_text_field($_POST['billing_cuit']);
@@ -357,6 +359,7 @@ if (!empty($_POST['billing_cuit'])) {
     if (!$valid_cuit) {
         wc_add_notice(__('El formato del CUIT no es válido.', 'my-account-manager'), 'error');
     }
+}
 }
 /**
  * Validar formato de CUIT
@@ -718,71 +721,74 @@ private function validate_cuit_format($cuit) {
      * Guardar dirección adicional
      */
     private function save_additional_address() {
-        $user_id = get_current_user_id();
-
-        // Incluir CUIT
-'cuit'      => sanitize_text_field($_POST['mam_address_cuit']),        
-        // Obtener datos del formulario
-        $action = isset($_POST['mam_address_action']) ? wc_clean($_POST['mam_address_action']) : '';
-        $address_id = isset($_POST['mam_address_id']) ? wc_clean($_POST['mam_address_id']) : '';
-        
-        // Validar campos requeridos
-        $required_fields = array(
-            'mam_address_name'      => __('Nombre de la dirección', 'my-account-manager'),
-            'mam_address_first_name' => __('Nombre', 'my-account-manager'),
-            'mam_address_last_name'  => __('Apellidos', 'my-account-manager'),
-            'mam_address_country'    => __('País', 'my-account-manager'),
-            'mam_address_address_1'  => __('Dirección', 'my-account-manager'),
-            'mam_address_city'       => __('Ciudad', 'my-account-manager'),
-            'mam_address_postcode'   => __('Código Postal', 'my-account-manager'),
-        );
-        
-        foreach ($required_fields as $field => $label) {
-            if (empty($_POST[$field])) {
-                wc_add_notice(sprintf(__('El campo %s es obligatorio.', 'my-account-manager'), $label), 'error');
-                return;
-            }
+    $user_id = get_current_user_id();
+    
+    // Obtener datos del formulario
+    $action = isset($_POST['mam_address_action']) ? wc_clean($_POST['mam_address_action']) : '';
+    $address_id = isset($_POST['mam_address_id']) ? wc_clean($_POST['mam_address_id']) : '';
+    
+    // Validar campos requeridos
+    $required_fields = array(
+        'mam_address_name'      => __('Nombre de la dirección', 'my-account-manager'),
+        'mam_address_first_name' => __('Nombre', 'my-account-manager'),
+        'mam_address_last_name'  => __('Apellidos', 'my-account-manager'),
+        'mam_address_country'    => __('País', 'my-account-manager'),
+        'mam_address_address_1'  => __('Dirección', 'my-account-manager'),
+        'mam_address_city'       => __('Ciudad', 'my-account-manager'),
+        'mam_address_postcode'   => __('Código Postal', 'my-account-manager'),
+    );
+    
+    foreach ($required_fields as $field => $label) {
+        if (empty($_POST[$field])) {
+            wc_add_notice(sprintf(__('El campo %s es obligatorio.', 'my-account-manager'), $label), 'error');
+            return;
         }
-        
-        // Obtener direcciones existentes
-        $additional_addresses = get_user_meta($user_id, '_mam_additional_addresses', true);
-        
-        if (!is_array($additional_addresses)) {
-            $additional_addresses = array();
-        }
-        
-        // Crear nuevo ID si estamos añadiendo
-        if ($action === 'add' || empty($address_id)) {
-            $address_id = 'addr_' . time() . '_' . wp_rand(100, 999);
-        }
-        
-        // Preparar datos de la dirección
-        $address = array(
-            'name'       => sanitize_text_field($_POST['mam_address_name']),
-            'first_name' => sanitize_text_field($_POST['mam_address_first_name']),
-            'last_name'  => sanitize_text_field($_POST['mam_address_last_name']),
-            'company'    => sanitize_text_field($_POST['mam_address_company']),
-            'country'    => sanitize_text_field($_POST['mam_address_country']),
-            'address_1'  => sanitize_text_field($_POST['mam_address_address_1']),
-            'address_2'  => sanitize_text_field($_POST['mam_address_address_2']),
-            'city'       => sanitize_text_field($_POST['mam_address_city']),
-            'state'      => sanitize_text_field($_POST['mam_address_state']),
-            'postcode'   => sanitize_text_field($_POST['mam_address_postcode']),
-            'phone'      => sanitize_text_field($_POST['mam_address_phone']),
-        );
-        
-        // Guardar dirección
-        $additional_addresses[$address_id] = $address;
-        update_user_meta($user_id, '_mam_additional_addresses', $additional_addresses);
-        
-        // Mensaje de éxito
-        $message = $action === 'add' ? __('Dirección añadida correctamente.', 'my-account-manager') : __('Dirección actualizada correctamente.', 'my-account-manager');
-        wc_add_notice($message, 'success');
-        
-        // Redireccionar para evitar reenvío del formulario
-        wp_redirect(wc_get_endpoint_url('edit-address', 'additional'));
-        exit;
     }
+    
+    // Obtener direcciones existentes
+    $additional_addresses = get_user_meta($user_id, '_mam_additional_addresses', true);
+    
+    if (!is_array($additional_addresses)) {
+        $additional_addresses = array();
+    }
+    
+    // Crear nuevo ID si estamos añadiendo
+    if ($action === 'add' || empty($address_id)) {
+        $address_id = 'addr_' . time() . '_' . wp_rand(100, 999);
+    }
+    
+    // Preparar datos de la dirección
+    $address = array(
+        'name'       => sanitize_text_field($_POST['mam_address_name']),
+        'first_name' => sanitize_text_field($_POST['mam_address_first_name']),
+        'last_name'  => sanitize_text_field($_POST['mam_address_last_name']),
+        'company'    => sanitize_text_field($_POST['mam_address_company']),
+        'country'    => sanitize_text_field($_POST['mam_address_country']),
+        'address_1'  => sanitize_text_field($_POST['mam_address_address_1']),
+        'address_2'  => sanitize_text_field($_POST['mam_address_address_2']),
+        'city'       => sanitize_text_field($_POST['mam_address_city']),
+        'state'      => sanitize_text_field($_POST['mam_address_state']),
+        'postcode'   => sanitize_text_field($_POST['mam_address_postcode']),
+        'phone'      => sanitize_text_field($_POST['mam_address_phone']),
+    );
+    
+    // Incluir CUIT si está presente
+    if (isset($_POST['mam_address_cuit'])) {
+        $address['cuit'] = sanitize_text_field($_POST['mam_address_cuit']);
+    }
+    
+    // Guardar dirección
+    $additional_addresses[$address_id] = $address;
+    update_user_meta($user_id, '_mam_additional_addresses', $additional_addresses);
+    
+    // Mensaje de éxito
+    $message = $action === 'add' ? __('Dirección añadida correctamente.', 'my-account-manager') : __('Dirección actualizada correctamente.', 'my-account-manager');
+    wc_add_notice($message, 'success');
+    
+    // Redireccionar para evitar reenvío del formulario
+    wp_redirect(wc_get_endpoint_url('edit-address', 'additional'));
+    exit;
+}
 
     /**
      * Eliminar dirección adicional
