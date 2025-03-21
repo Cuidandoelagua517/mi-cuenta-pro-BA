@@ -83,7 +83,10 @@ public function ajax_save_address() {
     $user_id = get_current_user_id();
     $action = isset($_POST['address_action']) ? wc_clean($_POST['address_action']) : '';
     $address_id = isset($_POST['address_id']) ? wc_clean($_POST['address_id']) : '';
-    
+    // CUIT
+if (isset($_POST['mam_address_cuit'])) {
+    $address['cuit'] = sanitize_text_field($_POST['mam_address_cuit']);
+}
     // Validar campos requeridos
     $required_fields = array(
         'address_name'      => __('Nombre de la dirección', 'my-account-manager'),
@@ -250,7 +253,16 @@ public function ajax_save_address() {
             'clear'       => true,
             'priority'    => 120,
         );
-        
+        // Añadir campo para CUIT
+$fields['billing_cuit'] = array(
+    'label'       => __('CUIT', 'my-account-manager'),
+    'placeholder' => __('Formato: xx-xxxxxxxx-x', 'my-account-manager'),
+    'required'    => true,
+    'class'       => array('mam-form-field', 'form-row-wide'),
+    'clear'       => true,
+    'priority'    => 115,
+);
+
         return $fields;
     }
 
@@ -258,6 +270,15 @@ public function ajax_save_address() {
      * Personalizar campos de envío
      */
     public function customize_shipping_fields($fields) {
+        // Añadir campo para CUIT en dirección de envío
+$fields['shipping_cuit'] = array(
+    'label'       => __('CUIT', 'my-account-manager'),
+    'placeholder' => __('Formato: xx-xxxxxxxx-x', 'my-account-manager'),
+    'required'    => false,
+    'class'       => array('mam-form-field', 'form-row-wide'),
+    'clear'       => true,
+    'priority'    => 95,
+);
         // Añadir o modificar campos específicos de envío
         if (isset($fields['shipping_phone'])) {
             $fields['shipping_phone']['label'] = __('Teléfono de contacto', 'my-account-manager');
@@ -326,7 +347,34 @@ public function ajax_save_address() {
             }
         }
     }
-
+// Validar CUIT
+if (!empty($_POST['billing_cuit'])) {
+    $cuit = sanitize_text_field($_POST['billing_cuit']);
+    
+    // Validación básica de formato de CUIT
+    $valid_cuit = $this->validate_cuit_format($cuit);
+    
+    if (!$valid_cuit) {
+        wc_add_notice(__('El formato del CUIT no es válido.', 'my-account-manager'), 'error');
+    }
+}
+/**
+ * Validar formato de CUIT
+ */
+private function validate_cuit_format($cuit) {
+    // Eliminar guiones y espacios
+    $cuit = preg_replace('/[^0-9]/', '', $cuit);
+    
+    // Verificar longitud
+    if (strlen($cuit) !== 11) {
+        return false;
+    }
+    
+    // Aquí podrías añadir validación adicional del número de CUIT
+    // como verificación del dígito de control
+    
+    return true;
+}
     /**
      * Validar NIF/CIF/DNI español
      */
@@ -671,7 +719,9 @@ public function ajax_save_address() {
      */
     private function save_additional_address() {
         $user_id = get_current_user_id();
-        
+
+        // Incluir CUIT
+'cuit'      => sanitize_text_field($_POST['mam_address_cuit']),        
         // Obtener datos del formulario
         $action = isset($_POST['mam_address_action']) ? wc_clean($_POST['mam_address_action']) : '';
         $address_id = isset($_POST['mam_address_id']) ? wc_clean($_POST['mam_address_id']) : '';
@@ -795,6 +845,7 @@ public function ajax_save_address() {
             'state'      => 'state',
             'postcode'   => 'postcode',
             'phone'      => 'phone',
+            'cuit'       => 'cuit',
         );
         
         // Actualizar direcciones predeterminadas
