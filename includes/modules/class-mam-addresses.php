@@ -69,18 +69,7 @@ public function register_ajax_handlers() {
     add_action('wp_ajax_mam_get_saved_address', array($this, 'ajax_get_saved_address'));
      add_action('wp_ajax_mam_update_account', array($this, 'ajax_update_account'));
 }
-public function ajax_update_account() {
-    check_ajax_referer('mam-nonce', 'security');
-    
-    // Lógica para actualizar
-    // ...
-    
-    // Respuesta
-    wp_send_json_success([
-        'message' => __('Datos actualizados', 'my-account-manager'),
-        // Otros datos si son necesarios
-    ]);
-}
+
     /**
  * Manejo AJAX de actualización de cuenta que incluye CUIT y empresa
  */
