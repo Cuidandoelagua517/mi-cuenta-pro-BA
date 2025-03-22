@@ -112,7 +112,6 @@ public function __construct() {
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-addresses.php';
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-account-details.php';
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-downloads.php';
- 
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-login-register.php';
     }
 
