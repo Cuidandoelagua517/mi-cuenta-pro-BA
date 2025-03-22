@@ -440,7 +440,57 @@
             }
         });
     }
+/**
+ * Agregar/modificar en assets/js/frontend.js
+ */
 
+// Mejora del formateo de CUIT en tiempo real
+function initCUITFormatting() {
+    $('#reg_cuit').on('input', function() {
+        var $field = $(this);
+        var cuit = $field.val().replace(/[^0-9]/g, '');
+        
+        // Formatear automáticamente mientras el usuario escribe
+        if (cuit.length > 0) {
+            // Mantener solo los primeros 11 dígitos
+            if (cuit.length > 11) {
+                cuit = cuit.substring(0, 11);
+            }
+            
+            // Aplicar formato XX-XXXXXXXX-X
+            var formattedCuit = '';
+            
+            if (cuit.length > 2 && cuit.length <= 10) {
+                formattedCuit = cuit.substring(0, 2) + '-' + cuit.substring(2);
+            } else if (cuit.length > 10) {
+                formattedCuit = cuit.substring(0, 2) + '-' + cuit.substring(2, 10) + '-' + cuit.substring(10);
+            } else {
+                formattedCuit = cuit;
+            }
+            
+            $field.val(formattedCuit);
+        }
+    });
+    
+    // Validación al perder el foco
+    $('#reg_cuit').on('blur', function() {
+        var $field = $(this);
+        var cuit = $field.val().trim();
+        var cleanCuit = cuit.replace(/[^0-9]/g, '');
+        
+        if (cuit && cleanCuit.length !== 11) {
+            $field.addClass('mam-field-error');
+            
+            // Mostrar mensaje de error
+            if ($field.next('.mam-field-error-message').length === 0) {
+                $field.after('<span class="mam-field-error-message">El CUIT debe tener 11 dígitos (formato: xx-xxxxxxxx-x)</span>');
+            }
+        } else {
+            $field.removeClass('mam-field-error');
+            $field.next('.mam-field-error-message').remove();
+        }
+    });
+}
     // Ejecutar cuando el DOM esté listo
     $(document).ready(function() {
         // Inicializar el objeto principal
