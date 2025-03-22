@@ -9,92 +9,93 @@
         /**
          * Inicializar pestañas en login/registro y otras áreas
          */
-       initTabs: function() {
-    // Tabs de login/registro
-    $('.mam-login-tab').on('click', function(e) {
-        e.preventDefault();
-        
-        // Activar tab
-        $('.mam-login-tab').addClass('active');
-        $('.mam-register-tab').removeClass('active');
-        
-        // Mostrar formulario correcto
-        $('.mam-login-form-wrapper').show();
-        $('.mam-register-form-wrapper').hide();
-    });
-    
-    $('.mam-register-tab').on('click', function(e) {
-        e.preventDefault();
-        
-        // Activar tab
-        $('.mam-register-tab').addClass('active');
-        $('.mam-login-tab').removeClass('active');
-        
-        // Mostrar formulario correcto
-        $('.mam-register-form-wrapper').show();
-        $('.mam-login-form-wrapper').hide();
-    });
-    
-    // Establecer estado inicial basado en URL
-    if (window.location.hash === '#register' || 
-        window.location.search.indexOf('action=register') > -1) {
-        // Simular clic en la pestaña de registro
-        $('.mam-register-tab').trigger('click');
-    } else {
-        // Por defecto, activar pestaña de login
-        $('.mam-login-tab').trigger('click');
-    }
-}
-
-       /**
- * Inicializar login por AJAX
- */
-initAjaxLogin: function() {
-    var self = this;
-    
-    $('.woocommerce-form-login.login').on('submit', function(e) {
-        e.preventDefault();
-        console.log('Login form submitted via AJAX');
-        
-        var $form = $(this);
-        var $submitBtn = $form.find('button[type="submit"]');
-        var formData = $form.serialize();
-        
-        // Asegurarse que el action esté incluido
-        if (formData.indexOf('action=') === -1) {
-            formData += '&action=mam_ajax_login';
-        }
-        
-        console.log('Form data:', formData);
-        
-        // Mostrar loader
-        $submitBtn.prop('disabled', true).addClass('mam-loading');
-        
-        $.ajax({
-            type: 'POST',
-            url: mam_params.ajax_url,
-            data: formData,
-            success: function(response) {
-                console.log('AJAX response received:', response);
-                if (response.success) {
-                    self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
-                    
-                    setTimeout(function() {
-                        window.location.href = response.data.redirect || '';
-                    }, 1000);
-                } else {
-                    self.showMessage($form, 'error', response.data.message || 'Error al iniciar sesión. Verifica tus credenciales.');
-                    $submitBtn.prop('disabled', false).removeClass('mam-loading');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX error:', status, error);
-                self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo.');
-                $submitBtn.prop('disabled', false).removeClass('mam-loading');
+        initTabs: function() {
+            // Tabs de login/registro
+            $('.mam-login-tab').on('click', function(e) {
+                e.preventDefault();
+                
+                // Activar tab
+                $('.mam-login-tab').addClass('active');
+                $('.mam-register-tab').removeClass('active');
+                
+                // Mostrar formulario correcto
+                $('.mam-login-form-wrapper').show();
+                $('.mam-register-form-wrapper').hide();
+            });
+            
+            $('.mam-register-tab').on('click', function(e) {
+                e.preventDefault();
+                
+                // Activar tab
+                $('.mam-register-tab').addClass('active');
+                $('.mam-login-tab').removeClass('active');
+                
+                // Mostrar formulario correcto
+                $('.mam-register-form-wrapper').show();
+                $('.mam-login-form-wrapper').hide();
+            });
+            
+            // Establecer estado inicial basado en URL
+            if (window.location.hash === '#register' || 
+                window.location.search.indexOf('action=register') > -1) {
+                // Simular clic en la pestaña de registro
+                $('.mam-register-tab').trigger('click');
+            } else {
+                // Por defecto, activar pestaña de login
+                $('.mam-login-tab').trigger('click');
             }
-        });
-    });
-}
+        },
+        
+        /**
+         * Inicializar login por AJAX
+         */
+        initAjaxLogin: function() {
+            var self = this;
+            
+            $('.woocommerce-form-login.login').on('submit', function(e) {
+                e.preventDefault();
+                console.log('Login form submitted via AJAX');
+                
+                var $form = $(this);
+                var $submitBtn = $form.find('button[type="submit"]');
+                var formData = $form.serialize();
+                
+                // Asegurarse que el action esté incluido
+                if (formData.indexOf('action=') === -1) {
+                    formData += '&action=mam_ajax_login';
+                }
+                
+                console.log('Form data:', formData);
+                
+                // Mostrar loader
+                $submitBtn.prop('disabled', true).addClass('mam-loading');
+                
+                $.ajax({
+                    type: 'POST',
+                    url: mam_params.ajax_url,
+                    data: formData,
+                    success: function(response) {
+                        console.log('AJAX response received:', response);
+                        if (response.success) {
+                            self.showMessage($form, 'success', response.data.message || 'Login exitoso. Redirigiendo...');
+                            
+                            setTimeout(function() {
+                                window.location.href = response.data.redirect || '';
+                            }, 1000);
+                        } else {
+                            self.showMessage($form, 'error', response.data.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+                            $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX error:', status, error);
+                        self.showMessage($form, 'error', 'Error de conexión. Por favor, inténtalo de nuevo.');
+                        $submitBtn.prop('disabled', false).removeClass('mam-loading');
+                    }
+                });
+            });
+        },
+        
         /**
          * Inicializar registro por AJAX
          */
@@ -350,78 +351,101 @@ initAjaxLogin: function() {
         /**
          * Inicializar todas las funcionalidades
          */
-init: function() {
-    console.log('MAMUserAccount init started'); // Depuración
-    this.initTabs();
-    this.initAjaxLogin(); // Verificar que esta función se esté llamando
-    this.initAjaxRegister();
-    this.initCUITValidation();
-    this.initPasswordToggle();
-    this.initFormValidation();
-    this.initMobileMenu();
-    console.log('MAMUserAccount init completed'); // Depuración
-}
+        init: function() {
+            console.log('MAMUserAccount init started'); // Depuración
+            this.initTabs();
+            this.initAjaxLogin(); // Verificar que esta función se esté llamando
+            this.initAjaxRegister();
+            this.initCUITValidation();
+            this.initPasswordToggle();
+            this.initFormValidation();
+            this.initMobileMenu();
+            console.log('MAMUserAccount init completed'); // Depuración
+        }
     };
 
-/**
- * Solución para las pestañas de login/registro
- * Este código debe insertarse en frontend.js
- */
+    /**
+     * Solución para las pestañas de login/registro
+     * Este código debe insertarse en frontend.js
+     */
 
-// Función para manejar las pestañas de login/registro
-function handleLoginRegisterTabs() {
-    console.log('Inicializando manejo de pestañas login/registro');
-    
-    // Función para cambiar entre pestañas
-    function switchTab(tabType) {
-        console.log('Cambiando a pestaña:', tabType);
+    // Función para manejar las pestañas de login/registro
+    function handleLoginRegisterTabs() {
+        console.log('Inicializando manejo de pestañas login/registro');
         
-        // 1. Actualizar pestañas activas
-        if (tabType === 'login') {
-            $('.mam-login-tab').addClass('active');
-            $('.mam-register-tab').removeClass('active');
-        } else if (tabType === 'register') {
-            $('.mam-register-tab').addClass('active');
-            $('.mam-login-tab').removeClass('active');
+        // Función para cambiar entre pestañas
+        function switchTab(tabType) {
+            console.log('Cambiando a pestaña:', tabType);
+            
+            // 1. Actualizar pestañas activas
+            if (tabType === 'login') {
+                $('.mam-login-tab').addClass('active');
+                $('.mam-register-tab').removeClass('active');
+            } else if (tabType === 'register') {
+                $('.mam-register-tab').addClass('active');
+                $('.mam-login-tab').removeClass('active');
+            }
+            
+            // 2. Mostrar/ocultar formularios correspondientes
+            if (tabType === 'login') {
+                $('.mam-login-form-wrapper').show();
+                $('.mam-register-form-wrapper').hide();
+            } else if (tabType === 'register') {
+                $('.mam-login-form-wrapper').hide();
+                $('.mam-register-form-wrapper').show();
+            }
         }
         
-        // 2. Mostrar/ocultar formularios correspondientes
-        if (tabType === 'login') {
-            $('.mam-login-form-wrapper').show();
-            $('.mam-register-form-wrapper').hide();
-        } else if (tabType === 'register') {
-            $('.mam-login-form-wrapper').hide();
-            $('.mam-register-form-wrapper').show();
+        // Manejar clic en pestaña de login
+        $('.mam-login-tab').on('click', function(e) {
+            e.preventDefault();
+            switchTab('login');
+        });
+        
+        // Manejar clic en pestaña de registro
+        $('.mam-register-tab').on('click', function(e) {
+            e.preventDefault();
+            switchTab('register');
+        });
+        
+        // Establecer pestaña inicial según URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var action = urlParams.get('action');
+        
+        if (action === 'register') {
+            switchTab('register');
+        } else {
+            switchTab('login');
         }
     }
-    
-    // Manejar clic en pestaña de login
-    $('.mam-login-tab').on('click', function(e) {
-        e.preventDefault();
-        switchTab('login');
-    });
-    
-    // Manejar clic en pestaña de registro
-    $('.mam-register-tab').on('click', function(e) {
-        e.preventDefault();
-        switchTab('register');
-    });
-    
-    // Establecer pestaña inicial según URL
-    var urlParams = new URLSearchParams(window.location.search);
-    var action = urlParams.get('action');
-    
-    if (action === 'register') {
-        switchTab('register');
-    } else {
-        switchTab('login');
-    }
-}
 
-// Ejecutar cuando el DOM esté listo
-  $(document).ready(function() {
-          // Inicializar el objeto principal
-    MAMUserAccount.init();
+    // Implementar una función clara para el manejo de pestañas
+    function initLoginRegisterTabs() {
+        $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
+            e.preventDefault();
+            
+            const isLoginTab = $(this).hasClass('mam-login-tab');
+            
+            // Activar pestaña correcta
+            $('.mam-login-tab, .mam-register-tab').removeClass('active');
+            $(this).addClass('active');
+            
+            // Mostrar formulario correcto
+            if (isLoginTab) {
+                $('.mam-login-form-wrapper').show();
+                $('.mam-register-form-wrapper').hide();
+            } else {
+                $('.mam-register-form-wrapper').show();
+                $('.mam-login-form-wrapper').hide();
+            }
+        });
+    }
+
+    // Ejecutar cuando el DOM esté listo
+    $(document).ready(function() {
+        // Inicializar el objeto principal
+        MAMUserAccount.init();
+        
         // Solo inicializar si estamos en la página de login/registro
         if ($('.mam-login-register-tabs').length > 0) {
             console.log('Inicializando tabs de login/registro');
@@ -470,36 +494,8 @@ function handleLoginRegisterTabs() {
                 $('.mam-login-tab').trigger('click');
             }
         }
+        
+        // Inicializar tabs de login/registro
+        initLoginRegisterTabs();
     });
-
-// Implementar una función clara para el manejo de pestañas
-function initLoginRegisterTabs() {
-    $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
-        e.preventDefault();
-        
-        const isLoginTab = $(this).hasClass('mam-login-tab');
-        
-        // Activar pestaña correcta
-        $('.mam-login-tab, .mam-register-tab').removeClass('active');
-        $(this).addClass('active');
-        
-        // Mostrar formulario correcto
-        if (isLoginTab) {
-            $('.mam-login-form-wrapper').show();
-            $('.mam-register-form-wrapper').hide();
-        } else {
-            $('.mam-register-form-wrapper').show();
-            $('.mam-login-form-wrapper').hide();
-        }
-    });
-}
-
-// Ejecutar cuando el DOM esté listo
-$(document).ready(function() {
-    // Inicializar el objeto principal
-    MAMUserAccount.init();
-    
-    // Inicializar tabs de login/registro
-    initLoginRegisterTabs();
-});
 })(jQuery);
