@@ -61,6 +61,15 @@ class MAM_Addresses {
         
         // Añadir opción para copiar dirección
         add_action('woocommerce_before_checkout_shipping_form', array($this, 'add_copy_address_option'));
+        // Añadir campos al checkout
+add_filter('woocommerce_checkout_fields', array($this, 'add_checkout_fields'));
+        // Validar CUIT en checkout
+add_action('woocommerce_checkout_process', array($this, 'validate_checkout_cuit'), 10, 2);
+        // Mostrar CUIT en la página de pedido
+add_action('woocommerce_order_details_after_customer_details', array($this, 'display_cuit_in_order'), 10, 1);
+
+// Mostrar CUIT en administración
+add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_cuit_to_admin_order'), 10, 1);
     }
 public function register_ajax_handlers() {
     add_action('wp_ajax_mam_save_address', array($this, 'ajax_save_address'));
@@ -896,7 +905,22 @@ public function save_registration_fields($customer_id) {
         </div>
         <?php
     }
-
+/**
+ * Validar campo CUIT en el checkout
+ */
+public function validate_checkout_cuit($fields, $errors) {
+    if (!empty($_POST['billing_cuit'])) {
+        $cuit = sanitize_text_field($_POST['billing_cuit']);
+        
+        // Validación básica de formato de CUIT
+        if (!$this->validate_cuit_format($cuit)) {
+            $errors->add('billing_cuit_error', __('El formato del CUIT no es válido.', 'my-account-manager'));
+        }
+    } else if (isset($_POST['billing_country']) && $_POST['billing_country'] === 'AR') {
+        // Si el país es Argentina, hacer el campo obligatorio
+        $errors->add('billing_cuit_error', __('El campo CUIT es obligatorio para compradores de Argentina.', 'my-account-manager'));
+    }
+}
     /**
      * Manejar acciones para direcciones adicionales
      */
@@ -930,7 +954,26 @@ public function save_registration_fields($customer_id) {
             }
         }
     }
-
+/**
+ * Mostrar el CUIT en la página de pedido y correos
+ */
+public function display_cuit_in_order($order) {
+    $order_id = $order->get_id();
+    $cuit = get_post_meta($order_id, '_billing_cuit', true);
+    
+    if (!empty($cuit)) {
+        echo '<p><strong>' . __('CUIT:', 'my-account-manager') . '</strong> ' . esc_html($cuit) . '</p>';
+    }
+}
+/**
+ * Añadir CUIT a los datos de administración de pedidos
+ */
+public function add_cuit_to_admin_order($order) {
+    $order_id = $order->get_id();
+    $cuit = get_post_meta($order_id, '_billing_cuit', true);
+    
+    echo '<p><strong>' . __('CUIT:', 'my-account-manager') . '</strong> ' . esc_html($cuit) . '</p>';
+}
     /**
      * Guardar dirección adicional
      */
@@ -1029,7 +1072,22 @@ public function save_registration_fields($customer_id) {
         wp_redirect(wc_get_endpoint_url('edit-address', 'additional'));
         exit;
     }
-
+/**
+ * Añadir campos personalizados al checkout
+ */
+public function add_checkout_fields($fields) {
+    // Añadir campo CUIT a la sección de facturación en checkout
+    $fields['billing']['billing_cuit'] = array(
+        'label'       => __('CUIT', 'my-account-manager'),
+        'placeholder' => __('Formato: xx-xxxxxxxx-x', 'my-account-manager'),
+        'required'    => true,
+        'class'       => array('form-row-wide'),
+        'clear'       => true,
+        'priority'    => 115, // Posicionarlo después de la empresa y antes del email
+    );
+    
+    return $fields;
+}
     /**
      * Establecer dirección como predeterminada
      */
