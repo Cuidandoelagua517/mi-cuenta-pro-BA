@@ -36,7 +36,7 @@ class MAM_Login_Register {
         //add_action('woocommerce_register_form', array($this, 'register_form_custom_fields'), 15);
         //add_action('woocommerce_register_form_end', array($this, 'register_form_end'), 10);
          // Registrar los handlers AJAX primero
-    $this->register_ajax_handlers();
+
         
         // Validación personalizada
         add_action('woocommerce_process_login_errors', array($this, 'validate_login'), 10, 2);
@@ -50,7 +50,11 @@ class MAM_Login_Register {
         add_shortcode('mam_login_form', array($this, 'login_form_shortcode'));
         add_shortcode('mam_register_form', array($this, 'register_form_shortcode'));
         
-    }
+       add_action('init', array($this, 'remove_duplicate_fields'), 20);
+    
+    // Asegurarse de que register_ajax_handlers se llama
+    $this->register_ajax_handlers();
+}
 
 /**
  * Register AJAX handlers
@@ -330,25 +334,28 @@ public function ajax_register() {
     // Guardar campos personalizados
     if (isset($_POST['first_name']) && !empty($_POST['first_name'])) {
         update_user_meta($new_customer, 'first_name', sanitize_text_field($_POST['first_name']));
+        update_user_meta($new_customer, 'billing_first_name', sanitize_text_field($_POST['first_name']));
     }
     
     if (isset($_POST['last_name']) && !empty($_POST['last_name'])) {
         update_user_meta($new_customer, 'last_name', sanitize_text_field($_POST['last_name']));
+        update_user_meta($new_customer, 'billing_last_name', sanitize_text_field($_POST['last_name']));
     }
     
     if (isset($_POST['phone']) && !empty($_POST['phone'])) {
         update_user_meta($new_customer, 'phone', sanitize_text_field($_POST['phone']));
+        update_user_meta($new_customer, 'billing_phone', sanitize_text_field($_POST['phone']));
     }
     
-    // Guardar los campos de empresa y CUIT
-    if (isset($_POST['company_name'])) {
-        update_user_meta($new_customer, 'billing_company', sanitize_text_field($_POST['company_name']));
+    // Guardar los campos de empresa y CUIT tanto en campos personalizados como en campos de facturación
+    if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
         update_user_meta($new_customer, 'company_name', sanitize_text_field($_POST['company_name']));
+        update_user_meta($new_customer, 'billing_company', sanitize_text_field($_POST['company_name']));
     }
     
-    if (isset($_POST['cuit'])) {
-        update_user_meta($new_customer, 'billing_cuit', sanitize_text_field($_POST['cuit']));
+    if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
         update_user_meta($new_customer, 'cuit', sanitize_text_field($_POST['cuit']));
+        update_user_meta($new_customer, 'billing_cuit', sanitize_text_field($_POST['cuit']));
     }
     
     // Iniciar sesión automáticamente
@@ -361,4 +368,14 @@ public function ajax_register() {
     
     exit;
 }
+public function remove_duplicate_fields() {
+    // Quitamos los campos que WooCommerce podría añadir y que ya manejamos nosotros
+    remove_action('woocommerce_register_form', 'woocommerce_form_field_company', 10);
+    remove_action('woocommerce_register_form', 'woocommerce_form_field_cuit', 10);
+    
+    // Si hay otros plugins que añaden campos, también podemos eliminarlos
+    remove_all_actions('woocommerce_register_form_start', 20);
+    remove_all_actions('woocommerce_register_form_end', 20);
+}
+
 }
