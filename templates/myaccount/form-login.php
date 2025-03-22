@@ -314,4 +314,37 @@ do_action('woocommerce_before_customer_login_form');
 </div>
 
 <?php do_action('woocommerce_after_customer_login_form'); ?>
-
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    // Manejar clic en pestaña de login
+    $('.mam-login-tab').on('click', function(e) {
+        e.preventDefault();
+        $('.mam-login-tab').addClass('active');
+        $('.mam-register-tab').removeClass('active');
+        $('.mam-login-form-wrapper').removeClass('hide');
+        $('.mam-register-form-wrapper').addClass('hide');
+    });
+    
+    // Manejar clic en pestaña de registro
+    $('.mam-register-tab').on('click', function(e) {
+        e.preventDefault();
+        $('.mam-register-tab').addClass('active');
+        $('.mam-login-tab').removeClass('active');
+        $('.mam-register-form-wrapper').removeClass('hide');
+        $('.mam-login-form-wrapper').addClass('hide');
+    });
+    
+    // Estado inicial basado en URL
+    <?php if (isset($_GET['action']) && $_GET['action'] === 'register'): ?>
+        $('.mam-register-tab').addClass('active');
+        $('.mam-login-tab').removeClass('active');
+        $('.mam-register-form-wrapper').removeClass('hide');
+        $('.mam-login-form-wrapper').addClass('hide');
+    <?php else: ?>
+        $('.mam-login-tab').addClass('active');
+        $('.mam-register-tab').removeClass('active');
+        $('.mam-login-form-wrapper').removeClass('hide');
+        $('.mam-register-form-wrapper').addClass('hide');
+    <?php endif; ?>
+});
+</script>
