@@ -231,10 +231,10 @@ add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
         
         // Scripts específicos para cada página
         if (is_account_page()) {
-            if (is_wc_endpoint_url('orders')) {
-                wp_enqueue_script('mam-orders', MAM_PLUGIN_URL . 'assets/js/orders.js', array('jquery'), MAM_VERSION, true);
-            } elseif (is_wc_endpoint_url('edit-address')) {
-                wp_enqueue_script('mam-addresses', MAM_PLUGIN_URL . 'assets/js/addresses.js', array('jquery'), MAM_VERSION, true);
+            //if (is_wc_endpoint_url('orders')) {
+                //wp_enqueue_script('mam-orders', MAM_PLUGIN_URL . 'assets/js/orders.js', array('jquery'), MAM_VERSION, true);
+            //} elseif (is_wc_endpoint_url('edit-address')) {
+                //wp_enqueue_script('mam-addresses', MAM_PLUGIN_URL . 'assets/js/addresses.js', array('jquery'), MAM_VERSION, true);
             } elseif (is_wc_endpoint_url('edit-account')) {
                 wp_enqueue_script('mam-account-details', MAM_PLUGIN_URL . 'assets/js/account-details.js', array('jquery'), MAM_VERSION, true);
             } elseif (is_wc_endpoint_url('downloads')) {
