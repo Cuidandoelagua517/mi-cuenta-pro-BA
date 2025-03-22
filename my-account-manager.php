@@ -112,7 +112,7 @@ public function __construct() {
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-addresses.php';
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-account-details.php';
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-downloads.php';
-        include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-payments.php';
+ 
         include_once MAM_PLUGIN_DIR . 'includes/modules/class-mam-login-register.php';
     }
 
@@ -162,7 +162,6 @@ public function init_modules() {
         MAM_Addresses::init();
         MAM_Account_Details::init();
         MAM_Downloads::init();
-        MAM_Payments::init();
         
         // Registrar handlers AJAX para toda la aplicación
         $this->register_ajax_handlers();
