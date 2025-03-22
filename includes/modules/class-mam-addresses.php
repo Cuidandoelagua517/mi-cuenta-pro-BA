@@ -511,21 +511,60 @@ if (!empty($_POST['billing_cuit'])) {
 }
 }
 /**
- * Validar formato de CUIT
+ * Validar formato de CUIT - Versión mejorada
  */
 private function validate_cuit_format($cuit) {
     // Eliminar guiones y espacios
-    $cuit = preg_replace('/[^0-9]/', '', $cuit);
+    $cleanCuit = preg_replace('/[^0-9]/', '', $cuit);
     
     // Verificar longitud
-    if (strlen($cuit) !== 11) {
+    if (strlen($cleanCuit) !== 11) {
         return false;
     }
     
-    // Aquí podrías añadir validación adicional del número de CUIT
-    // como verificación del dígito de control
+    // Verificación básica del formato XX-XXXXXXXX-X
+    $pattern = '/^[0-9]{2}-?[0-9]{8}-?[0-9]$/';
+    if (preg_match($pattern, $cuit)) {
+        return true;
+    }
     
-    return true;
+    // Si no tiene guiones pero tiene la longitud correcta, también es válido
+    if (strlen($cleanCuit) === 11) {
+        return true;
+    }
+    
+    return false;
+}
+/**
+ * Formatear CUIT para guardarlo en formato estándar
+ */
+private function format_cuit($cuit) {
+    // Eliminar cualquier formato existente
+    $cleanCuit = preg_replace('/[^0-9]/', '', $cuit);
+    
+    // Si no tiene 11 dígitos, devolver como está
+    if (strlen($cleanCuit) !== 11) {
+        return $cuit;
+    }
+    
+    // Aplicar formato XX-XXXXXXXX-X
+    return substr($cleanCuit, 0, 2) . '-' . 
+           substr($cleanCuit, 2, 8) . '-' . 
+           substr($cleanCuit, 10, 1);
+}
+/**
+ * Añadir esta función para guardar el CUIT en ambos lugares
+ */
+public function save_cuit_data($user_id, $cuit) {
+    $formattedCuit = $this->format_cuit($cuit);
+    
+    // Guardar en metadatos personalizados
+    update_user_meta($user_id, 'cuit', $formattedCuit);
+    
+    // Guardar en metadatos de facturación de WooCommerce
+    update_user_meta($user_id, 'billing_cuit', $formattedCuit);
+    
+    return $formattedCuit;
 }
     /**
      * Validar NIF/CIF/DNI español
