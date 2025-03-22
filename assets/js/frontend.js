@@ -353,15 +353,18 @@
          */
         init: function() {
             console.log('MAMUserAccount init started'); // Depuración
-            this.initTabs();
-            this.initAjaxLogin(); // Verificar que esta función se esté llamando
-            this.initAjaxRegister();
-            this.initCUITValidation();
-            this.initPasswordToggle();
-            this.initFormValidation();
-            this.initMobileMenu();
-            console.log('MAMUserAccount init completed'); // Depuración
-        }
+    this.initTabs();
+    this.initAjaxLogin();
+    this.initAjaxRegister();
+    this.initCUITValidation();
+    this.initPasswordToggle();
+    this.initFormValidation();
+    this.initMobileMenu();
+       // Inicializar formateo de CUIT para todos los campos
+    initCUITFormatting();
+    
+    console.log('MAMUserAccount init completed'); // Depuración
+}
     };
 
     /**
@@ -446,7 +449,8 @@
 
 // Mejora del formateo de CUIT en tiempo real
 function initCUITFormatting() {
-    $('#reg_cuit').on('input', function() {
+   // Selector que abarca tanto el campo de registro como el de checkout
+    $('body').on('input', '#reg_cuit, #billing_cuit', function() {
         var $field = $(this);
         var cuit = $field.val().replace(/[^0-9]/g, '');
         
@@ -471,6 +475,26 @@ function initCUITFormatting() {
             $field.val(formattedCuit);
         }
     });
+    
+    // Validación al perder el foco (para ambos campos)
+    $('body').on('blur', '#reg_cuit, #billing_cuit', function() {
+        var $field = $(this);
+        var cuit = $field.val().trim();
+        var cleanCuit = cuit.replace(/[^0-9]/g, '');
+        
+        if (cuit && cleanCuit.length !== 11) {
+            $field.addClass('mam-field-error');
+            
+            // Mostrar mensaje de error
+            if ($field.next('.mam-field-error-message').length === 0) {
+                $field.after('<span class="mam-field-error-message">El CUIT debe tener 11 dígitos (formato: xx-xxxxxxxx-x)</span>');
+            }
+        } else {
+            $field.removeClass('mam-field-error');
+            $field.next('.mam-field-error-message').remove();
+        }
+    });
+}
     
     // Validación al perder el foco
     $('#reg_cuit').on('blur', function() {
@@ -547,5 +571,6 @@ function initCUITFormatting() {
         
         // Inicializar tabs de login/registro
         initLoginRegisterTabs();
+    initCUITFormatting();
     });
 })(jQuery);
