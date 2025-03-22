@@ -385,7 +385,7 @@ public function dashboard_content() {
         if (is_account_page() && is_wc_endpoint_url('dashboard')) {
             // Aquí se podrían cargar scripts específicos para el dashboard
             // Por ejemplo, para gráficos o visualizaciones de datos
-            wp_enqueue_script('mam-dashboard-charts', MAM_PLUGIN_URL . 'assets/js/dashboard-charts.js', array('jquery'), MAM_VERSION, true);
+
         }
     }
 }
