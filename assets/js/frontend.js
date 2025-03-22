@@ -9,52 +9,42 @@
         /**
          * Inicializar pestañas en login/registro y otras áreas
          */
-        initTabs: function() {
-            // Tabs de login/registro
-            $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
-                e.preventDefault();
-                
-                var target = $(this).attr('href');
-                console.log('Tab clicked:', target); // Para depuración
-                
-                // Activar tab
-                $('.mam-login-tab, .mam-register-tab').removeClass('active');
-                $(this).addClass('active');
-                
-                // Simplificar la lógica de mostrar/ocultar formularios
-                if (target === '#login') {
-                    $('.mam-register-form-wrapper').addClass('hide');
-                    $('.mam-login-form-wrapper').removeClass('hide');
-                } else if (target === '#register') {
-                    $('.mam-login-form-wrapper').addClass('hide');
-                    $('.mam-register-form-wrapper').removeClass('hide');
-                }
-                
-                // Si estamos en móvil, scroll hacia arriba suavemente
-                if (window.innerWidth < 768) {
-                    $('html, body').animate({
-                        scrollTop: $('.mam-login-register-tabs').offset().top - 20
-                    }, 300);
-                }
-            });
-            
-            // Otras pestañas de la cuenta
-            $('.mam-account-tab, .mam-address-tab').on('click', function(e) {
-                // Solo gestionar el evento si no estamos navegando a otra página
-                if ($(this).attr('href').indexOf('#') === 0) {
-                    e.preventDefault();
-                    
-                    var tab = $(this).attr('href').replace('#', '');
-                    
-                    // Activar tab
-                    $(this).parent().find('.mam-account-tab, .mam-address-tab').removeClass('active');
-                    $(this).addClass('active');
-                    
-                    // Trigger evento personalizado para módulos específicos
-                    $(document).trigger('mam_tab_changed', [tab]);
-                }
-            });
-        },
+       initTabs: function() {
+    // Tabs de login/registro
+    $('.mam-login-tab').on('click', function(e) {
+        e.preventDefault();
+        
+        // Activar tab
+        $('.mam-login-tab').addClass('active');
+        $('.mam-register-tab').removeClass('active');
+        
+        // Mostrar formulario correcto
+        $('.mam-login-form-wrapper').show();
+        $('.mam-register-form-wrapper').hide();
+    });
+    
+    $('.mam-register-tab').on('click', function(e) {
+        e.preventDefault();
+        
+        // Activar tab
+        $('.mam-register-tab').addClass('active');
+        $('.mam-login-tab').removeClass('active');
+        
+        // Mostrar formulario correcto
+        $('.mam-register-form-wrapper').show();
+        $('.mam-login-form-wrapper').hide();
+    });
+    
+    // Establecer estado inicial basado en URL
+    if (window.location.hash === '#register' || 
+        window.location.search.indexOf('action=register') > -1) {
+        // Simular clic en la pestaña de registro
+        $('.mam-register-tab').trigger('click');
+    } else {
+        // Por defecto, activar pestaña de login
+        $('.mam-login-tab').trigger('click');
+    }
+}
 
        /**
  * Inicializar login por AJAX
