@@ -221,43 +221,23 @@ add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
      * Enqueue de assets para el frontend
      */
     public function enqueue_frontend_assets() {
-        // Registrar y encolar estilos CSS
-        wp_register_style('mam-styles', MAM_PLUGIN_URL . 'assets/css/frontend.css', array(), MAM_VERSION);
-        wp_enqueue_style('mam-styles');
-        
-        // Registrar los scripts JS
-        wp_register_script('mam-scripts', MAM_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), MAM_VERSION, true);
-        
-        // Scripts específicos para cada página
-        if (is_account_page()) {
-            //if (is_wc_endpoint_url('orders')) {
-                //wp_enqueue_script('mam-orders', MAM_PLUGIN_URL . 'assets/js/orders.js', array('jquery'), MAM_VERSION, true);
-            //} elseif (is_wc_endpoint_url('edit-address')) {
-                //wp_enqueue_script('mam-addresses', MAM_PLUGIN_URL . 'assets/js/addresses.js', array('jquery'), MAM_VERSION, true);
-            } elseif (is_wc_endpoint_url('edit-account')) {
-                wp_enqueue_script('mam-account-details', MAM_PLUGIN_URL . 'assets/js/account-details.js', array('jquery'), MAM_VERSION, true);
-            } elseif (is_wc_endpoint_url('downloads')) {
-                wp_enqueue_script('mam-downloads', MAM_PLUGIN_URL . 'assets/js/downloads.js', array('jquery'), MAM_VERSION, true);
-            } elseif (is_wc_endpoint_url('payment-methods') || is_wc_endpoint_url('add-payment-method')) {
-                wp_enqueue_script('mam-payment-methods', MAM_PLUGIN_URL . 'assets/js/payment-methods.js', array('jquery'), MAM_VERSION, true);
-            }
-        }
-        
-        // Script principal
-        wp_enqueue_script('mam-scripts');
-        
-        // Localizar todos los scripts con los mismos parámetros
-        $mam_params = array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('mam-nonce'),
-            'i18n' => array(
-                'loading' => __('Cargando...', 'my-account-manager'),
-                'error' => __('Ha ocurrido un error. Por favor, inténtalo de nuevo.', 'my-account-manager'),
-                'success' => __('Operación completada con éxito.', 'my-account-manager'),
-                'confirm_delete' => __('¿Estás seguro de que quieres eliminar este elemento?', 'my-account-manager')
-            )
-        );
-
+    // Registrar y encolar estilos CSS
+    wp_register_style('mam-styles', MAM_PLUGIN_URL . 'assets/css/frontend.css', array(), MAM_VERSION);
+    wp_enqueue_style('mam-styles');
+    
+    // Registrar los scripts JS
+    wp_register_script('mam-scripts', MAM_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), MAM_VERSION, true);
+    
+    // Scripts específicos para cada página
+    if (is_account_page()) {
+        // Código eliminado/comentado
+        // ...
+    }
+    
+    // Script principal
+    wp_enqueue_script('mam-scripts');
+    
+    // Esto debe estar DENTRO de la función, no fuera
     wp_localize_script('mam-scripts', 'mam_params', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('mam-nonce'),
@@ -266,7 +246,7 @@ add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
             // Otros strings...
         )
     ));
-}
+} 
 
     /**
      * Agregar script de corrección para las pestañas de login/registro
@@ -287,69 +267,6 @@ add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
         }
     }
 
-    /**
-     * Agregar código JavaScript inline para las pestañas de login/registro
-     */
-    public function add_inline_login_tabs_fix() {
-        // Solo cargar en la página de mi cuenta
-        if (function_exists('is_account_page') && is_account_page() && !is_user_logged_in()) {
-            ?>
-            <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                // Solo inicializar si estamos en la página de login/registro
-                if ($('.mam-login-register-tabs').length > 0) {
-                    console.log('Inicializando manejo de pestañas login/registro');
-                    
-                    // Función para cambiar entre pestañas
-                    function switchTab(tabType) {
-                        console.log('Cambiando a pestaña:', tabType);
-                        
-                        // 1. Actualizar pestañas activas
-                        if (tabType === 'login') {
-                            $('.mam-login-tab').addClass('active');
-                            $('.mam-register-tab').removeClass('active');
-                        } else if (tabType === 'register') {
-                            $('.mam-register-tab').addClass('active');
-                            $('.mam-login-tab').removeClass('active');
-                        }
-                        
-                        // 2. Mostrar/ocultar formularios correspondientes
-                        if (tabType === 'login') {
-                            $('.mam-login-form-wrapper').show();
-                            $('.mam-register-form-wrapper').hide();
-                        } else if (tabType === 'register') {
-                            $('.mam-login-form-wrapper').hide();
-                            $('.mam-register-form-wrapper').show();
-                        }
-                    }
-                    
-                    // Manejar clic en pestaña de login
-                    $('.mam-login-tab').on('click', function(e) {
-                        e.preventDefault();
-                        switchTab('login');
-                    });
-                    
-                    // Manejar clic en pestaña de registro
-                    $('.mam-register-tab').on('click', function(e) {
-                        e.preventDefault();
-                        switchTab('register');
-                    });
-                    
-                    // Establecer pestaña inicial según URL
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var action = urlParams.get('action');
-                    
-                    if (action === 'register') {
-                        switchTab('register');
-                    } else {
-                        switchTab('login');
-                    }
-                }
-            });
-            </script>
-            <?php
-        }
-    }
 
     /**
      * Enqueue de assets para el admin
