@@ -70,6 +70,7 @@ add_action('woocommerce_order_details_after_customer_details', array($this, 'dis
 
 // Mostrar CUIT en administración
 add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_cuit_to_admin_order'), 10, 1);
+add_filter('woocommerce_address_to_edit', array($this, 'load_address_fields_values'), 10, 2);
     }
 public function register_ajax_handlers() {
     add_action('wp_ajax_mam_save_address', array($this, 'ajax_save_address'));
