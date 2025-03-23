@@ -528,7 +528,55 @@ private function validate_cuit_format($cuit) {
         
         return $device;
     }
-
+/**
+ * Cargar los valores guardados de CUIT y empresa en el formulario de cuenta
+ */
+public function load_account_fields_values($user) {
+    // Obtener datos guardados (buscar en múltiples ubicaciones para garantizar que tengamos valores)
+    $company = get_user_meta($user->ID, 'billing_company', true);
+    if (empty($company)) {
+        $company = get_user_meta($user->ID, 'company_name', true);
+    }
+    
+    $cuit = get_user_meta($user->ID, 'billing_cuit', true);
+    if (empty($cuit)) {
+        $cuit = get_user_meta($user->ID, 'cuit', true);
+    }
+    
+    ?>
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_company"><?php _e('Empresa', 'my-account-manager'); ?></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_company" id="account_company" value="<?php echo esc_attr($company); ?>" />
+    </p>
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_cuit"><?php _e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_cuit" id="account_cuit" value="<?php echo esc_attr($cuit); ?>" required />
+    </p>
+    <?php
+}
+    /**
+ * Guardar los campos CUIT y empresa cuando se actualiza la cuenta
+ */
+public function save_account_fields($user_id) {
+    if (isset($_POST['account_company'])) {
+        $company = sanitize_text_field($_POST['account_company']);
+        update_user_meta($user_id, 'billing_company', $company);
+        update_user_meta($user_id, 'company_name', $company); // También guardar en campo personalizado
+    }
+    
+    if (isset($_POST['account_cuit'])) {
+        $cuit = sanitize_text_field($_POST['account_cuit']);
+        
+        // Validar formato del CUIT
+        if (!empty($cuit) && !$this->validate_cuit_format($cuit)) {
+            wc_add_notice(__('El formato del CUIT no es válido.', 'my-account-manager'), 'error');
+            return;
+        }
+        
+        update_user_meta($user_id, 'billing_cuit', $cuit);
+        update_user_meta($user_id, 'cuit', $cuit); // También guardar en campo personalizado
+    }
+}
     /**
      * Añadir sección de eliminación de cuenta
      */
