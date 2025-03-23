@@ -596,7 +596,33 @@ public function save_cuit_data($user_id, $cuit) {
         
         return false;
     }
-
+/**
+ * Cargar valores de CUIT y empresa en campos de dirección
+ */
+public function load_address_fields_values($fields, $load_address) {
+    $user_id = get_current_user_id();
+    
+    // Cargar CUIT desde los metadatos del usuario
+    if (isset($fields['billing_cuit']) && $load_address == 'billing') {
+        // Priorizar el valor guardado en billing_cuit, sino usar cuit
+        $cuit = get_user_meta($user_id, 'billing_cuit', true);
+        if (empty($cuit)) {
+            $cuit = get_user_meta($user_id, 'cuit', true);
+        }
+        $fields['billing_cuit']['default'] = $cuit;
+    }
+    
+    // Cargar empresa desde los metadatos del usuario
+    if (isset($fields['billing_company']) && $load_address == 'billing') {
+        $company = get_user_meta($user_id, 'billing_company', true);
+        if (empty($company)) {
+            $company = get_user_meta($user_id, 'company_name', true);
+        }
+        $fields['billing_company']['default'] = $company;
+    }
+    
+    return $fields;
+}
     /**
      * Añadir clases a los campos del formulario
      */
