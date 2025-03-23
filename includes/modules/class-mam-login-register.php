@@ -348,12 +348,12 @@ public function ajax_register() {
     }
     
     // Guardar los campos de empresa y CUIT tanto en campos personalizados como en campos de facturación
-    if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
+   if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
         update_user_meta($new_customer, 'company_name', sanitize_text_field($_POST['company_name']));
         update_user_meta($new_customer, 'billing_company', sanitize_text_field($_POST['company_name']));
     }
     
-    if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
+   if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
         update_user_meta($new_customer, 'cuit', sanitize_text_field($_POST['cuit']));
         update_user_meta($new_customer, 'billing_cuit', sanitize_text_field($_POST['cuit']));
     }
