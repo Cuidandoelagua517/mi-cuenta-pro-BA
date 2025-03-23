@@ -377,13 +377,20 @@ public function customize_account_fields($fields) {
     
     return $fields;
 }
-    /**
+   /**
  * Cargar los valores guardados de CUIT y empresa en el formulario de cuenta
  */
 public function load_account_fields_values($user) {
-    // Obtener datos guardados
+    // Obtener datos guardados (buscar en múltiples ubicaciones para garantizar que tengamos valores)
     $company = get_user_meta($user->ID, 'billing_company', true);
+    if (empty($company)) {
+        $company = get_user_meta($user->ID, 'company_name', true);
+    }
+    
     $cuit = get_user_meta($user->ID, 'billing_cuit', true);
+    if (empty($cuit)) {
+        $cuit = get_user_meta($user->ID, 'cuit', true);
+    }
     
     ?>
     <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
@@ -396,12 +403,14 @@ public function load_account_fields_values($user) {
     </p>
     <?php
 }
-    /**
+   /**
  * Guardar los campos CUIT y empresa cuando se actualiza la cuenta
  */
 public function save_account_fields($user_id) {
     if (isset($_POST['account_company'])) {
-        update_user_meta($user_id, 'billing_company', sanitize_text_field($_POST['account_company']));
+        $company = sanitize_text_field($_POST['account_company']);
+        update_user_meta($user_id, 'billing_company', $company);
+        update_user_meta($user_id, 'company_name', $company); // También guardar en campo personalizado
     }
     
     if (isset($_POST['account_cuit'])) {
@@ -414,6 +423,7 @@ public function save_account_fields($user_id) {
         }
         
         update_user_meta($user_id, 'billing_cuit', $cuit);
+        update_user_meta($user_id, 'cuit', $cuit); // También guardar en campo personalizado
     }
 }
     /**
