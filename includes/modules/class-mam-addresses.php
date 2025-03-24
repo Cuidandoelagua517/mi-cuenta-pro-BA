@@ -663,8 +663,9 @@ public function load_user_data_in_forms() {
               get_user_meta($user_id, 'billing_company', true);
     
     // Solo emitir el script si hay datos para autocompletar
-    if (empty($cuit) && empty($company)) return;
+if (!is_account_page()) return;
     
+    // Script de JavaScript para autocompletar campos relacionados
     ?>
     <script type="text/javascript">
     jQuery(document).ready(function($) {
