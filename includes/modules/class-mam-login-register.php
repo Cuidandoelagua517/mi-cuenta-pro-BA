@@ -53,7 +53,7 @@ class MAM_Login_Register {
 add_action('woocommerce_register_form', array($this, 'register_form_custom_fields'), 15);
 add_action('woocommerce_created_customer', array($this, 'save_register_fields'), 10, 1);
 add_filter('woocommerce_process_registration_errors', array($this, 'validate_registration'), 10, 3);
-add_action('init', array($this, 'remove_duplicate_fields'), 20);
+add_action('init', array($this, 'remove_duplicate_fields'), 5);
     
     // Asegurarse de que register_ajax_handlers se llama
     $this->register_ajax_handlers();
@@ -379,12 +379,26 @@ public function ajax_register() {
     exit;
 }
 public function remove_duplicate_fields() {
-     // Quitamos los campos que WooCommerce podría añadir y que ya manejamos nosotros
-    remove_action('woocommerce_register_form', 'woocommerce_form_field_company', 10);
-    remove_action('woocommerce_register_form', 'woocommerce_form_field_cuit', 10);
+    // Elimina todas las acciones que podrían añadir campos al formulario de registro
+    remove_all_actions('woocommerce_register_form');
     
-    // Si hay otros plugins que añaden campos, también podemos eliminarlos
-    remove_all_actions('woocommerce_register_form_start', 20);
-    remove_all_actions('woocommerce_register_form_end', 20);
+    // Luego vuelve a añadir solo tu función personalizada
+    add_action('woocommerce_register_form', array($this, 'register_form_custom_fields'), 15);
+    
+    // También elimina campos en estos hooks importantes
+    remove_all_actions('woocommerce_register_form_start');
+    remove_all_actions('woocommerce_register_form_end');
+    
+    // Elimina acciones específicas conocidas
+    global $wp_filter;
+    if (isset($wp_filter['woocommerce_register_form'])) {
+        foreach ($wp_filter['woocommerce_register_form']->callbacks as $priority => $callbacks) {
+            foreach ($callbacks as $callback_id => $callback_obj) {
+                if ($callback_id !== get_class($this) . '::register_form_custom_fields') {
+                    remove_action('woocommerce_register_form', $callback_obj['function'], $priority);
+                }
+            }
+        }
+    }
 }
 }
