@@ -337,18 +337,29 @@ public function ajax_save_address() {
             'clear'       => true,
             'priority'    => 120,
         );
-        // Añadir campo para CUIT
-$fields['billing_cuit'] = array(
-    'label'       => __('CUIT', 'my-account-manager'),
-    'placeholder' => __('Formato: xx-xxxxxxxx-x', 'my-account-manager'),
-    'required'    => true,
-    'class'       => array('mam-form-field', 'form-row-wide'),
-    'clear'       => true,
-    'priority'    => 115,
-);
-
-        return $fields;
+        // IMPORTANTE: Añadir valores predeterminados para CUIT y empresa
+    $user_id = get_current_user_id();
+    $cuit = get_user_meta($user_id, 'cuit', true) ?: get_user_meta($user_id, 'billing_cuit', true);
+    $company = get_user_meta($user_id, 'company_name', true) ?: get_user_meta($user_id, 'billing_company', true);
+    
+    // Modificar campo CUIT
+    $fields['billing_cuit'] = array(
+        'label'       => __('CUIT', 'my-account-manager'),
+        'placeholder' => __('Formato: xx-xxxxxxxx-x', 'my-account-manager'),
+        'required'    => true,
+        'class'       => array('mam-form-field', 'form-row-wide'),
+        'clear'       => true,
+        'priority'    => 115,
+        'default'     => $cuit  // AÑADIDO: Valor predeterminado
+    );
+    
+    // Modificar campo empresa
+    if (isset($fields['billing_company'])) {
+        $fields['billing_company']['default'] = $company; // AÑADIDO: Valor predeterminado
     }
+    
+    return $fields;
+}
 /**
  * Modificar los campos del formulario de edición de cuenta
  */
