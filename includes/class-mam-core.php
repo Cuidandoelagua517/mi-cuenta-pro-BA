@@ -25,6 +25,8 @@ class MAM_Core {
         
         // Reemplazar templates
         add_filter('woocommerce_locate_template', array($this, 'override_woocommerce_templates'), 10, 3);
+        // Activar la función en todas las páginas de cuenta
+add_action('woocommerce_account_content', 'mam_load_user_data_to_form', 5);
     }
 
     /**
@@ -74,7 +76,34 @@ class MAM_Core {
         
         return $new_menu_items;
     }
-
+/**
+ * Cargar datos de usuario en cualquier formulario
+ */
+function mam_load_user_data_to_form() {
+    $user_id = get_current_user_id();
+    if (!$user_id) return;
+    
+    // Script que autocompleta campos con JavaScript
+    ?>
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Datos de empresa
+        var companyName = '<?php echo esc_js(get_user_meta($user_id, 'company_name', true) ?: get_user_meta($user_id, 'billing_company', true)); ?>';
+        var cuit = '<?php echo esc_js(get_user_meta($user_id, 'cuit', true) ?: get_user_meta($user_id, 'billing_cuit', true)); ?>';
+        
+        // Autocompletar campos de empresa
+        if (companyName) {
+            $('input[name="account_company"], input[name="account_company_name"], input[name="billing_company"], input[name="shipping_company"]').val(companyName);
+        }
+        
+        // Autocompletar campos de CUIT
+        if (cuit) {
+            $('input[name="account_cuit"], input[name="billing_cuit"], input[name="shipping_cuit"]').val(cuit);
+        }
+    });
+    </script>
+    <?php
+}
     /**
      * Personalizar URLs de endpoints
      */
