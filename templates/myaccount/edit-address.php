@@ -166,12 +166,12 @@ do_action('woocommerce_before_edit_account_address_form');
                     
                     <div class="mam-form-row mam-form-row-first">
                         <label for="mam_address_first_name"><?php _e('Nombre', 'my-account-manager'); ?> <span class="required">*</span></label>
-                        <input type="text" class="mam-input-field" name="mam_address_first_name" id="mam_address_first_name" value="<?php echo esc_attr($addr['first_name']); ?>" required>
+                        <input type="text" class="mam-input-field" name="mam_address_first_name" id="mam_address_first_name" value="<?php echo esc_attr($addr['first_name']); ?>" >
                     </div>
                     
                     <div class="mam-form-row mam-form-row-last">
                         <label for="mam_address_last_name"><?php _e('Apellidos', 'my-account-manager'); ?> <span class="required">*</span></label>
-                        <input type="text" class="mam-input-field" name="mam_address_last_name" id="mam_address_last_name" value="<?php echo esc_attr($addr['last_name']); ?>" required>
+                        <input type="text" class="mam-input-field" name="mam_address_last_name" id="mam_address_last_name" value="<?php echo esc_attr($addr['last_name']); ?>" >
                     </div>
                     
                     <div class="mam-form-row mam-form-row-wide">
