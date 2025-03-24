@@ -324,38 +324,30 @@ public function ajax_register() {
         exit;
     }
     
-    $new_customer = wc_create_new_customer($email, $username, $password);
+ $new_customer = wc_create_new_customer($email, $username, $password);
     
     if (is_wp_error($new_customer)) {
         wp_send_json_error(array('message' => $new_customer->get_error_message()));
         exit;
     }
     
-    // Guardar campos personalizados
-    if (isset($_POST['first_name']) && !empty($_POST['first_name'])) {
-        update_user_meta($new_customer, 'first_name', sanitize_text_field($_POST['first_name']));
-        update_user_meta($new_customer, 'billing_first_name', sanitize_text_field($_POST['first_name']));
+    // MODIFICACIÓN IMPORTANTE: Guardar datos en múltiples ubicaciones
+    // Empresa
+    if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
+        $company = sanitize_text_field($_POST['company_name']);
+        // Guardar en todos los lugares posibles
+        update_user_meta($new_customer, 'company_name', $company);
+        update_user_meta($new_customer, 'billing_company', $company);
+        update_user_meta($new_customer, 'shipping_company', $company);
     }
     
-    if (isset($_POST['last_name']) && !empty($_POST['last_name'])) {
-        update_user_meta($new_customer, 'last_name', sanitize_text_field($_POST['last_name']));
-        update_user_meta($new_customer, 'billing_last_name', sanitize_text_field($_POST['last_name']));
-    }
-    
-    if (isset($_POST['phone']) && !empty($_POST['phone'])) {
-        update_user_meta($new_customer, 'phone', sanitize_text_field($_POST['phone']));
-        update_user_meta($new_customer, 'billing_phone', sanitize_text_field($_POST['phone']));
-    }
-    
-    // Guardar los campos de empresa y CUIT tanto en campos personalizados como en campos de facturación
-   if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
-        update_user_meta($new_customer, 'company_name', sanitize_text_field($_POST['company_name']));
-        update_user_meta($new_customer, 'billing_company', sanitize_text_field($_POST['company_name']));
-    }
-    
-   if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
-        update_user_meta($new_customer, 'cuit', sanitize_text_field($_POST['cuit']));
-        update_user_meta($new_customer, 'billing_cuit', sanitize_text_field($_POST['cuit']));
+    // CUIT
+    if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
+        $cuit = sanitize_text_field($_POST['cuit']);
+        // Guardar en todos los lugares posibles
+        update_user_meta($new_customer, 'cuit', $cuit);
+        update_user_meta($new_customer, 'billing_cuit', $cuit);
+        update_user_meta($new_customer, 'shipping_cuit', $cuit);
     }
     
     // Iniciar sesión automáticamente
