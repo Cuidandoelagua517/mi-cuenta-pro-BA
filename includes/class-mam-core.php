@@ -27,8 +27,31 @@ class MAM_Core {
         add_filter('woocommerce_locate_template', array($this, 'override_woocommerce_templates'), 10, 3);
         // Activar la función en todas las páginas de cuenta
 add_action('woocommerce_account_content', 'mam_load_user_data_to_form', 5);
+        // Solo para administradores
+add_action('woocommerce_account_dashboard', 'mam_debug_user_data', 1
     }
-
+/**
+ * Verificar los valores de CUIT y empresa almacenados
+ */
+function mam_debug_user_data() {
+    if (!current_user_can('manage_options') || !isset($_GET['mam_debug'])) {
+        return;
+    }
+    
+    $user_id = get_current_user_id();
+    $data = array(
+        'cuit' => get_user_meta($user_id, 'cuit', true),
+        'billing_cuit' => get_user_meta($user_id, 'billing_cuit', true),
+        'shipping_cuit' => get_user_meta($user_id, 'shipping_cuit', true),
+        'company_name' => get_user_meta($user_id, 'company_name', true),
+        'billing_company' => get_user_meta($user_id, 'billing_company', true),
+        'shipping_company' => get_user_meta($user_id, 'shipping_company', true),
+    );
+    
+    echo '<pre>';
+    print_r($data);
+    echo '</pre>';
+}
     /**
      * Personalizar los elementos del menú de Mi cuenta
      */
