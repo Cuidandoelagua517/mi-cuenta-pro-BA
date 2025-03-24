@@ -184,8 +184,20 @@ do_action('woocommerce_before_customer_login_form');
     </div>
 </div>
                 
-               <div class="mam-form-row mam-form-row-wide">
+<div class="mam-form-row mam-form-row-wide">
     <label for="reg_cuit"><?php esc_html_e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
+    <div class="mam-input-with-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="cuit" id="reg_cuit" value="<?php echo (!empty($_POST['cuit'])) ? esc_attr(wp_unslash($_POST['cuit'])) : ''; ?>" placeholder="<?php esc_attr_e('Formato: xx-xxxxxxxx-x', 'my-account-manager'); ?>" required />
+    </div>
+    <span class="mam-input-help-text"><?php esc_html_e('Ingresa el CUIT sin guiones. El formato será aplicado automáticamente.', 'my-account-manager'); ?></span>
+</div>
+
+<label for="reg_last_name"><?php esc_html_e('Apellidos', 'my-account-manager'); ?></label>
+
+<label for="reg_phone"><?php esc_html_e('Teléfono', 'my-account-manager'); ?></label>
     <div class="mam-input-with-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
