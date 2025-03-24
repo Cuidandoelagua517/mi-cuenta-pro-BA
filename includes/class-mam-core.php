@@ -28,7 +28,7 @@ class MAM_Core {
         // Activar la función en todas las páginas de cuenta
 add_action('woocommerce_account_content', 'mam_load_user_data_to_form', 5);
         // Solo para administradores
-add_action('woocommerce_account_dashboard', 'mam_debug_user_data', 1
+add_action('woocommerce_account_dashboard', 'mam_debug_user_data', 1);
     }
 /**
  * Verificar los valores de CUIT y empresa almacenados
