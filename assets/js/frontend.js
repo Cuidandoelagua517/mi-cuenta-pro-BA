@@ -353,6 +353,7 @@
          */
         init: function() {
             console.log('MAMUserAccount init started'); // Depuración
+init: function() {
     this.initTabs();
     this.initAjaxLogin();
     this.initAjaxRegister();
@@ -360,8 +361,9 @@
     this.initPasswordToggle();
     this.initFormValidation();
     this.initMobileMenu();
-       // Inicializar formateo de CUIT para todos los campos
+    // Añadir esta línea
     initCUITFormatting();
+
     
     console.log('MAMUserAccount init completed'); // Depuración
 }
