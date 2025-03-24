@@ -192,22 +192,48 @@ if (isset($_POST['account_company_name'])) {
         return $fields;
     }
 
-    /**
-     * Añadir campos personalizados al formulario de datos de cuenta
-     */
-    public function add_custom_account_fields() {
-        $user_id = get_current_user_id();
-        
-        // Obtener valores actuales
-        $phone = get_user_meta($user_id, 'phone', true);
-        $birth_date = get_user_meta($user_id, 'birth_date', true);
-        
-        ?>
-        <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="account_phone"><?php _e('Teléfono', 'my-account-manager'); ?></label>
-            <input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="account_phone" id="account_phone" value="<?php echo esc_attr($phone); ?>" />
-            <span class="description"><?php _e('Utilizado para contactarte en caso de problemas con tu pedido.', 'my-account-manager'); ?></span>
-        </p>
+/**
+ * Añadir campos personalizados al formulario de datos de cuenta
+ */
+public function add_custom_account_fields() {
+    $user_id = get_current_user_id();
+    
+    // Obtener valores actuales con prioridad
+    $phone = get_user_meta($user_id, 'phone', true);
+    $birth_date = get_user_meta($user_id, 'birth_date', true);
+    
+    // IMPORTANTE: Buscar CUIT en múltiples ubicaciones
+    $cuit = get_user_meta($user_id, 'cuit', true);
+    if (empty($cuit)) {
+        $cuit = get_user_meta($user_id, 'billing_cuit', true);
+    }
+    
+    // IMPORTANTE: Buscar empresa en múltiples ubicaciones
+    $company = get_user_meta($user_id, 'company_name', true);
+    if (empty($company)) {
+        $company = get_user_meta($user_id, 'billing_company', true);
+    }
+    
+    ?>
+    <!-- Añadir explícitamente campos de empresa y CUIT -->
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_company_name"><?php esc_html_e('Nombre de Empresa', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_company_name" id="account_company_name" value="<?php echo esc_attr($company); ?>" />
+        <span class="description"><?php _e('Empresa asociada a tu cuenta.', 'my-account-manager'); ?></span>
+    </p>
+
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_cuit"><?php esc_html_e('CUIT', 'my-account-manager'); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_cuit" id="account_cuit" value="<?php echo esc_attr($cuit); ?>" required />
+        <span class="description"><?php _e('CUIT asociado a tu empresa.', 'my-account-manager'); ?></span>
+    </p>
+    
+    <!-- Campos existentes -->
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_phone"><?php _e('Teléfono', 'my-account-manager'); ?></label>
+        <input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="account_phone" id="account_phone" value="<?php echo esc_attr($phone); ?>" />
+        <span class="description"><?php _e('Utilizado para contactarte en caso de problemas con tu pedido.', 'my-account-manager'); ?></span>
+    </p>
         
         <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
             <label for="account_birth_date"><?php _e('Fecha de nacimiento', 'my-account-manager'); ?></label>
