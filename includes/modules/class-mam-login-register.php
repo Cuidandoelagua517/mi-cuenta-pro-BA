@@ -182,18 +182,21 @@ public function register_ajax_handlers() {
         <?php
     }
 public function save_register_fields($customer_id) {
-    // Guardar empresa
-if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
+// Guardar empresa
+    if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
         $company = sanitize_text_field($_POST['company_name']);
         update_user_meta($customer_id, 'company_name', $company);
-        update_user_meta($customer_id, 'billing_company', $company); // También guardar como dato de facturación
+        update_user_meta($customer_id, 'billing_company', $company);
+        update_user_meta($customer_id, 'shipping_company', $company);
     }
     
     // Guardar CUIT
-  if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
+    if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
         $cuit = sanitize_text_field($_POST['cuit']);
+        // Guardar en múltiples ubicaciones para asegurar consistencia
         update_user_meta($customer_id, 'cuit', $cuit);
-        update_user_meta($customer_id, 'billing_cuit', $cuit); // También guardar como dato de facturación
+        update_user_meta($customer_id, 'billing_cuit', $cuit);
+        update_user_meta($customer_id, 'shipping_cuit', $cuit);
     }
      if (isset($_POST['first_name']) && !empty($_POST['first_name'])) {
         update_user_meta($customer_id, 'first_name', sanitize_text_field($_POST['first_name']));
@@ -244,9 +247,15 @@ public function ajax_register() {
         exit;
     }
     
-    // Validación básica de formato CUIT (xx-xxxxxxxx-x)
-    if (!empty($_POST['cuit']) && !$this->validate_cuit_format($_POST['cuit'])) {
-        $validation_error->add('cuit_format_error', __('El formato del CUIT no es válido. Debe ser: xx-xxxxxxxx-x', 'my-account-manager'));
+// Validar el CUIT específicamente
+    if (empty($_POST['cuit'])) {
+        wp_send_json_error(array('message' => __('El CUIT es obligatorio.', 'my-account-manager')));
+        exit;
+    }
+    
+    if (!$this->validate_cuit_format($_POST['cuit'])) {
+        wp_send_json_error(array('message' => __('El formato del CUIT no es válido.', 'my-account-manager')));
+        exit;
     }
     
     // Validar aceptación de política de privacidad (obligatorio)
@@ -257,10 +266,29 @@ public function ajax_register() {
     // Eliminar validaciones de otros campos como first_name, last_name, etc.
     
     return $validation_error;
-}
-/**
- * Validar formato de CUIT
+    /**
+ * Validación personalizada de registro
  */
+public function validate_registration($validation_error, $username, $email) {
+    // Validar campos obligatorios personalizados
+    if (isset($_POST['company_name']) && empty($_POST['company_name'])) {
+        $validation_error->add('company_name_error', __('El nombre de empresa es obligatorio.', 'my-account-manager'));
+    }
+    
+    if (isset($_POST['cuit']) && empty($_POST['cuit'])) {
+        $validation_error->add('cuit_error', __('El CUIT es obligatorio.', 'my-account-manager'));
+    }
+    
+    // Validación básica de formato CUIT (xx-xxxxxxxx-x)
+    if (!empty($_POST['cuit']) && !$this->validate_cuit_format($_POST['cuit'])) {
+        $validation_error->add('cuit_format_error', __('El formato del CUIT no es válido. Debe ser: xx-xxxxxxxx-x', 'my-account-manager'));
+    }
+    
+    if (isset($_POST['privacy_policy']) && empty($_POST['privacy_policy'])) {
+        $validation_error->add('privacy_policy_error', __('Debes aceptar nuestra política de privacidad.', 'my-account-manager'));
+    }
+    
+    return $validation_error;
 /**
  * Validar formato de CUIT
  */
@@ -274,7 +302,7 @@ private function validate_cuit_format($cuit) {
     }
     
     // Aquí podrías añadir validación adicional del número de CUIT
-    // como verificación del dígito de control
+    // como verificación del dígito de control si es necesario
     
     return true;
 }
