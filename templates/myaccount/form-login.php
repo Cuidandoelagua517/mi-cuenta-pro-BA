@@ -195,16 +195,25 @@ do_action('woocommerce_before_customer_login_form');
     <span class="mam-input-help-text"><?php esc_html_e('Ingresa el CUIT sin guiones. El formato será aplicado automáticamente.', 'my-account-manager'); ?></span>
 </div>
 
-<label for="reg_last_name"><?php esc_html_e('Apellidos', 'my-account-manager'); ?></label>
-
-<label for="reg_phone"><?php esc_html_e('Teléfono', 'my-account-manager'); ?></label>
+<!-- Apellidos - Corregir la etiqueta -->
+<div class="mam-form-row mam-form-row-wide">
+    <label for="reg_last_name"><?php esc_html_e('Apellidos', 'my-account-manager'); ?></label>
     <div class="mam-input-with-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
-        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="cuit" id="reg_cuit" value="<?php echo (!empty($_POST['cuit'])) ? esc_attr(wp_unslash($_POST['cuit'])) : ''; ?>" placeholder="<?php esc_attr_e('Formato: xx-xxxxxxxx-x', 'my-account-manager'); ?>" required />
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="last_name" id="reg_last_name" autocomplete="family-name" value="<?php echo (!empty($_POST['last_name'])) ? esc_attr(wp_unslash($_POST['last_name'])) : ''; ?>" />
     </div>
-    <span class="mam-input-help-text"><?php esc_html_e('Ingresa el CUIT sin guiones. El formato será aplicado automáticamente.', 'my-account-manager'); ?></span>
+</div>
+
+<div class="mam-form-row mam-form-row-wide">
+    <label for="reg_phone"><?php esc_html_e('Teléfono', 'my-account-manager'); ?></label>
+    <div class="mam-input-with-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+        </svg>
+        <input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="phone" id="reg_phone" autocomplete="tel" value="<?php echo (!empty($_POST['phone'])) ? esc_attr(wp_unslash($_POST['phone'])) : ''; ?>" />
+    </div>
 </div>
 
                 <div class="mam-form-row mam-form-row-first">
