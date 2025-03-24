@@ -26,7 +26,7 @@ class MAM_Addresses {
      */
     public function __construct() {
         // Añadir campos a la edición de cuenta
-    add_action('woocommerce_edit_account_form', array($this, 'load_account_fields_values'));
+    //add_action('woocommerce_edit_account_form', array($this, 'load_account_fields_values'));
     add_action('woocommerce_save_account_details', array($this, 'save_account_fields'));
     add_filter('woocommerce_form_field_args', array($this, 'add_form_field_args'), 10, 3);
         // Personalizar título del endpoint
