@@ -71,6 +71,7 @@ add_action('woocommerce_order_details_after_customer_details', array($this, 'dis
 // Mostrar CUIT en administración
 add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_cuit_to_admin_order'), 10, 1);
 add_filter('woocommerce_address_to_edit', array($this, 'load_address_fields_values'), 10, 2);
+        add_action('wp_footer', array($this, 'load_user_data_in_forms'));
     }
 public function register_ajax_handlers() {
     add_action('wp_ajax_mam_save_address', array($this, 'ajax_save_address'));
@@ -644,6 +645,41 @@ public function load_address_fields_values($fields, $load_address) {
     }
     
     return $fields;
+}
+    /**
+ * Método para cargar la información de usuario automáticamente en los campos
+ */
+public function load_user_data_in_forms() {
+    if (!is_account_page()) return;
+    
+    $user_id = get_current_user_id();
+    if (!$user_id) return;
+    
+    // Obtener los mejores valores disponibles
+    $cuit = get_user_meta($user_id, 'cuit', true) ?: 
+            get_user_meta($user_id, 'billing_cuit', true);
+            
+    $company = get_user_meta($user_id, 'company_name', true) ?: 
+              get_user_meta($user_id, 'billing_company', true);
+    
+    // Solo emitir el script si hay datos para autocompletar
+    if (empty($cuit) && empty($company)) return;
+    
+    ?>
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Autocompletar campos de empresa
+        <?php if (!empty($company)) : ?>
+        $('input[name="account_company"], input[name="account_company_name"], input[name="billing_company"]').val('<?php echo esc_js($company); ?>');
+        <?php endif; ?>
+        
+        // Autocompletar campos de CUIT
+        <?php if (!empty($cuit)) : ?>
+        $('input[name="account_cuit"], input[name="billing_cuit"]').val('<?php echo esc_js($cuit); ?>');
+        <?php endif; ?>
+    });
+    </script>
+    <?php
 }
     /**
      * Añadir clases a los campos del formulario
