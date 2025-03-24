@@ -559,15 +559,16 @@ private function validate_cuit_format($cuit) {
  */
 public function load_account_fields_values($user) {
     // Obtener datos guardados (buscar en múltiples ubicaciones para garantizar que tengamos valores)
-    $company = get_user_meta($user->ID, 'billing_company', true);
-    if (empty($company)) {
-        $company = get_user_meta($user->ID, 'company_name', true);
-    }
-    
-    $cuit = get_user_meta($user->ID, 'billing_cuit', true);
-    if (empty($cuit)) {
-        $cuit = get_user_meta($user->ID, 'cuit', true);
-    }
+   $company = get_user_meta($user->ID, 'billing_company', true);
+if (empty($company)) {
+    $company = get_user_meta($user->ID, 'company_name', true);
+}
+
+$cuit = get_user_meta($user->ID, 'billing_cuit', true);
+if (empty($cuit)) {
+    $cuit = get_user_meta($user->ID, 'cuit', true);
+}
+
     
     ?>
     <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
