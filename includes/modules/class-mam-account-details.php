@@ -193,22 +193,28 @@ if (isset($_POST['account_company_name'])) {
     }
 
 public function add_custom_account_fields() {
-    $user_id = get_current_user_id();
+  $user_id = get_current_user_id();
     
-    // Obtener valores actuales con prioridad
-    $phone = get_user_meta($user_id, 'phone', true);
-    $birth_date = get_user_meta($user_id, 'birth_date', true);
-    
-    // IMPORTANTE: Buscar CUIT en múltiples ubicaciones
-    $cuit = get_user_meta($user_id, 'cuit', true);
-    if (empty($cuit)) {
-        $cuit = get_user_meta($user_id, 'billing_cuit', true);
+    // Búsqueda avanzada con múltiples ubicaciones - CUIT
+    $cuit = '';
+    $cuit_locations = ['cuit', 'billing_cuit', '_cuit', '_billing_cuit'];
+    foreach ($cuit_locations as $meta_key) {
+        $temp = get_user_meta($user_id, $meta_key, true);
+        if (!empty($temp)) {
+            $cuit = $temp;
+            break;
+        }
     }
     
-    // IMPORTANTE: Buscar empresa en múltiples ubicaciones
-    $company = get_user_meta($user_id, 'company_name', true);
-    if (empty($company)) {
-        $company = get_user_meta($user_id, 'billing_company', true);
+    // Búsqueda avanzada con múltiples ubicaciones - Empresa
+    $company = '';
+    $company_locations = ['company_name', 'billing_company', '_company_name', '_billing_company'];
+    foreach ($company_locations as $meta_key) {
+        $temp = get_user_meta($user_id, $meta_key, true);
+        if (!empty($temp)) {
+            $company = $temp;
+            break;
+        }
     }
     
     ?>
