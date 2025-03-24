@@ -145,7 +145,33 @@
     opacity: 0.7;
     pointer-events: none;
 }
+/* Reducir el margen superior por defecto */
+.mam-dashboard-header h2,
+.woocommerce-MyAccount-content h2:first-of-type {
+    margin-top: 0;
+}
 
+/* Forzar un margen adecuado solo cuando hay mensajes de WooCommerce */
+.woocommerce-notices-wrapper:not(:empty) + .mam-dashboard-header h2,
+.woocommerce-notices-wrapper:not(:empty) + .woocommerce-MyAccount-content h2:first-of-type,
+.woocommerce-notices-wrapper:not(:empty) ~ .mam-dashboard-header h2,
+.woocommerce-notices-wrapper:not(:empty) ~ .woocommerce-MyAccount-content h2:first-of-type {
+    margin-top: 1.5rem;
+}
+/* Eliminar espacios innecesarios en el contenedor de mensajes cuando está vacío */
+.woocommerce-notices-wrapper:empty {
+    display: none;
+}
+
+/* En caso de que la clase del elemento sea diferente, esta regla más general también ayudará */
+.woocommerce-account .woocommerce-MyAccount-content > h2:first-of-type {
+    margin-top: 0;
+}
+
+/* Mantener márgenes adecuados solo si hay mensajes */
+.woocommerce-notices-wrapper:not(:empty) {
+    margin-bottom: 1.5rem;
+}
 .mam-loading:after {
     content: "";
     position: absolute;
