@@ -386,7 +386,6 @@ public function remove_duplicate_fields() {
     // Si hay otros plugins que añaden campos, también podemos eliminarlos
     remove_all_actions('woocommerce_register_form_start', 20);
     remove_all_actions('woocommerce_register_form_end', 20);
-}
     
     // Si hay otros plugins que añaden campos, también podemos eliminarlos
     remove_all_actions('woocommerce_register_form_start', 20);
