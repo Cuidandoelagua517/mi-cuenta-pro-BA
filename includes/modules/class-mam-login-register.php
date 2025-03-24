@@ -333,22 +333,21 @@ public function ajax_register() {
     
     // MODIFICACIÓN IMPORTANTE: Guardar datos en múltiples ubicaciones
     // Empresa
-    if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
-        $company = sanitize_text_field($_POST['company_name']);
-        // Guardar en todos los lugares posibles
-        update_user_meta($new_customer, 'company_name', $company);
-        update_user_meta($new_customer, 'billing_company', $company);
-        update_user_meta($new_customer, 'shipping_company', $company);
-    }
-    
-    // CUIT
-    if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
-        $cuit = sanitize_text_field($_POST['cuit']);
-        // Guardar en todos los lugares posibles
-        update_user_meta($new_customer, 'cuit', $cuit);
-        update_user_meta($new_customer, 'billing_cuit', $cuit);
-        update_user_meta($new_customer, 'shipping_cuit', $cuit);
-    }
+  if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
+    $company = sanitize_text_field($_POST['company_name']);
+    // Guardar en todos los lugares posibles
+    update_user_meta($new_customer, 'company_name', $company);
+    update_user_meta($new_customer, 'billing_company', $company);
+    update_user_meta($new_customer, 'shipping_company', $company);
+}
+
+if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
+    $cuit = sanitize_text_field($_POST['cuit']);
+    // Guardar en todos los lugares posibles
+    update_user_meta($new_customer, 'cuit', $cuit);
+    update_user_meta($new_customer, 'billing_cuit', $cuit);
+    update_user_meta($new_customer, 'shipping_cuit', $cuit);
+}
     
     // Iniciar sesión automáticamente
     wc_set_customer_auth_cookie($new_customer);
