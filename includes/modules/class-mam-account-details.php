@@ -192,9 +192,6 @@ if (isset($_POST['account_company_name'])) {
         return $fields;
     }
 
-/**
- * Añadir campos personalizados al formulario de datos de cuenta
- */
 public function add_custom_account_fields() {
     $user_id = get_current_user_id();
     
@@ -235,57 +232,58 @@ public function add_custom_account_fields() {
         <span class="description"><?php _e('Utilizado para contactarte en caso de problemas con tu pedido.', 'my-account-manager'); ?></span>
     </p>
         
-        <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-            <label for="account_birth_date"><?php _e('Fecha de nacimiento', 'my-account-manager'); ?></label>
-            <input type="date" class="woocommerce-Input woocommerce-Input--date input-text" name="account_birth_date" id="account_birth_date" value="<?php echo esc_attr($birth_date); ?>" />
-            <span class="description"><?php _e('Utilizada para enviarte promociones especiales en tu cumpleaños.', 'my-account-manager'); ?></span>
-        </p>
-        <?php
-    }
+    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+        <label for="account_birth_date"><?php _e('Fecha de nacimiento', 'my-account-manager'); ?></label>
+        <input type="date" class="woocommerce-Input woocommerce-Input--date input-text" name="account_birth_date" id="account_birth_date" value="<?php echo esc_attr($birth_date); ?>" />
+        <span class="description"><?php _e('Utilizada para enviarte promociones especiales en tu cumpleaños.', 'my-account-manager'); ?></span>
+    </p>
+    <?php
+}
 
     /**
-     * Guardar campos personalizados
-     */
-    public function save_custom_account_fields($user_id) {
-        // Guardar número de teléfono
-        if (isset($_POST['account_phone'])) {
-            update_user_meta($user_id, 'phone', sanitize_text_field($_POST['account_phone']));
-        }
-        
-        // Guardar fecha de nacimiento
-        if (isset($_POST['account_birth_date'])) {
-            update_user_meta($user_id, 'birth_date', sanitize_text_field($_POST['account_birth_date']));
-        }
-        
-        // Guardar preferencias de comunicación
-        if (isset($_POST['communication_preferences'])) {
-            $preferences = array_map('sanitize_text_field', $_POST['communication_preferences']);
-            update_user_meta($user_id, 'communication_preferences', $preferences);
-        } else {
-            update_user_meta($user_id, 'communication_preferences', array());
-        }
-        
-        // Guardar preferencias de privacidad
-        if (isset($_POST['privacy_options'])) {
-            $privacy = array_map('sanitize_text_field', $_POST['privacy_options']);
-            update_user_meta($user_id, 'privacy_options', $privacy);
-        } else {
-            update_user_meta($user_id, 'privacy_options', array());
-        }
-        // Guardar CUIT
-if (isset($_POST['account_cuit'])) {
-    update_user_meta($user_id, 'cuit', sanitize_text_field($_POST['account_cuit']));
-    // También guardarlo como meta de facturación para WooCommerce
-    update_user_meta($user_id, 'billing_cuit', sanitize_text_field($_POST['account_cuit']));
-}
-
-// Guardar Nombre de Empresa
-if (isset($_POST['account_company_name'])) {
-    update_user_meta($user_id, 'company_name', sanitize_text_field($_POST['account_company_name']));
-    // También guardarlo como meta de facturación para WooCommerce
-    update_user_meta($user_id, 'billing_company', sanitize_text_field($_POST['account_company_name']));
-}
+ * También modificar la función save_account_fields para guardar en todos los lugares
+ */
+public function save_custom_account_fields($user_id) {
+    // Guardar número de teléfono
+    if (isset($_POST['account_phone'])) {
+        update_user_meta($user_id, 'phone', sanitize_text_field($_POST['account_phone']));
     }
+    
+    // Guardar fecha de nacimiento
+    if (isset($_POST['account_birth_date'])) {
+        update_user_meta($user_id, 'birth_date', sanitize_text_field($_POST['account_birth_date']));
+    }
+    
+    // Guardar preferencias de comunicación
+    if (isset($_POST['communication_preferences'])) {
+        $preferences = array_map('sanitize_text_field', $_POST['communication_preferences']);
+        update_user_meta($user_id, 'communication_preferences', $preferences);
+    } else {
+        update_user_meta($user_id, 'communication_preferences', array());
+    }
+    
+    // Guardar preferencias de privacidad
+    if (isset($_POST['privacy_options'])) {
+        $privacy = array_map('sanitize_text_field', $_POST['privacy_options']);
+        update_user_meta($user_id, 'privacy_options', $privacy);
+    } else {
+        update_user_meta($user_id, 'privacy_options', array());
+    }
+    
+    // Guardar CUIT
+    if (isset($_POST['account_cuit'])) {
+        update_user_meta($user_id, 'cuit', sanitize_text_field($_POST['account_cuit']));
+        // También guardarlo como meta de facturación para WooCommerce
+        update_user_meta($user_id, 'billing_cuit', sanitize_text_field($_POST['account_cuit']));
+    }
+    
+    // Guardar Nombre de Empresa
+    if (isset($_POST['account_company_name'])) {
+        update_user_meta($user_id, 'company_name', sanitize_text_field($_POST['account_company_name']));
+        // También guardarlo como meta de facturación para WooCommerce
+        update_user_meta($user_id, 'billing_company', sanitize_text_field($_POST['account_company_name']));
+    }
+}
 
     /**
      * Validación personalizada para los campos de cuenta
