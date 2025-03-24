@@ -50,7 +50,10 @@ class MAM_Login_Register {
         add_shortcode('mam_login_form', array($this, 'login_form_shortcode'));
         add_shortcode('mam_register_form', array($this, 'register_form_shortcode'));
         
-       add_action('init', array($this, 'remove_duplicate_fields'), 20);
+add_action('woocommerce_register_form', array($this, 'register_form_custom_fields'), 15);
+add_action('woocommerce_created_customer', array($this, 'save_register_fields'), 10, 1);
+add_filter('woocommerce_process_registration_errors', array($this, 'validate_registration'), 10, 3);
+add_action('init', array($this, 'remove_duplicate_fields'), 20);
     
     // Asegurarse de que register_ajax_handlers se llama
     $this->register_ajax_handlers();
@@ -178,7 +181,23 @@ public function register_ajax_handlers() {
         </div>
         <?php
     }
-
+public function save_register_fields($customer_id) {
+    // Guardar empresa
+    if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
+        $company = sanitize_text_field($_POST['company_name']);
+        update_user_meta($customer_id, 'company_name', $company);
+        update_user_meta($customer_id, 'billing_company', $company);
+        update_user_meta($customer_id, 'shipping_company', $company);
+    }
+    
+    // Guardar CUIT
+    if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
+        $cuit = sanitize_text_field($_POST['cuit']);
+        update_user_meta($customer_id, 'cuit', $cuit);
+        update_user_meta($customer_id, 'billing_cuit', $cuit);
+        update_user_meta($customer_id, 'shipping_cuit', $cuit);
+    }
+}
     /**
      * Validación personalizada de login
      */
@@ -371,5 +390,4 @@ public function remove_duplicate_fields() {
     remove_all_actions('woocommerce_register_form_start', 20);
     remove_all_actions('woocommerce_register_form_end', 20);
 }
-
 }
