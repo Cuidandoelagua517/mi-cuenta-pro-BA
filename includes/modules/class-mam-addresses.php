@@ -310,35 +310,11 @@ public function ajax_save_address() {
         return $fields;
     }
 
-    /**
-     * Personalizar campos de facturación
-     */
-    public function customize_billing_fields($fields) {
-        // Añadir o modificar campos específicos de facturación
-        if (isset($fields['billing_phone'])) {
-            $fields['billing_phone']['label'] = __('Teléfono de contacto', 'my-account-manager');
-            $fields['billing_phone']['placeholder'] = __('Para contactarte sobre el pedido', 'my-account-manager');
-            $fields['billing_phone']['priority'] = 100;
-            $fields['billing_phone']['class'] = array('mam-form-field', 'form-row-first');
-        }
-        
-        if (isset($fields['billing_email'])) {
-            $fields['billing_email']['label'] = __('Email de facturación', 'my-account-manager');
-            $fields['billing_email']['placeholder'] = __('Para enviarte la factura', 'my-account-manager');
-            $fields['billing_email']['priority'] = 110;
-            $fields['billing_email']['class'] = array('mam-form-field', 'form-row-last');
-        }
-        
-        // Añadir campo para NIF/CIF/DNI para facturación
-        $fields['billing_id_number'] = array(
-            'label'       => __('NIF/CIF/DNI', 'my-account-manager'),
-            'placeholder' => __('Para facturación', 'my-account-manager'),
-            'required'    => false,
-            'class'       => array('mam-form-field', 'form-row-wide'),
-            'clear'       => true,
-            'priority'    => 120,
-        );
-        // IMPORTANTE: Añadir valores predeterminados para CUIT y empresa
+  /**
+ * También mejorar la función customize_billing_fields para usar valores por defecto
+ */
+public function customize_billing_fields($fields) {
+    // IMPORTANTE: Añadir valores predeterminados para CUIT y empresa
     $user_id = get_current_user_id();
     $cuit = get_user_meta($user_id, 'cuit', true) ?: get_user_meta($user_id, 'billing_cuit', true);
     $company = get_user_meta($user_id, 'company_name', true) ?: get_user_meta($user_id, 'billing_company', true);
@@ -620,7 +596,7 @@ public function save_cuit_data($user_id, $cuit) {
         return false;
     }
 /**
- * Cargar valores de CUIT y empresa en campos de dirección
+ * Adicionalmente, añadir esta función para facilitar la manipulación de direcciones
  */
 public function load_address_fields_values($fields, $load_address) {
     $user_id = get_current_user_id();
@@ -646,9 +622,12 @@ public function load_address_fields_values($fields, $load_address) {
     
     return $fields;
 }
-    /**
- * Método para cargar la información de usuario automáticamente en los campos
+/**
+ * En includes/modules/class-mam-addresses.php
+ * 
+ * Añadir nueva función para autocompletar campos en los formularios
  */
+
 public function load_user_data_in_forms() {
     if (!is_account_page()) return;
     
@@ -663,9 +642,8 @@ public function load_user_data_in_forms() {
               get_user_meta($user_id, 'billing_company', true);
     
     // Solo emitir el script si hay datos para autocompletar
-if (!is_account_page()) return;
+    if (empty($cuit) && empty($company)) return;
     
-    // Script de JavaScript para autocompletar campos relacionados
     ?>
     <script type="text/javascript">
     jQuery(document).ready(function($) {
