@@ -695,3 +695,22 @@ input[type="password"] {
 .mam-dashboard-card-footer a:hover {
     text-decoration: underline;
 }
+/* Estilos para campos con error */
+.mam-field-error {
+    border-color: var(--mam-danger-color) !important;
+    box-shadow: 0 0 0 1px var(--mam-danger-color) !important;
+}
+
+.mam-field-error-message {
+    color: var(--mam-danger-color);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.mam-input-help-text {
+    color: var(--mam-text-light-color);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: block;
+}
