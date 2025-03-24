@@ -217,15 +217,31 @@ if (isset($_POST['last_name']) && !empty($_POST['last_name'])) {
     /**
  * Validación personalizada de registro
  */
-public function validate_registration($validation_error, $username, $email) {
-    // Validar campo de empresa (obligatorio)
-    if (isset($_POST['company_name']) && empty($_POST['company_name'])) {
-        $validation_error->add('company_name_error', __('El nombre de empresa es obligatorio.', 'my-account-manager'));
+public function ajax_register() {
+    check_ajax_referer('mam-nonce', 'security');
+    
+    $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    
+    // Validar los campos obligatorios
+    $errors = array();
+    
+    if (empty($email)) {
+        $errors[] = __('El correo electrónico es obligatorio', 'my-account-manager');
     }
     
-    // Validar campo de CUIT (obligatorio)
+    if (isset($_POST['company_name']) && empty($_POST['company_name'])) {
+        $errors[] = __('El nombre de empresa es obligatorio', 'my-account-manager');
+    }
+    
     if (isset($_POST['cuit']) && empty($_POST['cuit'])) {
-        $validation_error->add('cuit_error', __('El CUIT es obligatorio.', 'my-account-manager'));
+        $errors[] = __('El CUIT es obligatorio', 'my-account-manager');
+    }
+    
+    if (!empty($errors)) {
+        wp_send_json_error(array('message' => implode('<br>', $errors)));
+        exit;
     }
     
     // Validación básica de formato CUIT (xx-xxxxxxxx-x)
