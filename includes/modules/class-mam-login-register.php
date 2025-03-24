@@ -353,19 +353,16 @@ public function ajax_register() {
     }
     
     // MODIFICACIÓN IMPORTANTE: Guardar datos en múltiples ubicaciones
-    // Empresa
+   // Asegurarse de usar los campos correctos (los que tienen el prefijo "reg_")
     if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
         $company = sanitize_text_field($_POST['company_name']);
-        // Guardar en todos los lugares posibles
         update_user_meta($new_customer, 'company_name', $company);
         update_user_meta($new_customer, 'billing_company', $company);
         update_user_meta($new_customer, 'shipping_company', $company);
     }
     
-    // CUIT
     if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
         $cuit = sanitize_text_field($_POST['cuit']);
-        // Guardar en todos los lugares posibles
         update_user_meta($new_customer, 'cuit', $cuit);
         update_user_meta($new_customer, 'billing_cuit', $cuit);
         update_user_meta($new_customer, 'shipping_cuit', $cuit);
@@ -382,9 +379,14 @@ public function ajax_register() {
     exit;
 }
 public function remove_duplicate_fields() {
-    // Quitamos los campos que WooCommerce podría añadir y que ya manejamos nosotros
+     // Quitamos los campos que WooCommerce podría añadir y que ya manejamos nosotros
     remove_action('woocommerce_register_form', 'woocommerce_form_field_company', 10);
     remove_action('woocommerce_register_form', 'woocommerce_form_field_cuit', 10);
+    
+    // Si hay otros plugins que añaden campos, también podemos eliminarlos
+    remove_all_actions('woocommerce_register_form_start', 20);
+    remove_all_actions('woocommerce_register_form_end', 20);
+}
     
     // Si hay otros plugins que añaden campos, también podemos eliminarlos
     remove_all_actions('woocommerce_register_form_start', 20);
