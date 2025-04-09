@@ -551,6 +551,104 @@ input[type="password"] {
 .mam-password-field input {
   padding-right: 40px; /* Espacio para el botón de mostrar/ocultar */
 }
+/* Estilos para formularios en popups */
+.mam-popup-form {
+    font-family: var(--mam-font-family);
+    color: var(--mam-text-color);
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.mam-popup-form-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.mam-popup-form-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--mam-dark-color);
+}
+
+.mam-popup-form-header p {
+    color: var(--mam-text-light-color);
+    font-size: 0.95rem;
+}
+
+.mam-popup-form .mam-form-row {
+    margin-bottom: 1rem;
+}
+
+.mam-popup-form .mam-form-row-first,
+.mam-popup-form .mam-form-row-last {
+    width: 100%;
+}
+
+.mam-popup-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.mam-popup-form input[type="text"],
+.mam-popup-form input[type="email"],
+.mam-popup-form input[type="password"],
+.mam-popup-form input[type="tel"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--mam-border-color);
+    border-radius: var(--mam-border-radius);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.mam-popup-form .mam-button {
+    width: 100%;
+    justify-content: center;
+}
+
+.mam-popup-form-footer {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.mam-popup-form .mam-remember-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.mam-popup-form .mam-lost-password-link {
+    font-size: 0.85rem;
+    color: var(--mam-primary-color);
+    text-decoration: none;
+}
+
+/* Responsive para popups */
+@media (min-width: 480px) {
+    .mam-popup-form .mam-form-row-first {
+        float: left;
+        width: 48%;
+        clear: both;
+    }
+    
+    .mam-popup-form .mam-form-row-last {
+        float: right;
+        width: 48%;
+    }
+    
+    .mam-popup-form .mam-form-row::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
 /* Responsive: Tablet (768px) y superior */
 @media (min-width: 768px) {
     .woocommerce-account .woocommerce {
