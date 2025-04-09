@@ -320,35 +320,77 @@ private function validate_cuit_format($cuit) {
         echo '</div>';
     }
 
-    /**
-     * Shortcode para formulario de login
-     */
-    public function login_form_shortcode($atts) {
-        ob_start();
-        
+   /**
+ * Shortcode para formulario de login - Mejorado para popups
+ */
+public function login_form_shortcode($atts) {
+    $atts = shortcode_atts([
+        'popup' => 'no',                  // 'yes' si es para popup
+        'redirect' => '',                 // URL de redirección personalizada
+        'show_title' => 'yes',            // Mostrar título
+        'show_register_link' => 'yes',    // Mostrar enlace a registro
+        'button_text' => 'Iniciar Sesión' // Texto del botón personalizable
+    ], $atts);
+    
+    ob_start();
+    
+    // Encolar siempre los estilos y scripts necesarios
+    wp_enqueue_style('mam-styles');
+    wp_enqueue_script('mam-scripts');
+    
+    // Almacenar los atributos para que la plantilla pueda acceder a ellos
+    set_query_var('mam_form_atts', $atts);
+    
+    // Cargar plantilla adecuada según el contexto
+    if ($atts['popup'] === 'yes') {
+        include(MAM_PLUGIN_DIR . 'templates/popup/form-login.php');
+    } else {
+        // Para uso normal, usar la plantilla completa
         if (is_user_logged_in()) {
             wc_get_template('myaccount/my-account.php');
         } else {
             wc_get_template('myaccount/form-login.php', array('form' => 'login'));
         }
-        
-        return ob_get_clean();
     }
+    
+    return ob_get_clean();
+}
       
-    /**
-     * Shortcode para formulario de registro
-     */
-    public function register_form_shortcode($atts) {
-        ob_start();
-        
+   /**
+ * Shortcode para formulario de registro - Mejorado para popups
+ */
+public function register_form_shortcode($atts) {
+    $atts = shortcode_atts([
+        'popup' => 'no',                  // 'yes' si es para popup
+        'redirect' => '',                 // URL de redirección personalizada
+        'show_title' => 'yes',            // Mostrar título
+        'show_login_link' => 'yes',       // Mostrar enlace a login
+        'button_text' => 'Crear Cuenta'   // Texto del botón personalizable
+    ], $atts);
+    
+    ob_start();
+    
+    // Encolar siempre los estilos y scripts necesarios
+    wp_enqueue_style('mam-styles');
+    wp_enqueue_script('mam-scripts');
+    
+    // Almacenar los atributos para que la plantilla pueda acceder a ellos
+    set_query_var('mam_form_atts', $atts);
+    
+    // Cargar plantilla adecuada según el contexto
+    if ($atts['popup'] === 'yes') {
+        include(MAM_PLUGIN_DIR . 'templates/popup/form-register.php');
+    } else {
+        // Para uso normal, usar la plantilla completa
         if (is_user_logged_in()) {
             wc_get_template('myaccount/my-account.php');
         } else {
             wc_get_template('myaccount/form-login.php', array('form' => 'register'));
         }
-        
-        return ob_get_clean();
     }
+    
+    return ob_get_clean();
+}
 
    /**
  * Login por AJAX
