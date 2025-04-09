@@ -392,8 +392,8 @@ public function register_form_shortcode($atts) {
     return ob_get_clean();
 }
 
-   /**
- * Login por AJAX
+/**
+ * Login por AJAX - Mejorado para popups
  */
 public function ajax_login() {
     check_ajax_referer('mam-nonce', 'security');
@@ -418,21 +418,27 @@ public function ajax_login() {
         return;
     }
     
+    // Permitir URL de redirección personalizada
+    $redirect = '';
+    if (!empty($_POST['redirect'])) {
+        $redirect = esc_url_raw($_POST['redirect']);
+    } else {
+        $redirect = wc_get_account_endpoint_url('dashboard');
+    }
+    
     wp_send_json_success([
         'message' => __('Login exitoso', 'my-account-manager'),
-        'redirect' => wc_get_account_endpoint_url('dashboard')
+        'redirect' => $redirect
     ]);
 }
-  /**
- * En includes/modules/class-mam-login-register.php
- * Modificar la función ajax_register() para guardar correctamente los datos
+ /**
+ * Registro por AJAX - Mejorado para popups
  */
-
 public function ajax_register() {
     check_ajax_referer('mam-nonce', 'security');
     
     $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
-    $email    = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     
     $validation_error = new WP_Error();
@@ -450,31 +456,46 @@ public function ajax_register() {
         exit;
     }
     
-    // MODIFICACIÓN IMPORTANTE: Guardar datos en múltiples ubicaciones
-   // Asegurarse de usar los campos correctos (los que tienen el prefijo "reg_")
+    // Guardar datos adicionales
     if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
         $company = sanitize_text_field($_POST['company_name']);
         update_user_meta($new_customer, 'company_name', $company);
         update_user_meta($new_customer, 'billing_company', $company);
-        update_user_meta($new_customer, 'shipping_company', $company);
     }
     
     if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
         $cuit = sanitize_text_field($_POST['cuit']);
         update_user_meta($new_customer, 'cuit', $cuit);
         update_user_meta($new_customer, 'billing_cuit', $cuit);
-        update_user_meta($new_customer, 'shipping_cuit', $cuit);
+    }
+    
+    if (isset($_POST['first_name']) && !empty($_POST['first_name'])) {
+        update_user_meta($new_customer, 'first_name', sanitize_text_field($_POST['first_name']));
+    }
+    
+    if (isset($_POST['last_name']) && !empty($_POST['last_name'])) {
+        update_user_meta($new_customer, 'last_name', sanitize_text_field($_POST['last_name']));
+    }
+    
+    if (isset($_POST['phone']) && !empty($_POST['phone'])) {
+        update_user_meta($new_customer, 'phone', sanitize_text_field($_POST['phone']));
     }
     
     // Iniciar sesión automáticamente
     wc_set_customer_auth_cookie($new_customer);
     
+    // Permitir URL de redirección personalizada
+    $redirect = '';
+    if (!empty($_POST['redirect'])) {
+        $redirect = esc_url_raw($_POST['redirect']);
+    } else {
+        $redirect = apply_filters('mam_registration_redirect', wc_get_page_permalink('myaccount'), $new_customer);
+    }
+    
     wp_send_json_success(array(
         'message' => __('Registro exitoso, redirigiendo...', 'my-account-manager'),
-        'redirect' => apply_filters('mam_registration_redirect', wc_get_page_permalink('myaccount'), $new_customer)
+        'redirect' => $redirect
     ));
-    
-    exit;
 }
 public function remove_duplicate_fields() {
     // Elimina todas las acciones que podrían añadir campos al formulario de registro
