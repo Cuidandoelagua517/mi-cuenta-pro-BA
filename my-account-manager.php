@@ -220,33 +220,31 @@ add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
     /**
      * Enqueue de assets para el frontend
      */
-    public function enqueue_frontend_assets() {
+   public function enqueue_frontend_assets() {
     // Registrar y encolar estilos CSS
     wp_register_style('mam-styles', MAM_PLUGIN_URL . 'assets/css/frontend.css', array(), MAM_VERSION);
-    wp_enqueue_style('mam-styles');
     
     // Registrar los scripts JS
     wp_register_script('mam-scripts', MAM_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), MAM_VERSION, true);
     
-    // Scripts específicos para cada página
-    if (is_account_page()) {
-        // Código eliminado/comentado
-        // ...
-    }
-    
-    // Script principal
+    // Encolar siempre en el footer para que estén disponibles para popups
+    wp_enqueue_style('mam-styles');
     wp_enqueue_script('mam-scripts');
     
-    // Esto debe estar DENTRO de la función, no fuera
+    // Añadir datos al script
     wp_localize_script('mam-scripts', 'mam_params', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('mam-nonce'),
+        'is_popup' => false, // Esto puede cambiarse a true cuando se usa en popups
         'i18n'     => array(
-            'error'   => __('Error de conexión. Por favor, inténtalo de nuevo.', 'my-account-manager'),
-            // Otros strings...
+            'error'           => __('Error de conexión. Por favor, inténtalo de nuevo.', 'my-account-manager'),
+            'required'        => __('Este campo es obligatorio.', 'my-account-manager'),
+            'email_invalid'   => __('Por favor, introduce un email válido.', 'my-account-manager'),
+            'password_short'  => __('La contraseña debe tener al menos 6 caracteres.', 'my-account-manager'),
+            'confirm_delete'  => __('¿Estás seguro de que quieres eliminar esta dirección?', 'my-account-manager')
         )
     ));
-} 
+}
 
     /**
      * Agregar script de corrección para las pestañas de login/registro
