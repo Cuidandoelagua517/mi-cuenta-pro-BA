@@ -500,7 +500,7 @@
 
     // Ejecutar cuando el DOM esté listo
     $(document).ready(function() {
-        console.log('My Account Manager: Iniciando...');
+      
         
         // Inicializar el objeto principal
         MAMUserAccount.init();
@@ -508,13 +508,13 @@
         // Debug: Verificar si hay campos CUIT en la página
         setTimeout(function() {
             var cuitFields = $('input[name="cuit"], input[name="billing_cuit"], input[name="reg_cuit"], [id*="cuit"]:not([type="hidden"]), [name*="cuit"]:not([type="hidden"])');
-            console.log('Campos CUIT encontrados:', cuitFields.length);
+       
             
             if (cuitFields.length > 0) {
-                console.log('Aplicando formateo inicial a campos CUIT...');
+                
                 cuitFields.each(function() {
                     var $field = $(this);
-                    console.log('Campo CUIT:', $field.attr('name') || $field.attr('id'), 'Valor:', $field.val());
+       
                     
                     // Si tiene valor sin guiones, aplicar formato
                     if ($field.val() && !$field.val().includes('-')) {
