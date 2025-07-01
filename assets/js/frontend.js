@@ -6,38 +6,75 @@
 
     // Objeto principal del plugin
     var MAMUserAccount = {
+        
+        /**
+         * Inicializar todas las funcionalidades
+         */
+        init: function() {
+            this.initTabs();
+            this.initAjaxLogin();
+            this.initAjaxRegister();
+            this.initCUITValidation();
+            this.initPasswordToggle();
+            this.initFormValidation();
+            this.initMobileMenu();
+            
+            console.log('MAMUserAccount init completed');
+        },
+        
         /**
          * Inicializar pestañas en login/registro y otras áreas
          */
         initTabs: function() {
+            var self = this;
+            
+            // Solo inicializar si estamos en la página de login/registro
+            if ($('.mam-login-register-tabs').length === 0) {
+                return;
+            }
+            
+            console.log('Inicializando tabs de login/registro');
+            
             // Tabs de login/registro
             $('.mam-login-tab').on('click', function(e) {
                 e.preventDefault();
+                console.log('Login tab clicked');
                 
                 // Activar tab
                 $('.mam-login-tab').addClass('active');
                 $('.mam-register-tab').removeClass('active');
                 
                 // Mostrar formulario correcto
-                $('.mam-login-form-wrapper').show();
-                $('.mam-register-form-wrapper').hide();
+                $('.mam-login-form-wrapper').removeClass('hide').show();
+                $('.mam-register-form-wrapper').addClass('hide').hide();
+                
+                // Actualizar clases en html para mayor compatibilidad
+                $('html').addClass('js-login-tab-active').removeClass('js-register-tab-active');
             });
             
             $('.mam-register-tab').on('click', function(e) {
                 e.preventDefault();
+                console.log('Register tab clicked');
                 
                 // Activar tab
                 $('.mam-register-tab').addClass('active');
                 $('.mam-login-tab').removeClass('active');
                 
                 // Mostrar formulario correcto
-                $('.mam-register-form-wrapper').show();
-                $('.mam-login-form-wrapper').hide();
+                $('.mam-register-form-wrapper').removeClass('hide').show();
+                $('.mam-login-form-wrapper').addClass('hide').hide();
+                
+                // Actualizar clases en html para mayor compatibilidad
+                $('html').addClass('js-register-tab-active').removeClass('js-login-tab-active');
             });
             
             // Establecer estado inicial basado en URL
+            var urlParams = new URLSearchParams(window.location.search);
+            var action = urlParams.get('action');
+            
             if (window.location.hash === '#register' || 
-                window.location.search.indexOf('action=register') > -1) {
+                window.location.search.indexOf('action=register') > -1 ||
+                action === 'register') {
                 // Simular clic en la pestaña de registro
                 $('.mam-register-tab').trigger('click');
             } else {
@@ -168,38 +205,122 @@
          * Validación de CUIT en tiempo real
          */
         initCUITValidation: function() {
-            $('#reg_cuit').on('blur', function() {
+            var self = this;
+            
+            // Selectores más amplios para capturar todos los campos CUIT posibles
+            var cuitSelectors = '#reg_cuit, #billing_cuit, input[name="cuit"], input[name="billing_cuit"], input[name="reg_cuit"], [id*="cuit"]:not([type="hidden"]), [name*="cuit"]:not([type="hidden"])';
+            
+            console.log('Inicializando validación CUIT');
+            
+            // Formateo automático mientras se escribe
+            $('body').on('input', cuitSelectors, function() {
                 var $field = $(this);
-                var cuit = $field.val().trim();
+                var cuit = $field.val();
+                var cursorPos = this.selectionStart;
                 
-                // Eliminar guiones y espacios para la validación
-                var cleanCuit = cuit.replace(/[^0-9]/g, '');
+                console.log('Formateando CUIT:', cuit);
                 
-                if (cuit && cleanCuit.length !== 11) {
-                    $field.addClass('mam-field-error');
+                // Solo formatear si el usuario no está escribiendo guiones manualmente
+                if (!cuit.includes('-') || cuit.replace(/[^-]/g, '').length < 2) {
+                    var cuitLimpio = cuit.replace(/[^0-9]/g, '');
                     
-                    // Añadir mensaje de error si no existe
-                    if ($field.next('.mam-field-error-message').length === 0) {
-                        $field.after('<span class="mam-field-error-message">CUIT debe tener 11 dígitos (xx-xxxxxxxx-x)</span>');
-                    } else {
-                        $field.next('.mam-field-error-message').text('CUIT debe tener 11 dígitos (xx-xxxxxxxx-x)');
+                    // Limitar a 11 dígitos
+                    if (cuitLimpio.length > 11) {
+                        cuitLimpio = cuitLimpio.substring(0, 11);
                     }
+                    
+                    // Aplicar formato XX-XXXXXXXX-X
+                    var formattedCuit = '';
+                    
+                    if (cuitLimpio.length > 2 && cuitLimpio.length <= 10) {
+                        formattedCuit = cuitLimpio.substring(0, 2) + '-' + cuitLimpio.substring(2);
+                        if (cursorPos > 2) cursorPos++;
+                    } else if (cuitLimpio.length > 10) {
+                        formattedCuit = cuitLimpio.substring(0, 2) + '-' + 
+                                       cuitLimpio.substring(2, 10) + '-' + 
+                                       cuitLimpio.substring(10, 11);
+                        if (cursorPos > 10) cursorPos++;
+                        if (cursorPos > 2) cursorPos++;
+                    } else {
+                        formattedCuit = cuitLimpio;
+                    }
+                    
+                    $field.val(formattedCuit);
+                    
+                    // Restaurar posición del cursor
+                    if (this.setSelectionRange) {
+                        this.setSelectionRange(cursorPos, cursorPos);
+                    }
+                }
+                
+                // Validar mientras escribe si tiene 11 dígitos
+                var digitCount = $field.val().replace(/[^0-9]/g, '').length;
+                if (digitCount === 11) {
+                    self.validateCUITField($field);
                 }
             });
             
-            // Formatear automáticamente el CUIT mientras se escribe
-            $('#reg_cuit').on('input', function() {
-                var $field = $(this);
-                var cuit = $field.val().replace(/[^0-9]/g, '');
-                
-                if (cuit.length > 2 && cuit.length <= 10) {
-                    cuit = cuit.substring(0, 2) + '-' + cuit.substring(2);
-                } else if (cuit.length > 10) {
-                    cuit = cuit.substring(0, 2) + '-' + cuit.substring(2, 10) + '-' + cuit.substring(10, 11);
-                }
-                
-                $field.val(cuit);
+            // Validación al perder el foco
+            $('body').on('blur', cuitSelectors, function() {
+                self.validateCUITField($(this));
             });
+            
+            // También aplicar formateo inicial a campos CUIT existentes
+            $(document).ready(function() {
+                setTimeout(function() {
+                    $(cuitSelectors).each(function() {
+                        var $field = $(this);
+                        if ($field.val() && !$field.val().includes('-')) {
+                            $field.trigger('input');
+                        }
+                    });
+                }, 500);
+            });
+        },
+        
+        /**
+         * Validar un campo CUIT específico
+         */
+        validateCUITField: function($field) {
+            var cuit = $field.val().trim();
+            
+            if (!cuit) {
+                $field.removeClass('mam-field-error');
+                $field.parent().find('.mam-field-error-message').remove();
+                return;
+            }
+            
+            // Expresiones regulares para validar CUIT
+            var regexEstricto = /^\d{2}-\d{8}-\d$/;  // Formato con guiones obligatorios
+            var regexFlexible = /^\d{2}[-]?\d{8}[-]?\d$/;  // Formato con guiones opcionales
+            var regexNumeros = /^\d{11}$/;  // Solo números
+            
+            // Limpiar CUIT para validación de solo números
+            var cuitNumeros = cuit.replace(/[^0-9]/g, '');
+            
+            // Validar formato
+            var esValido = regexEstricto.test(cuit) || 
+                          regexFlexible.test(cuit) || 
+                          (cuitNumeros.length === 11 && regexNumeros.test(cuitNumeros));
+            
+            // Buscar el contenedor correcto para el mensaje de error
+            var $errorContainer = $field.parent();
+            
+            if (cuit && !esValido) {
+                $field.addClass('mam-field-error');
+                
+                // Remover mensaje anterior
+                $errorContainer.find('.mam-field-error-message').remove();
+                
+                // Añadir nuevo mensaje de error
+                $errorContainer.append('<span class="mam-field-error-message" style="color: #e74c3c; font-size: 12px; display: block; margin-top: 5px;">El formato del CUIT debe ser: XX-XXXXXXXX-X</span>');
+            } else if (esValido) {
+                $field.removeClass('mam-field-error');
+                $errorContainer.find('.mam-field-error-message').remove();
+                
+                // Mensaje de éxito opcional
+                console.log('CUIT válido:', cuit);
+            }
         },
 
         /**
@@ -292,37 +413,58 @@
          * Inicializar menú móvil para navegación responsiva
          */
         initMobileMenu: function() {
-            // Si estamos en viewport móvil
-            if (window.innerWidth < 768) {
-                // Crear botón de menú si no existe
-                if ($('.mam-mobile-menu-toggle').length === 0) {
-                    $('.woocommerce-MyAccount-navigation').before(
-                        '<button class="mam-mobile-menu-toggle">' +
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />' +
-                        '</svg>' +
-                        '<span>Menú de Cuenta</span>' +
-                        '</button>'
-                    );
+            var self = this;
+            
+            // Función para configurar el menú móvil
+            function setupMobileMenu() {
+                // Si estamos en viewport móvil
+                if (window.innerWidth < 768) {
+                    // Crear botón de menú si no existe
+                    if ($('.mam-mobile-menu-toggle').length === 0 && $('.woocommerce-MyAccount-navigation').length > 0) {
+                        $('.woocommerce-MyAccount-navigation').before(
+                            '<button class="mam-mobile-menu-toggle">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />' +
+                            '</svg>' +
+                            '<span>Menú de Cuenta</span>' +
+                            '</button>'
+                        );
+                        
+                        // Vincular eventos al nuevo botón
+                        self.bindMobileMenuEvents();
+                    }
+                    
+                    // Ocultar menú por defecto
+                    $('.woocommerce-MyAccount-navigation ul').addClass('mam-mobile-hidden');
                 }
-                
-                // Ocultar menú por defecto
-                $('.woocommerce-MyAccount-navigation ul').addClass('mam-mobile-hidden');
-                
+            }
+            
+            // Vincular eventos del menú móvil
+            this.bindMobileMenuEvents = function() {
                 // Toggle para mostrar/ocultar menú
-                $('.mam-mobile-menu-toggle').on('click', function() {
+                $('.mam-mobile-menu-toggle').off('click').on('click', function() {
                     $('.woocommerce-MyAccount-navigation ul').toggleClass('mam-mobile-hidden');
                     $(this).toggleClass('mam-menu-active');
                 });
                 
                 // Cerrar menú al hacer clic en un enlace
-                $('.woocommerce-MyAccount-navigation li a').on('click', function() {
+                $('.woocommerce-MyAccount-navigation li a').off('click.mobile').on('click.mobile', function() {
                     if (window.innerWidth < 768) {
                         $('.woocommerce-MyAccount-navigation ul').addClass('mam-mobile-hidden');
                         $('.mam-mobile-menu-toggle').removeClass('mam-menu-active');
                     }
                 });
-            }
+            };
+            
+            // Configurar inicialmente
+            setupMobileMenu();
+            
+            // Reconfigurar en cambio de tamaño de ventana
+            var resizeTimer;
+            $(window).on('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(setupMobileMenu, 250);
+            });
         },
         
         /**
@@ -346,254 +488,44 @@
                     });
                 }, 5000);
             }
-        },
-        
-        /**
-         * Inicializar todas las funcionalidades
-         */
-
-init: function() {
-    this.initTabs();
-    this.initAjaxLogin();
-    this.initAjaxRegister();
-    this.initCUITValidation();
-    this.initPasswordToggle();
-    this.initFormValidation();
-    this.initMobileMenu();
-    // Añadir esta línea
-    initCUITFormatting();
-
-    
-    console.log('MAMUserAccount init completed'); // Depuración
-}
+            
+            // Scroll al mensaje si está fuera de vista
+            if ($message.offset().top < $(window).scrollTop()) {
+                $('html, body').animate({
+                    scrollTop: $message.offset().top - 100
+                }, 300);
+            }
+        }
     };
-
-    /**
-     * Solución para las pestañas de login/registro
-     * Este código debe insertarse en frontend.js
-     */
-
-    // Función para manejar las pestañas de login/registro
-    function handleLoginRegisterTabs() {
-        console.log('Inicializando manejo de pestañas login/registro');
-        
-        // Función para cambiar entre pestañas
-        function switchTab(tabType) {
-            console.log('Cambiando a pestaña:', tabType);
-            
-            // 1. Actualizar pestañas activas
-            if (tabType === 'login') {
-                $('.mam-login-tab').addClass('active');
-                $('.mam-register-tab').removeClass('active');
-            } else if (tabType === 'register') {
-                $('.mam-register-tab').addClass('active');
-                $('.mam-login-tab').removeClass('active');
-            }
-            
-            // 2. Mostrar/ocultar formularios correspondientes
-            if (tabType === 'login') {
-                $('.mam-login-form-wrapper').show();
-                $('.mam-register-form-wrapper').hide();
-            } else if (tabType === 'register') {
-                $('.mam-login-form-wrapper').hide();
-                $('.mam-register-form-wrapper').show();
-            }
-        }
-        
-        // Manejar clic en pestaña de login
-        $('.mam-login-tab').on('click', function(e) {
-            e.preventDefault();
-            switchTab('login');
-        });
-        
-        // Manejar clic en pestaña de registro
-        $('.mam-register-tab').on('click', function(e) {
-            e.preventDefault();
-            switchTab('register');
-        });
-        
-        // Establecer pestaña inicial según URL
-        var urlParams = new URLSearchParams(window.location.search);
-        var action = urlParams.get('action');
-        
-        if (action === 'register') {
-            switchTab('register');
-        } else {
-            switchTab('login');
-        }
-    }
-
-    // Implementar una función clara para el manejo de pestañas
-    function initLoginRegisterTabs() {
-        $('.mam-login-tab, .mam-register-tab').on('click', function(e) {
-            e.preventDefault();
-            
-            const isLoginTab = $(this).hasClass('mam-login-tab');
-            
-            // Activar pestaña correcta
-            $('.mam-login-tab, .mam-register-tab').removeClass('active');
-            $(this).addClass('active');
-            
-            // Mostrar formulario correcto
-            if (isLoginTab) {
-                $('.mam-login-form-wrapper').show();
-                $('.mam-register-form-wrapper').hide();
-            } else {
-                $('.mam-register-form-wrapper').show();
-                $('.mam-login-form-wrapper').hide();
-            }
-        });
-    }
-/**
- * Validación y formateo de CUIT en tiempo real
- */
-function initCUITFormatting() {
-    $('#reg_cuit').on('input', function() {
-        var $field = $(this);
-        var cuit = $field.val().replace(/[^0-9]/g, '');
-        
-        // Formatear automáticamente mientras el usuario escribe
-        if (cuit.length > 0) {
-            // Mantener solo los primeros 11 dígitos
-            if (cuit.length > 11) {
-                cuit = cuit.substring(0, 11);
-            }
-            
-            // Aplicar formato XX-XXXXXXXX-X
-            var formattedCuit = '';
-            
-            if (cuit.length > 2 && cuit.length <= 10) {
-                formattedCuit = cuit.substring(0, 2) + '-' + cuit.substring(2);
-            } else if (cuit.length > 10) {
-                formattedCuit = cuit.substring(0, 2) + '-' + cuit.substring(2, 10) + '-' + cuit.substring(10);
-            } else {
-                formattedCuit = cuit;
-            }
-            
-            $field.val(formattedCuit);
-        }
-    });
-    
-    // Validación al perder el foco
-    $('#reg_cuit').on('blur', function() {
-        var $field = $(this);
-        var cuit = $field.val().trim();
-        var cleanCuit = cuit.replace(/[^0-9]/g, '');
-        
-        if (cuit && cleanCuit.length !== 11) {
-            $field.addClass('mam-field-error');
-            
-            // Mostrar mensaje de error
-            if ($field.next('.mam-field-error-message').length === 0) {
-                $field.after('<span class="mam-field-error-message">El CUIT debe tener 11 dígitos (formato: xx-xxxxxxxx-x)</span>');
-            }
-        } else {
-            $field.removeClass('mam-field-error');
-            $field.next('.mam-field-error-message').remove();
-        }
-    });
-}
-
-// Asegúrate de llamar a esta función cuando el documento esté listo
-$(document).ready(function() {
-    initCUITFormatting();
-});
-    
-    // Validación al perder el foco (para ambos campos)
-    $('body').on('blur', '#reg_cuit, #billing_cuit', function() {
-        var $field = $(this);
-        var cuit = $field.val().trim();
-        var cleanCuit = cuit.replace(/[^0-9]/g, '');
-        
-        if (cuit && cleanCuit.length !== 11) {
-            $field.addClass('mam-field-error');
-            
-            // Mostrar mensaje de error
-            if ($field.next('.mam-field-error-message').length === 0) {
-                $field.after('<span class="mam-field-error-message">El CUIT debe tener 11 dígitos (formato: xx-xxxxxxxx-x)</span>');
-            }
-        } else {
-            $field.removeClass('mam-field-error');
-            $field.next('.mam-field-error-message').remove();
-        }
-    });
-
-    
-    // Validación al perder el foco
-    $('#reg_cuit').on('blur', function() {
-        var $field = $(this);
-        var cuit = $field.val().trim();
-        var cleanCuit = cuit.replace(/[^0-9]/g, '');
-        
-        if (cuit && cleanCuit.length !== 11) {
-            $field.addClass('mam-field-error');
-            
-            // Mostrar mensaje de error
-            if ($field.next('.mam-field-error-message').length === 0) {
-                $field.after('<span class="mam-field-error-message">El CUIT debe tener 11 dígitos (formato: xx-xxxxxxxx-x)</span>');
-            }
-        } else {
-            $field.removeClass('mam-field-error');
-            $field.next('.mam-field-error-message').remove();
-        }
-    });
 
     // Ejecutar cuando el DOM esté listo
     $(document).ready(function() {
+        console.log('My Account Manager: Iniciando...');
+        
         // Inicializar el objeto principal
         MAMUserAccount.init();
         
-        // Solo inicializar si estamos en la página de login/registro
-        if ($('.mam-login-register-tabs').length > 0) {
-            console.log('Inicializando tabs de login/registro');
+        // Debug: Verificar si hay campos CUIT en la página
+        setTimeout(function() {
+            var cuitFields = $('input[name="cuit"], input[name="billing_cuit"], input[name="reg_cuit"], [id*="cuit"]:not([type="hidden"]), [name*="cuit"]:not([type="hidden"])');
+            console.log('Campos CUIT encontrados:', cuitFields.length);
             
-            // Manejar clic en pestaña de login
-            $('.mam-login-tab').on('click', function(e) {
-                e.preventDefault();
-                console.log('Login tab clicked');
-                
-                // Activar esta pestaña
-                $('.mam-login-tab').addClass('active');
-                $('.mam-register-tab').removeClass('active');
-                
-                // Mostrar el formulario correspondiente
-                $('.mam-login-form-wrapper').removeClass('hide').show();
-                $('.mam-register-form-wrapper').addClass('hide').hide();
-                
-                // Actualizar clases en html para mayor compatibilidad
-                $('html').addClass('js-login-tab-active').removeClass('js-register-tab-active');
-            });
-            
-            // Manejar clic en pestaña de registro
-            $('.mam-register-tab').on('click', function(e) {
-                e.preventDefault();
-                console.log('Register tab clicked');
-                
-                // Activar esta pestaña
-                $('.mam-register-tab').addClass('active');
-                $('.mam-login-tab').removeClass('active');
-                
-                // Mostrar el formulario correspondiente
-                $('.mam-register-form-wrapper').removeClass('hide').show();
-                $('.mam-login-form-wrapper').addClass('hide').hide();
-                
-                // Actualizar clases en html para mayor compatibilidad
-                $('html').addClass('js-register-tab-active').removeClass('js-login-tab-active');
-            });
-            
-            // Verificar estado inicial basado en URL
-            if (window.location.hash === '#register' || 
-                window.location.search.indexOf('action=register') > -1) {
-                // Simular clic en la pestaña de registro
-                $('.mam-register-tab').trigger('click');
-            } else {
-                // Por defecto, activar pestaña de login
-                $('.mam-login-tab').trigger('click');
+            if (cuitFields.length > 0) {
+                console.log('Aplicando formateo inicial a campos CUIT...');
+                cuitFields.each(function() {
+                    var $field = $(this);
+                    console.log('Campo CUIT:', $field.attr('name') || $field.attr('id'), 'Valor:', $field.val());
+                    
+                    // Si tiene valor sin guiones, aplicar formato
+                    if ($field.val() && !$field.val().includes('-')) {
+                        $field.trigger('input');
+                    }
+                });
             }
-        }
-        
-        // Inicializar tabs de login/registro
-        initLoginRegisterTabs();
-    initCUITFormatting();
+        }, 1000);
     });
+    
+    // Exponer el objeto globalmente para extensibilidad
+    window.MAMUserAccount = MAMUserAccount;
+
 })(jQuery);
