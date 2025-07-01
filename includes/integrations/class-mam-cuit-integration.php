@@ -245,18 +245,36 @@ class MAM_CUIT_Integration {
         }
     }
     
-    /**
+/**
      * Validar formato de CUIT (método auxiliar)
      */
     private function validate_cuit_format($cuit) {
-        // Eliminar espacios y guiones
-        $cuit = str_replace(array(' ', '-'), '', $cuit);
-        
-        // Verificar que tenga exactamente 11 dígitos
-        if (!preg_match('/^[0-9]{11}$/', $cuit)) {
-            return false;
+        // Primero intentar validar con el formato completo con guiones
+        if (preg_match('/^\d{2}-\d{8}-\d$/', $cuit)) {
+            // Si tiene el formato correcto, validar el dígito verificador
+            $cuit_limpio = str_replace('-', '', $cuit);
+            return $this->validate_cuit_checksum($cuit_limpio);
         }
         
+        // Luego intentar con guiones opcionales
+        if (preg_match('/^\d{2}[-]?\d{8}[-]?\d$/', $cuit)) {
+            $cuit_limpio = preg_replace('/[^0-9]/', '', $cuit);
+            return $this->validate_cuit_checksum($cuit_limpio);
+        }
+        
+        // Finalmente, validar solo números (11 dígitos)
+        $cuit_numeros = preg_replace('/[^0-9]/', '', $cuit);
+        if (preg_match('/^\d{11}$/', $cuit_numeros)) {
+            return $this->validate_cuit_checksum($cuit_numeros);
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Validar dígito verificador del CUIT
+     */
+    private function validate_cuit_checksum($cuit) {
         // Validación del dígito verificador
         $base = array(5, 4, 3, 2, 7, 6, 5, 4, 3, 2);
         $aux = 0;
