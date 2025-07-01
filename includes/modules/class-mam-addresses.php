@@ -72,6 +72,9 @@ add_action('woocommerce_order_details_after_customer_details', array($this, 'dis
 add_action('woocommerce_admin_order_data_after_billing_address', array($this, 'add_cuit_to_admin_order'), 10, 1);
 add_filter('woocommerce_address_to_edit', array($this, 'load_address_fields_values'), 10, 2);
         add_action('wp_footer', array($this, 'load_user_data_in_forms'));
+        
+        add_action('profile_update', array($this, 'sync_cuit_on_profile_update'));
+add_filter('woocommerce_customer_data', array($this, 'add_cuit_to_customer_data'), 10, 3);
     }
 public function register_ajax_handlers() {
     add_action('wp_ajax_mam_save_address', array($this, 'ajax_save_address'));
@@ -80,7 +83,34 @@ public function register_ajax_handlers() {
     add_action('wp_ajax_mam_get_saved_address', array($this, 'ajax_get_saved_address'));
      add_action('wp_ajax_mam_update_account', array($this, 'ajax_update_account'));
 }
+/**
+ * Sincronizar CUIT con WooCommerce al actualizar perfil
+ */
+public function sync_cuit_on_profile_update($user_id) {
+    // Obtener CUIT de cualquier fuente
+    $cuit = get_user_meta($user_id, 'cuit', true);
+    if (empty($cuit)) {
+        $cuit = get_user_meta($user_id, 'billing_cuit', true);
+    }
+    
+    // Sincronizar en todos los campos posibles
+    if (!empty($cuit)) {
+        update_user_meta($user_id, 'billing_cuit', $cuit);
+        update_user_meta($user_id, 'cuit', $cuit);
+        
+        // También actualizar en los pedidos futuros
+        add_user_meta($user_id, '_default_billing_cuit', $cuit, true);
+    }
+}
 
+/**
+ * Hook para WooCommerce customer data
+ */
+public function add_cuit_to_customer_data($customer_data, $customer, $data_store) {
+    $customer_data['billing_cuit'] = $customer->get_meta('billing_cuit');
+    $customer_data['cuit'] = $customer->get_meta('cuit');
+    return $customer_data;
+}
     /**
  * Manejo AJAX de actualización de cuenta que incluye CUIT y empresa
  */
