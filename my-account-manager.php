@@ -105,6 +105,7 @@ public function __construct() {
         if (is_admin()) {
             include_once MAM_PLUGIN_DIR . 'includes/admin/class-mam-admin.php';
     include_once MAM_PLUGIN_DIR . 'includes/admin/class-mam-admin-cuit.php'; // NUEVA LÍNEA
+    include_once MAM_PLUGIN_DIR . 'includes/admin/class-mam-cuit-settings.php'; // NUEVA LÍNEA
         }
         
         // Módulos
