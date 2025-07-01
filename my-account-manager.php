@@ -3,7 +3,7 @@
  * Plugin Name: My Account Manager
  * Plugin URI: https://tudominio.com/my-account-manager
  * Description: Plugin personalizado para la gestión de cuentas de usuario, optimizado bajo los principios de UX y UI.
- * Version: 1.0.0
+ * Version: 1.2.0
  * Author: Dario
  * Author URI: https://bairesanalitica.com
  * Text Domain: my-account-manager
