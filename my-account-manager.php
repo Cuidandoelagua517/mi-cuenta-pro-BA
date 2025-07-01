@@ -4,8 +4,8 @@
  * Plugin URI: https://tudominio.com/my-account-manager
  * Description: Plugin personalizado para la gestión de cuentas de usuario, optimizado bajo los principios de UX y UI.
  * Version: 1.0.0
- * Author: Tu Nombre
- * Author URI: https://tudominio.com
+ * Author: Dario
+ * Author URI: https://bairesanalitica.com
  * Text Domain: my-account-manager
  * Domain Path: /languages
  * WC requires at least: 7.0
@@ -104,6 +104,7 @@ public function __construct() {
         // Admin
         if (is_admin()) {
             include_once MAM_PLUGIN_DIR . 'includes/admin/class-mam-admin.php';
+    include_once MAM_PLUGIN_DIR . 'includes/admin/class-mam-admin-cuit.php'; // NUEVA LÍNEA
         }
         
         // Módulos
@@ -132,6 +133,7 @@ public function __construct() {
     
     // Añade este hook para declarar compatibilidad HPOS
     add_action('before_woocommerce_init', array($this, 'declare_wc_compatibility'));
+    add_action('wp_enqueue_scripts', 'mam_add_dashboard_spacing_fix', 20);
 }
 /**
  * Declarar compatibilidad con características de WooCommerce
@@ -220,31 +222,33 @@ add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
     /**
      * Enqueue de assets para el frontend
      */
-   public function enqueue_frontend_assets() {
+    public function enqueue_frontend_assets() {
     // Registrar y encolar estilos CSS
     wp_register_style('mam-styles', MAM_PLUGIN_URL . 'assets/css/frontend.css', array(), MAM_VERSION);
+    wp_enqueue_style('mam-styles');
     
     // Registrar los scripts JS
     wp_register_script('mam-scripts', MAM_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), MAM_VERSION, true);
     
-    // Encolar siempre en el footer para que estén disponibles para popups
-    wp_enqueue_style('mam-styles');
+    // Scripts específicos para cada página
+    if (is_account_page()) {
+        // Código eliminado/comentado
+        // ...
+    }
+    
+    // Script principal
     wp_enqueue_script('mam-scripts');
     
-    // Añadir datos al script
+    // Esto debe estar DENTRO de la función, no fuera
     wp_localize_script('mam-scripts', 'mam_params', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('mam-nonce'),
-        'is_popup' => false, // Esto puede cambiarse a true cuando se usa en popups
         'i18n'     => array(
-            'error'           => __('Error de conexión. Por favor, inténtalo de nuevo.', 'my-account-manager'),
-            'required'        => __('Este campo es obligatorio.', 'my-account-manager'),
-            'email_invalid'   => __('Por favor, introduce un email válido.', 'my-account-manager'),
-            'password_short'  => __('La contraseña debe tener al menos 6 caracteres.', 'my-account-manager'),
-            'confirm_delete'  => __('¿Estás seguro de que quieres eliminar esta dirección?', 'my-account-manager')
+            'error'   => __('Error de conexión. Por favor, inténtalo de nuevo.', 'my-account-manager'),
+            // Otros strings...
         )
     ));
-}
+} 
 
     /**
      * Agregar script de corrección para las pestañas de login/registro
@@ -290,7 +294,22 @@ add_action('wp_ajax_mam_user_action', array($this, 'handle_user_action'));
         <?php
     }
 }
-
+function mam_add_dashboard_spacing_fix() {
+    if (is_account_page()) {
+        $custom_css = "
+            /* Solución para el espaciado excesivo en el panel de Mi Cuenta */
+            .mam-dashboard-header h2, 
+            .woocommerce-MyAccount-content h2:first-of-type {
+                margin-top: 0;
+            }
+            .woocommerce-notices-wrapper:empty {
+                display: none;
+            }
+            /* Resto del CSS aquí */
+        ";
+        wp_add_inline_style('mam-styles', $custom_css);
+    }
+}
 /**
  * Función principal para acceder a la instancia de My_Account_Manager
  */
