@@ -266,6 +266,8 @@ public function ajax_register() {
     // Eliminar validaciones de otros campos como first_name, last_name, etc.
     
     return $validation_error;
+}
+
     /**
  * Validación personalizada de registro
  */
@@ -289,23 +291,53 @@ public function validate_registration($validation_error, $username, $email) {
     }
     
     return $validation_error;
+}
 /**
- * Validar formato de CUIT
- */
-private function validate_cuit_format($cuit) {
-    // Eliminar guiones y espacios
-    $cuit = preg_replace('/[^0-9]/', '', $cuit);
-    
-    // Verificar longitud
-    if (strlen($cuit) !== 11) {
+     * Validar formato de CUIT (método auxiliar)
+     */
+    private function validate_cuit_format($cuit) {
+        // Primero intentar validar con el formato completo con guiones
+        if (preg_match('/^\d{2}-\d{8}-\d$/', $cuit)) {
+            // Si tiene el formato correcto, validar el dígito verificador
+            $cuit_limpio = str_replace('-', '', $cuit);
+            return $this->validate_cuit_checksum($cuit_limpio);
+        }
+        
+        // Luego intentar con guiones opcionales
+        if (preg_match('/^\d{2}[-]?\d{8}[-]?\d$/', $cuit)) {
+            $cuit_limpio = preg_replace('/[^0-9]/', '', $cuit);
+            return $this->validate_cuit_checksum($cuit_limpio);
+        }
+        
+        // Finalmente, validar solo números (11 dígitos)
+        $cuit_numeros = preg_replace('/[^0-9]/', '', $cuit);
+        if (preg_match('/^\d{11}$/', $cuit_numeros)) {
+            return $this->validate_cuit_checksum($cuit_numeros);
+        }
+        
         return false;
     }
     
-    // Aquí podrías añadir validación adicional del número de CUIT
-    // como verificación del dígito de control si es necesario
-    
-    return true;
-}
+    /**
+     * Validar dígito verificador del CUIT
+     */
+    private function validate_cuit_checksum($cuit) {
+        // Validación del dígito verificador
+        $base = array(5, 4, 3, 2, 7, 6, 5, 4, 3, 2);
+        $aux = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $aux += $cuit[$i] * $base[$i];
+        }
+        $aux = 11 - ($aux % 11);
+        if ($aux == 11) {
+            $aux = 0;
+        }
+        if ($aux == 10) {
+            $aux = 9;
+        }
+        
+        return $aux == $cuit[10];
+    }
     /**
      * Inicio del wrapper de contenido de mi cuenta
      */
@@ -320,80 +352,38 @@ private function validate_cuit_format($cuit) {
         echo '</div>';
     }
 
-   /**
- * Shortcode para formulario de login - Mejorado para popups
- */
-public function login_form_shortcode($atts) {
-    $atts = shortcode_atts([
-        'popup' => 'no',                  // 'yes' si es para popup
-        'redirect' => '',                 // URL de redirección personalizada
-        'show_title' => 'yes',            // Mostrar título
-        'show_register_link' => 'yes',    // Mostrar enlace a registro
-        'button_text' => 'Iniciar Sesión' // Texto del botón personalizable
-    ], $atts);
-    
-    ob_start();
-    
-    // Encolar siempre los estilos y scripts necesarios
-    wp_enqueue_style('mam-styles');
-    wp_enqueue_script('mam-scripts');
-    
-    // Almacenar los atributos para que la plantilla pueda acceder a ellos
-    set_query_var('mam_form_atts', $atts);
-    
-    // Cargar plantilla adecuada según el contexto
-    if ($atts['popup'] === 'yes') {
-        include(MAM_PLUGIN_DIR . 'templates/popup/form-login.php');
-    } else {
-        // Para uso normal, usar la plantilla completa
+    /**
+     * Shortcode para formulario de login
+     */
+    public function login_form_shortcode($atts) {
+        ob_start();
+        
         if (is_user_logged_in()) {
             wc_get_template('myaccount/my-account.php');
         } else {
             wc_get_template('myaccount/form-login.php', array('form' => 'login'));
         }
+        
+        return ob_get_clean();
     }
-    
-    return ob_get_clean();
-}
       
-   /**
- * Shortcode para formulario de registro - Mejorado para popups
- */
-public function register_form_shortcode($atts) {
-    $atts = shortcode_atts([
-        'popup' => 'no',                  // 'yes' si es para popup
-        'redirect' => '',                 // URL de redirección personalizada
-        'show_title' => 'yes',            // Mostrar título
-        'show_login_link' => 'yes',       // Mostrar enlace a login
-        'button_text' => 'Crear Cuenta'   // Texto del botón personalizable
-    ], $atts);
-    
-    ob_start();
-    
-    // Encolar siempre los estilos y scripts necesarios
-    wp_enqueue_style('mam-styles');
-    wp_enqueue_script('mam-scripts');
-    
-    // Almacenar los atributos para que la plantilla pueda acceder a ellos
-    set_query_var('mam_form_atts', $atts);
-    
-    // Cargar plantilla adecuada según el contexto
-    if ($atts['popup'] === 'yes') {
-        include(MAM_PLUGIN_DIR . 'templates/popup/form-register.php');
-    } else {
-        // Para uso normal, usar la plantilla completa
+    /**
+     * Shortcode para formulario de registro
+     */
+    public function register_form_shortcode($atts) {
+        ob_start();
+        
         if (is_user_logged_in()) {
             wc_get_template('myaccount/my-account.php');
         } else {
             wc_get_template('myaccount/form-login.php', array('form' => 'register'));
         }
+        
+        return ob_get_clean();
     }
-    
-    return ob_get_clean();
-}
 
-/**
- * Login por AJAX - Mejorado para popups
+   /**
+ * Login por AJAX
  */
 public function ajax_login() {
     check_ajax_referer('mam-nonce', 'security');
@@ -418,85 +408,13 @@ public function ajax_login() {
         return;
     }
     
-    // Permitir URL de redirección personalizada
-    $redirect = '';
-    if (!empty($_POST['redirect'])) {
-        $redirect = esc_url_raw($_POST['redirect']);
-    } else {
-        $redirect = wc_get_account_endpoint_url('dashboard');
-    }
-    
     wp_send_json_success([
         'message' => __('Login exitoso', 'my-account-manager'),
-        'redirect' => $redirect
+        'redirect' => wc_get_account_endpoint_url('dashboard')
     ]);
 }
- /**
- * Registro por AJAX - Mejorado para popups
- */
-public function ajax_register() {
-    check_ajax_referer('mam-nonce', 'security');
-    
-    $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
-    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-    
-    $validation_error = new WP_Error();
-    $validation_error = $this->validate_registration($validation_error, $username, $email);
-    
-    if ($validation_error->get_error_code()) {
-        wp_send_json_error(array('message' => $validation_error->get_error_message()));
-        exit;
-    }
-    
-    $new_customer = wc_create_new_customer($email, $username, $password);
-    
-    if (is_wp_error($new_customer)) {
-        wp_send_json_error(array('message' => $new_customer->get_error_message()));
-        exit;
-    }
-    
-    // Guardar datos adicionales
-    if (isset($_POST['company_name']) && !empty($_POST['company_name'])) {
-        $company = sanitize_text_field($_POST['company_name']);
-        update_user_meta($new_customer, 'company_name', $company);
-        update_user_meta($new_customer, 'billing_company', $company);
-    }
-    
-    if (isset($_POST['cuit']) && !empty($_POST['cuit'])) {
-        $cuit = sanitize_text_field($_POST['cuit']);
-        update_user_meta($new_customer, 'cuit', $cuit);
-        update_user_meta($new_customer, 'billing_cuit', $cuit);
-    }
-    
-    if (isset($_POST['first_name']) && !empty($_POST['first_name'])) {
-        update_user_meta($new_customer, 'first_name', sanitize_text_field($_POST['first_name']));
-    }
-    
-    if (isset($_POST['last_name']) && !empty($_POST['last_name'])) {
-        update_user_meta($new_customer, 'last_name', sanitize_text_field($_POST['last_name']));
-    }
-    
-    if (isset($_POST['phone']) && !empty($_POST['phone'])) {
-        update_user_meta($new_customer, 'phone', sanitize_text_field($_POST['phone']));
-    }
-    
-    // Iniciar sesión automáticamente
-    wc_set_customer_auth_cookie($new_customer);
-    
-    // Permitir URL de redirección personalizada
-    $redirect = '';
-    if (!empty($_POST['redirect'])) {
-        $redirect = esc_url_raw($_POST['redirect']);
-    } else {
-        $redirect = apply_filters('mam_registration_redirect', wc_get_page_permalink('myaccount'), $new_customer);
-    }
-    
-    wp_send_json_success(array(
-        'message' => __('Registro exitoso, redirigiendo...', 'my-account-manager'),
-        'redirect' => $redirect
-    ));
-}
+
+
 public function remove_duplicate_fields() {
     // Elimina todas las acciones que podrían añadir campos al formulario de registro
     remove_all_actions('woocommerce_register_form');
